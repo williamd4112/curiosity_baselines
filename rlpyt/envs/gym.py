@@ -10,6 +10,7 @@ from rlpyt.spaces.gym_wrapper import GymSpaceWrapper
 from rlpyt.utils.collections import is_namedtuple_class
 from rlpyt.envs.wrappers.general_wrappers import *
 from rlpyt.envs.wrappers.mario_wrappers import *
+from rlpyt.envs.wrappers.pycolab_wrappers import *
 
 
 class GymEnvWrapper(Wrapper):
@@ -232,6 +233,8 @@ def deepmind_make(*args, info_example=None, **kwargs):
         env = NoNegativeReward(env)
 
     if kwargs['obs_type'] == 'rgb':
+        if kwargs['grayscale'] == True:
+            env = Grayscale(env)
         env = PytorchImage(env)
 
     if info_example is None:

@@ -160,6 +160,7 @@ class PyColabEnv(gym.Env):
             self.observation_space = spaces.Box(0., 1., [len(self.state_layer_chars)] + crop_window) # don't count empty space layer
         elif self.obs_type == 'rgb':
             self.observation_space = spaces.Box(0., 255., [crop_window[0]*resize_scale, crop_window[1]*resize_scale] + [3])
+        self.width, self.height = crop_window[0]*resize_scale, crop_window[1]*resize_scale
         self.action_space = action_space
         self.act_null_value = act_null_value
 

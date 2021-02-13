@@ -117,10 +117,10 @@ def launch_tmux(args):
         time.sleep(6) # wait for logdir to be created
         with open(log_dir + '/cmd.txt', 'w') as cmd_file:
             cmd_file.writelines(commands['runner'])
-        with open(log_dir + '/git.txt', 'w') as git_file:
-            branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip().decode('utf-8')
-            commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
-            git_file.write('{}/{}'.format(branch, commit))
+        # with open(log_dir + '/git.txt', 'w') as git_file:
+        #     branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip().decode('utf-8')
+        #     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
+        #     git_file.write('{}/{}'.format(branch, commit))
 
 
 def start_experiment(args):
@@ -130,6 +130,10 @@ def start_experiment(args):
         os.makedirs(args.log_dir)
     with open(args.log_dir + '/arguments.json', 'w') as jsonfile:
         jsonfile.write(args_json)
+    with open(args.log_dir + '/git.txt', 'w') as git_file:
+        branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip().decode('utf-8')
+        commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
+        git_file.write('{}/{}'.format(branch, commit))
 
     config = dict(env_id=args.env)
     
@@ -255,6 +259,7 @@ def start_experiment(args):
             log_heatmaps=args.log_heatmaps,
             logdir=args.log_dir,
             obs_type=args.obs_type,
+            grayscale=args.grayscale,
             max_steps_per_episode=args.max_episode_steps
             )
     elif args.env in _MUJOCO_ENVS:
