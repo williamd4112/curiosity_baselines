@@ -160,6 +160,7 @@ def start_experiment(args):
         model_args['curiosity_kwargs']['batch_norm'] = args.batch_norm
         model_args['curiosity_kwargs']['prediction_beta'] = args.prediction_beta
         model_args['curiosity_kwargs']['forward_loss_wt'] = args.forward_loss_wt
+        model_args['curiosity_kwargs']['forward_model'] = args.forward_model
     elif args.curiosity_alg == 'disagreement':
         model_args['curiosity_kwargs']['feature_encoding'] = args.feature_encoding
         model_args['curiosity_kwargs']['ensemble_size'] = args.ensemble_size
@@ -167,6 +168,7 @@ def start_experiment(args):
         model_args['curiosity_kwargs']['prediction_beta'] = args.prediction_beta
         model_args['curiosity_kwargs']['forward_loss_wt'] = args.forward_loss_wt
         model_args['curiosity_kwargs']['device'] = args.sample_mode
+        model_args['curiosity_kwargs']['forward_model'] = args.forward_model
     elif args.curiosity_alg == 'ndigo':
         model_args['curiosity_kwargs']['feature_encoding'] = args.feature_encoding
         model_args['curiosity_kwargs']['pred_horizon'] = args.pred_horizon

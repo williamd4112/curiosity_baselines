@@ -3,43 +3,8 @@ import torch
 from torch import nn
 
 from rlpyt.utils.tensor import infer_leading_dims, restore_leading_dims, valid_mean
-from rlpyt.models.curiosity.encoders import BurdaHead, MazeHead, UniverseHead
-
-class ResBlock(nn.Module):
-    def __init__(self,
-                 feature_size,
-                 action_size):
-        super(ResBlock, self).__init__()
-
-        self.lin_1 = nn.Linear(feature_size + action_size, feature_size)
-        self.lin_2 = nn.Linear(feature_size + action_size, feature_size)
-
-    def forward(self, x, action):
-        res = nn.functional.leaky_relu(self.lin_1(torch.cat([x, action], 2)))
-        res = self.lin_2(torch.cat([res, action], 2))
-        return res + x
-
-class ResForward(nn.Module):
-    def __init__(self,
-                 feature_size,
-                 action_size):
-        super(ResForward, self).__init__()
-
-        self.lin_1 = nn.Linear(feature_size + action_size, feature_size)
-        self.res_block_1 = ResBlock(feature_size, action_size)
-        self.res_block_2 = ResBlock(feature_size, action_size)
-        self.res_block_3 = ResBlock(feature_size, action_size)
-        self.res_block_4 = ResBlock(feature_size, action_size)
-        self.lin_last = nn.Linear(feature_size + action_size, feature_size)
-
-    def forward(self, phi1, action):
-        x = nn.functional.leaky_relu(self.lin_1(torch.cat([phi1, action], 2)))
-        x = self.res_block_1(x, action)
-        x = self.res_block_2(x, action)
-        x = self.res_block_3(x, action)
-        x = self.res_block_4(x, action)
-        x = self.lin_last(torch.cat([x, action], 2))
-        return x
+from rlpyt.models.curiosity.encoders import *
+from rlpyt.models.curiosity.forward_models import *
 
 class Disagreement(nn.Module):
     """Curiosity model for intrinsically motivated agents: similar to ICM
@@ -58,6 +23,7 @@ class Disagreement(nn.Module):
             obs_stats=None,
             device="cpu",
             forward_loss_wt=0.2,
+            forward_model='res'
             ):
         super(Disagreement, self).__init__()
 
@@ -86,10 +52,15 @@ class Disagreement(nn.Module):
                 self.feature_size = 256
                 self.encoder = MazeHead(image_shape=image_shape, output_size=self.feature_size, batch_norm=batch_norm)
 
-        self.forward_model_1 = ResForward(feature_size=self.feature_size, action_size=action_size).to(self.device)
-        self.forward_model_2 = ResForward(feature_size=self.feature_size, action_size=action_size).to(self.device)
-        self.forward_model_3 = ResForward(feature_size=self.feature_size, action_size=action_size).to(self.device)
-        self.forward_model_4 = ResForward(feature_size=self.feature_size, action_size=action_size).to(self.device)
+        if forward_model == 'res':
+            fmodel_class = ResForward
+        elif forward_model == 'og':
+            fmodel_class = OgForward
+
+        self.forward_model_1 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(self.device)
+        self.forward_model_2 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(self.device)
+        self.forward_model_3 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(self.device)
+        self.forward_model_4 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(self.device)
 
     def forward(self, obs1, obs2, action):
 
@@ -151,7 +122,6 @@ class Disagreement(nn.Module):
         forward_loss_4 = nn.functional.dropout(nn.functional.mse_loss(predicted_phi2[3], phi2.detach(), reduction='none'), p=0.2).sum(-1)/self.feature_size
         forward_loss += valid_mean(forward_loss_4, valid)
 
-        print(forward_loss)
         return self.forward_loss_wt*forward_loss
 
 
