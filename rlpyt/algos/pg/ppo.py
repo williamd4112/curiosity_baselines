@@ -155,9 +155,13 @@ class PPO(PolicyGradientAlgo):
                 opt_info.value_loss.append(value_loss.item())
                 opt_info.entropy_loss.append(entropy_loss.item())
 
-                if self.curiosity_type == 'icm' or self.curiosity_type == 'disagreement':
+                if self.curiosity_type == 'icm':
                     inv_loss, forward_loss = curiosity_losses
                     opt_info.inv_loss.append(inv_loss.item())
+                    opt_info.forward_loss.append(forward_loss.item())
+                    opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
+                elif self.curiosity_type == 'disagreement':
+                    forward_loss = curiosity_losses
                     opt_info.forward_loss.append(forward_loss.item())
                     opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
                 elif self.curiosity_type == 'ndigo':
@@ -223,11 +227,15 @@ class PPO(PolicyGradientAlgo):
 
         loss = pi_loss + value_loss + entropy_loss
 
-        if self.curiosity_type == 'icm' or self.curiosity_type == 'disagreement':
+        if self.curiosity_type == 'icm': 
             inv_loss, forward_loss = self.agent.curiosity_loss(self.curiosity_type, *agent_curiosity_inputs)
             loss += inv_loss
             loss += forward_loss
             curiosity_losses = (inv_loss, forward_loss)
+        elif self.curiosity_type == 'disagreement':
+            forward_loss = self.agent.curiosity_loss(self.curiosity_type, *agent_curiosity_inputs)
+            loss += forward_loss
+            curiosity_losses = (forward_loss)
         elif self.curiosity_type == 'ndigo':
             forward_loss = self.agent.curiosity_loss(self.curiosity_type, *agent_curiosity_inputs)
             loss += forward_loss

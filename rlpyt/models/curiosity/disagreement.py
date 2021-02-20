@@ -72,10 +72,8 @@ class Disagreement(nn.Module):
 
         if forward_loss_wt == -1.0:
             self.forward_loss_wt = 1.0
-            self.inverse_loss_wt = 1.0
         else:
             self.forward_loss_wt = forward_loss_wt
-            self.inverse_loss_wt = 1-forward_loss_wt
 
         if self.feature_encoding != 'none':
             if self.feature_encoding == 'idf':
@@ -87,12 +85,6 @@ class Disagreement(nn.Module):
             elif self.feature_encoding == 'idf_maze':
                 self.feature_size = 256
                 self.encoder = MazeHead(image_shape=image_shape, output_size=self.feature_size, batch_norm=batch_norm)
-
-        self.inverse_model = nn.Sequential(
-            nn.Linear(self.feature_size * 2, self.feature_size),
-            nn.ReLU(),
-            nn.Linear(self.feature_size, action_size)
-            )
 
         self.forward_model_1 = ResForward(feature_size=self.feature_size, action_size=action_size).to(self.device)
         self.forward_model_2 = ResForward(feature_size=self.feature_size, action_size=action_size).to(self.device)
@@ -120,8 +112,6 @@ class Disagreement(nn.Module):
             phi1 = phi1.view(T, B, -1) # make sure you're not mixing data up here
             phi2 = phi2.view(T, B, -1)
 
-        predicted_action = self.inverse_model(torch.cat([phi1, phi2], 2))
-
         predicted_phi2 = []
 
         predicted_phi2.append(self.forward_model_1(phi1.detach(), action.view(T, B, -1).detach()))
@@ -131,10 +121,10 @@ class Disagreement(nn.Module):
 
         predicted_phi2_stacked = torch.stack(predicted_phi2)
 
-        return phi1, phi2, predicted_phi2, predicted_phi2_stacked, predicted_action
+        return phi2, predicted_phi2, predicted_phi2_stacked
 
     def compute_bonus(self, observations, next_observations, actions):
-        phi1, phi2, predicted_phi2, predicted_phi2_stacked, predicted_action = self.forward(observations, next_observations, actions)
+        _, _, predicted_phi2_stacked = self.forward(observations, next_observations, actions)
         feature_var = torch.var(predicted_phi2_stacked, dim=0) # feature variance across forward models
         reward = torch.mean(feature_var, axis=-1) # mean over feature
         return self.prediction_beta * reward
@@ -145,10 +135,7 @@ class Disagreement(nn.Module):
         if actions.dim() == 2: 
             actions = actions.unsqueeze(1)
         #------------------------------------------------------------#
-        phi1, phi2, predicted_phi2, predicted_phi2_stacked, predicted_action = self.forward(observations, next_observations, actions)
-        actions = torch.max(actions.view(-1, *actions.shape[2:]), 1)[1] # conver action to (T * B, action_size), then get target indexes
-        inverse_loss = nn.functional.cross_entropy(predicted_action.view(-1, *predicted_action.shape[2:]), actions.detach(), reduction='none').view(phi1.shape[0], phi2.shape[1])
-        inverse_loss = valid_mean(inverse_loss, valid)
+        phi2, predicted_phi2, _ = self.forward(observations, next_observations, actions)
         
         forward_loss = torch.tensor(0.0, device=self.device)
 
@@ -164,7 +151,8 @@ class Disagreement(nn.Module):
         forward_loss_4 = nn.functional.dropout(nn.functional.mse_loss(predicted_phi2[3], phi2.detach(), reduction='none'), p=0.2).sum(-1)/self.feature_size
         forward_loss += valid_mean(forward_loss_4, valid)
 
-        return self.inverse_loss_wt*inverse_loss, self.forward_loss_wt*forward_loss
+        print(forward_loss)
+        return self.forward_loss_wt*forward_loss
 
 
 
