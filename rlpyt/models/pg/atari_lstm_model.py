@@ -67,7 +67,6 @@ class AtariLstmModel(torch.nn.Module):
                                              horizon=curiosity_kwargs['pred_horizon'],
                                              feature_encoding=curiosity_kwargs['feature_encoding'],
                                              batch_norm=curiosity_kwargs['batch_norm'],
-                                             num_predictors=curiosity_kwargs['num_predictors'],
                                              device=curiosity_kwargs['device'],
                                              )
             elif curiosity_kwargs['curiosity_alg'] == 'rnd':

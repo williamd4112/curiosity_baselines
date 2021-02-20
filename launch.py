@@ -171,7 +171,6 @@ def start_experiment(args):
         model_args['curiosity_kwargs']['feature_encoding'] = args.feature_encoding
         model_args['curiosity_kwargs']['pred_horizon'] = args.pred_horizon
         model_args['curiosity_kwargs']['batch_norm'] = args.batch_norm
-        model_args['curiosity_kwargs']['num_predictors'] = args.num_predictors
         model_args['curiosity_kwargs']['device'] = args.sample_mode
     elif args.curiosity_alg == 'rnd':
         model_args['curiosity_kwargs']['feature_encoding'] = args.feature_encoding

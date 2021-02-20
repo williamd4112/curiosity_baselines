@@ -48,19 +48,15 @@ class NDIGO(torch.nn.Module):
             gru_size=128,
             batch_norm=False,
             obs_stats=None,
-            num_predictors=10,
             device='cpu',
             ):
         """Instantiate neural net module according to inputs."""
         super(NDIGO, self).__init__()
 
-        assert num_predictors >= horizon
-
         self.action_size = action_size
         self.horizon = horizon
         self.feature_encoding = feature_encoding
         self.obs_stats = obs_stats
-        self.num_predictors = num_predictors
         if self.obs_stats is not None:
             self.obs_mean, self.obs_std = self.obs_stats
         self.device = torch.device('cuda:0' if device == 'gpu' else 'cpu')
@@ -111,7 +107,7 @@ class NDIGO(torch.nn.Module):
                                             output_size=image_shape[0]*image_shape[1]*image_shape[2])
 
 
-    def forward(self, observations, prev_actions, actions):
+    def forward(self, observations, prev_actions):
 
         # Infer (presence of) leading dimensions: [T,B], [B], or [].
         # lead_dim is just number of leading dimensions: e.g. [T, B] = 2 or [] = 0.
@@ -141,7 +137,7 @@ class NDIGO(torch.nn.Module):
         #------------------------------------------------------------#
 
         # generate belief states
-        belief_states, gru_output_states = self.forward(observations, prev_actions, actions)
+        belief_states, gru_output_states = self.forward(observations, prev_actions)
         self.gru_states = None # only bc we're processing exactly 1 episode per batch
 
         # slice beliefs and actions
@@ -228,10 +224,10 @@ class NDIGO(torch.nn.Module):
         #------------------------------------------------------------#
 
         # generate belief states
-        belief_states, gru_output_states = self.forward(observations, prev_actions, actions)
+        belief_states, gru_output_states = self.forward(observations, prev_actions)
         self.gru_states = None # only bc we're processing exactly 1 episode per batch
 
-        for k in range(1, self.num_predictors+1):
+        for k in range(1, 11):
             action_seqs = torch.zeros((T-k, B, k*self.action_size), device=self.device) # placeholder
             for i in range(len(actions)-k):
                 action_seq = actions[i:i+k]
