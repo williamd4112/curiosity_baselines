@@ -43,6 +43,8 @@ class EpisodicCuriosity(nn.Module):
           obs_stats (RunningMeanStd, optional): for normalizing the observation (usually used in MuJoCo). Defaults to None.
       """
       super(EpisodicCuriosity, self).__init__()
+      self.image_shape = image_shape
+      self.num_envs = num_envs
       self.memory_size = memory_size
       self.num_envs = num_envs
       self.n_nearest_neighbors = n_nearest_neighbors
@@ -75,20 +77,29 @@ class EpisodicCuriosity(nn.Module):
           nn.Linear(self.feature_size, action_size)
           )
 
-      self.reset()
+      self.reset_all()
     
-    def reset(self):
+    def reset_all(self):
+      """Reset memory and its related variables for all parallel environments.
+      """
       # TODO: make sure model.to(device) work on this
       # Memory is a circular buffer
-      self.memory = torch.zeros((self.memory_size, self.feature_size))    
+      self.memory = torch.zeros((self.num_envs, self.memory_size, self.feature_size))    
       # How many elements are in the memory
-      self.n_elements_in_memory = 0
+      self.n_elements_in_memory = np.zeros(self.num_envs, dtype=np.int32)
       # The position of the cursor
-      self.cursor = 0
+      self.cursor = np.zeros(self.num_envs, dtype=np.int32)
       # Running average of euclidean distance of k-nearest neighbors (d^2_m in the paper)
-      self.knn_distance_running_mean = torch.zeros((self.n_nearest_neighbors,))
+      self.knn_distance_running_mean = torch.zeros((self.num_envs, self.n_nearest_neighbors,))
       # Number of kNN queries for calculating running mean
-      self.n_knn_queries = 0
+      self.n_knn_queries = np.zeros(self.num_envs, dtype=np.int32)
+
+    def reset(self, env_idx):
+      self.memory[env_idx] = torch.zeros((self.memory_size, self.feature_size))  
+      self.n_elements_in_memory[env_idx] = 0
+      self.cursor[env_idx] = 0
+      self.knn_distance_running_mean[env_idx] = torch.zeros((self.n_nearest_neighbors,))
+      self.n_knn_queries[env_idx] = 0   
 
     def _encode(self, observation):
       """Encode a batch of observation by self.enoder
@@ -118,59 +129,83 @@ class EpisodicCuriosity(nn.Module):
       
       return phi
 
-    def append(self, observation):
-      """Append an encoded state (i.e., controllable state f(x) in the paper) to the memory
+    def append(self, observations):
+      """Append and encode the observation in each parallel environment (i.e., controllable state f(x) in the paper) to the memory.
+        The shape of `observations` must be in (T, B,) + obs_size.
 
       Args:
-          observation ([torch.Tensor]): A raw observation (dim is assumed to be (B,) + image_shape)
+          observation ([torch.Tensor]): A list of raw observations (dim is assumed to be (T, B,) or (B,) + image_shape)
       """
-      encoded_state = self._encode(observation)
-      self.memory[self.cursor] = encoded_state
+      assert observations.shape[0] == self.num_envs # T must be equal to self.num_envs
+      assert len(observations.shape) == (2 + len(self.image_shape)) # (T, B,) + image_shape
 
-      self.cursor = (self.cursor + 1) % self.memory_size
-      self.n_elements_in_memory = min(self.n_elements_in_memory + 1, self.memory_size)
-      logging.debug('memory_size={}; n_elements_in_memory={}; cursor={};'.format(self.memory_size, self.n_elements_in_memory, self.cursor))
+      encoded_states = self._encode(observations)
 
-    def compute_episodic_curiosity_reward(self, observation):
+      T, B = encoded_states.shape[:2]
+      assert T == self.num_envs
+
+      for env_idx in range(T):
+        for batch_idx in range(B):
+          self.memory[env_idx, self.cursor[env_idx]] = encoded_states[env_idx, batch_idx]
+          self.cursor[env_idx] = (self.cursor[env_idx] + 1) % self.memory_size
+          self.n_elements_in_memory[env_idx] = min(self.n_elements_in_memory[env_idx] + 1, self.memory_size)
+          logging.debug('env_idx={}; memory_size={}; n_elements_in_memory={}; cursor={};'.format(env_idx, self.memory_size, self.n_elements_in_memory[env_idx], self.cursor[env_idx]))
+
+    def compute_episodic_curiosity_reward(self, observations):
       """Compute the episodic curiosity reward r^{episodic}_t by k-nearest negihbor lookup in the self.memory
 
       Args:
-          observation ([torch.Tensor]): The current observation x_t. 
-                    Note that for now we don't support parallel training, the dimension of x_t must be (1, image_shape).
+          observation ([torch.Tensor]): A batch of observations in each parallel environment. 
+                    The shape is expected to be (T, B,) + image_shape.                 
 
       Returns:
-          [float]: episodic curiosity reward r^{episodic}_t
+          [np.ndarray]: Episodic curiosity reward r^{episodic}_t for each parallel environment.
+                  The shape is (T, B,)
       """
-      fx_t = self._encode(observation)
-      available_memory_size = min(self.memory_size, self.n_elements_in_memory)
-      
-      # Retrieve N_k and d(f(x_t), N_k[i])
-      euclidean_distances = torch.sqrt(torch.sum((self.memory[:available_memory_size] - fx_t)**2, dim=-1))
-      knn_elements_indices = torch.argsort(euclidean_distances, descending=True, dim=1)[:self.n_nearest_neighbors]
-      
-      # Compute d_k[i] = d^2(f(x_t), N_k[i])
-      knn_distances = euclidean_distances[:, knn_elements_indices]**2 # NOTE: they use squared euclidean distance
-      import ipdb; ipdb.set_trace()
-      # Update the running average of distances (d^2_m)
-      self.n_knn_queries += 1
-      self.knn_distance_running_mean += (1.0 / self.n_knn_queries) * (knn_distances - self.knn_distance_running_mean)
+         
+      encoded_states = self._encode(observations)
 
-      # Normalize the distance d_n = d_k / d^2_m
-      normalized_knn_distances = knn_distances / self.knn_distance_running_mean
+      T, B = encoded_states.shape[:2]
+      assert T == self.num_envs
 
-      # Cluster distance
-      normalized_knn_distances = torch.clamp(normalized_knn_distances - self.cluster_distance, min=0.0, max=INF)
+      # TODO: what's a better initialization for each parallel environment when memory of that environment is empty?
+      #       for now, I initialize them as one since we 1.0 means no changes in multiplication (i.e., multiply with lifelong curiosity)
+      similarities = np.ones((T, B))
 
-      # Compute kernel values K_v
-      kernel_values = self.eps / (normalized_knn_distances + self.eps)
+      for env_idx in range(T):
+        available_memory_size = min(self.memory_size, self.n_elements_in_memory[env_idx])
+        if available_memory_size == 0:
+          continue
+        for batch_idx in range(B):         
+          # Retrieve N_k and d(f(x_t), N_k[i])
+          euclidean_distances = torch.sqrt(torch.sum((self.memory[env_idx, :available_memory_size, :] - encoded_states[env_idx, batch_idx, ...])**2, dim=-1))
+          knn_elements_indices = torch.argsort(euclidean_distances, descending=True, dim=-1)[:self.n_nearest_neighbors]
+          
+          # Compute d_k[i] = d^2(f(x_t), N_k[i])
+          knn_distances = euclidean_distances[knn_elements_indices]**2 # NOTE: they use squared euclidean distance
+          
+          # Update the running average of distances (d^2_m)
+          self.n_knn_queries[env_idx] += 1
+          self.knn_distance_running_mean[env_idx] += (1.0 / self.n_knn_queries[env_idx]) * (knn_distances - self.knn_distance_running_mean[env_idx])
 
-      # Compute similarity scores between f(x_t) and N_k
-      similarity = (torch.sqrt(torch.sum(kernel_values)) + self.c).detach().cpu().numpy()
+          # Normalize the distance d_n = d_k / d^2_m
+          normalized_knn_distances = knn_distances / self.knn_distance_running_mean[env_idx]
 
-      if similarity > self.max_similarity:
-        return 0
-      else:
-        return 1.0 / similarity      
+          # Cluster distance
+          normalized_knn_distances = torch.clamp(normalized_knn_distances - self.cluster_distance, min=0.0, max=INF)
+
+          # Compute kernel values K_v
+          kernel_values = self.eps / (normalized_knn_distances + self.eps)
+
+          # Compute similarity scores between f(x_t) and N_k
+          similarity = (torch.sqrt(torch.sum(kernel_values)) + self.c).detach().cpu().numpy()
+
+          if similarity > self.max_similarity:
+            similarities[env_idx, batch_idx] = 0
+          else:
+            similarities[env_idx, batch_idx] = 1.0 / similarity
+
+      return similarities 
 
     def forward(self, obs1, obs2):
         img1 = obs1
@@ -214,40 +249,76 @@ if __name__ == '__main__':
   import numpy as np
   import torch
   
-  logger = logging.getLogger()
-  logger.setLevel(logging.DEBUG)
+  #logger = logging.getLogger()
+  #logger.setLevel(logging.DEBUG)
   
-  N = 10
+  T = 8
+  B = 10
   obs_size = (3, 84, 84)
   action_size = 5
   memory_size = 64
 
-  batch_obses = torch.from_numpy(np.random.random((10,) + obs_size)).float()
-  batch_acts = torch.from_numpy(np.stack([np.eye(action_size)[np.random.randint(low=0, high=action_size)] for i in range(10)])).float()
-  batch_next_obses = torch.from_numpy(np.random.random((10,) + obs_size)).float()
+  batch_obses = torch.from_numpy(np.random.random((T, B,) + obs_size)).float()
+  batch_acts = torch.stack([torch.from_numpy(np.stack([np.eye(action_size)[np.random.randint(low=0, high=action_size)] for i in range(B)])).float() for t in range(T)])
+  batch_next_obses = torch.from_numpy(np.random.random((T, B,) + obs_size)).float()
   model = EpisodicCuriosity(image_shape=obs_size,
-                action_size=action_size, memory_size=memory_size)
+                action_size=action_size, memory_size=memory_size, num_envs=T)
 
   # Test training
   optimizer = torch.optim.Adam(model.parameters())
-  loss = model.compute_loss(batch_obses, batch_next_obses, batch_acts, None)
+  loss = model.compute_loss(batch_obses, batch_next_obses, batch_acts, valid=None)
   optimizer.zero_grad()
   loss.backward()
   optimizer.step()
   assert isinstance(loss.item(), float)
+  print('"training" test passed')
 
   # Test append
-  for t in range(65):
-    obs = torch.from_numpy(np.random.random(obs_size)).float()
+  for t in range(memory_size + 5):
+    obs = torch.from_numpy(np.random.random((T, 1,) + obs_size)).float()
     model.append(obs)
-    assert model.n_elements_in_memory == min((t + 1), memory_size)
-    assert model.cursor == (t + 1) % memory_size
+    for i in range(T):
+      assert model.n_elements_in_memory[i] == min((t + 1), memory_size)
+      assert model.cursor[i] == (t + 1) % memory_size
+      pass
+  print('"append" test passed')
 
   # Test reward computation
   for t in range(10):
-    obs = torch.from_numpy(np.random.random(obs_size)).float()
+    obs = torch.from_numpy(np.random.random((T, 4,) + obs_size)).float()
     rew = model.compute_episodic_curiosity_reward(obs)
-    print(rew)
+    assert rew.shape == (T, 4)
+  print('"compute_episodic_curisoity_reward" test passed')
+
+  # Test reset by index
+  for i in range(T):
+    model.reset(i)
+
+  # Test reward computation again after reset
+  for t in range(T):
+    obs = torch.from_numpy(np.random.random((T, 4,) + obs_size)).float()
+    rew = model.compute_episodic_curiosity_reward(obs)
+    assert rew.shape == (T, 4)
+    assert np.all(rew[t] == 1.0)
+  print('"compute_episodic_curisoity_reward (empty memory)" test passed')
+  
+  # Test append again after reset
+  for t in range(memory_size + 5):
+    obs = torch.from_numpy(np.random.random((T, 1,) + obs_size)).float()
+    model.append(obs)
+    for i in range(T):
+      assert model.n_elements_in_memory[i] == min((t + 1), memory_size)
+      assert model.cursor[i] == (t + 1) % memory_size
+      pass
+  print('"append (after reset)" test passed')
+
+  # Test reward computation again after reset
+  for t in range(10):
+    obs = torch.from_numpy(np.random.random((T, 4,) + obs_size)).float()
+    rew = model.compute_episodic_curiosity_reward(obs)
+    assert rew.shape == (T, 4)
+  print('"compute_episodic_curisoity_reward (after reset)" test passed')
+
 
 
   
