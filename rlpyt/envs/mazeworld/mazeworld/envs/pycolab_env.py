@@ -16,6 +16,7 @@ from gym import logger
 from gym.utils import seeding
 
 import numpy as np
+from scipy.stats import entropy
 from collections import namedtuple
 
 from rlpyt.samplers.collections import TrajInfo
@@ -46,10 +47,12 @@ class PycolabTrajInfo(TrajInfo):
         self.first_visit_f = 500
         self.first_visit_g = 500
         self.first_visit_h = 500
+        self.visitation_entropy = 0
 
     def step(self, observation, action, reward_ext, done, agent_info, env_info):
         visitation_frequency = getattr(env_info, 'visitation_frequency', None)
         first_visit_time = getattr(env_info, 'first_time_visit', None)
+        self.visitation_entropy = getattr(env_info, 'visitation_entropy', None)
 
         if visitation_frequency is not None and first_visit_time is not None:
             if len(visitation_frequency) >= 1:
@@ -119,7 +122,9 @@ class PyColabEnv(gym.Env):
                  act_null_value=4,
                  delay=30,
                  resize_scale=8,
-                 crop_window=[5, 5]):
+                 crop_window=[5, 5],
+                 visitable_states=0,
+                 ):
         """Create an `PyColabEnv` adapter to a `pycolab` game as a `gym.Env`.
 
         You can access the `pycolab.Engine` instance with `env.current_game`.
@@ -134,6 +139,7 @@ class PyColabEnv(gym.Env):
             resize_scale: number of pixels per observation pixel.
                 Used only by the renderer.
             crop_window: dimensions of observation cropping.
+            visitable_states: number of states the agent can visit.
         """
         assert max_iterations > 0
         assert isinstance(default_reward, numbers.Number)
@@ -163,6 +169,7 @@ class PyColabEnv(gym.Env):
         self.width, self.height = crop_window[0]*resize_scale, crop_window[1]*resize_scale
         self.action_space = action_space
         self.act_null_value = act_null_value
+        self.visitable_states = visitable_states
 
         self.current_game = None
         self._croppers = []
@@ -183,6 +190,7 @@ class PyColabEnv(gym.Env):
         # Metrics
         self.visitation_frequency = {char:0 for char in self.objects}
         self.first_visit_time = {char:500 for char in self.objects}
+        self.visitation_entropy = 0
 
         # Heatmaps
         self.episodes = 0 # number of episodes run (to determine when to save heatmaps)
@@ -214,14 +222,14 @@ class PyColabEnv(gym.Env):
         """
 
         return {'P' : (255., 255., 255.),
-                'a' : (175., 255., 15.),
-                'b' : (21., 0., 255.),
+                'a' : (114., 206., 227.),
+                'b' : (255., 0., 0.),
                 'c' : (250., 0., 129.),
-                'd' : (0., 250., 71.),
-                'e' : (255., 0., 0.),
-                'f' : (252., 28., 3.),
+                'd' : (19., 139., 67.),
+                'e' : (21., 0., 255.),
+                'f' : (175., 255., 15.),
                 'g' : (136., 3., 252.),
-                'h' : (20., 145., 60.),
+                'h' : (245., 119., 34.),
                 '#' : (61., 61., 61.),
                 '@' : (255., 255., 0.),
                 ' ' : (0., 0., 0.)}
@@ -292,6 +300,7 @@ class PyColabEnv(gym.Env):
         if self.log_heatmaps == True:
             pr, pc = self.current_game.things['P'].position
             self.heatmap[pr, pc] += 1
+            self.visitation_entropy = entropy(self.heatmap.flatten(), base=self.visitable_states)
 
         self._last_reward = reward if reward is not None else \
             self._default_reward
@@ -367,6 +376,7 @@ class PyColabEnv(gym.Env):
         # Add custom metrics
         info['visitation_frequency'] = self.visitation_frequency
         info['first_time_visit'] = self.first_visit_time
+        info['visitation_entropy'] = self.visitation_entropy
 
         # Check the current status of the game.
         reward = self._last_reward

@@ -38,7 +38,8 @@ class MazeWorld(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
             act_null_value=4,
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=150)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -64,7 +65,8 @@ class DeepmindMazeWorld_5room(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=223)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -90,7 +92,8 @@ class DeepmindMazeWorld_5room_randomfixed(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=223)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -116,7 +119,8 @@ class DeepmindMazeWorld_5room_bouncing(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=222)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -142,7 +146,8 @@ class DeepmindMazeWorld_5room_brownian(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=223)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -169,7 +174,8 @@ class DeepmindMazeWorld_maze(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
             act_null_value=4,
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=150.)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -196,7 +202,8 @@ class DeepmindMazeWorld_8room(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
             act_null_value=4,
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=833)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -223,7 +230,8 @@ class DeepmindMazeWorld_8room_v1(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
             act_null_value=4,
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=833)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -251,7 +259,8 @@ class DeepmindMazeWorld_5room_moveable(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
             act_null_value=4,
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=223)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -279,7 +288,8 @@ class DeepmindMazeWorld_5room_moveable_v1(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
             act_null_value=4,
-            resize_scale=17)
+            resize_scale=17,
+            visitable_states=223)
 
     def make_game(self):
         self._croppers = self.make_croppers()
