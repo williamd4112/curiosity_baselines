@@ -38,19 +38,6 @@ class RND(nn.Module):
         self.conv_feature_size = 7*7*64
 
         # Learned predictor model
-        # self.forward_model = nn.Sequential(nn.Conv2d(in_channels=c, out_channels=32, kernel_size=8, stride=4),
-        #                                    nn.LeakyReLU(),
-        #                                    nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2),
-        #                                    nn.LeakyReLU(),
-        #                                    nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1),
-        #                                    nn.LeakyReLU(),
-        #                                    Flatten(),
-        #                                    nn.Linear(self.conv_feature_size, self.feature_size),
-        #                                    nn.ReLU(),
-        #                                    nn.Linear(self.feature_size, self.feature_size),
-        #                                    nn.ReLU(),
-        #                                    nn.Linear(self.feature_size, self.feature_size))
-
         self.forward_model = nn.Sequential(
                                             nn.Conv2d(
                                                 in_channels=1,
@@ -84,15 +71,6 @@ class RND(nn.Module):
                 param.bias.data.zero_()
 
         # Fixed weight target model
-        # self.target_model = nn.Sequential(nn.Conv2d(in_channels=c, out_channels=32, kernel_size=8, stride=4),
-        #                                   nn.LeakyReLU(),
-        #                                   nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2),
-        #                                   nn.LeakyReLU(),
-        #                                   nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1),
-        #                                   nn.LeakyReLU(),
-        #                                   Flatten(),
-        #                                   nn.Linear(self.conv_feature_size, self.feature_size))
-
         self.target_model = nn.Sequential(
                                             nn.Conv2d(
                                                 in_channels=1,
@@ -181,6 +159,8 @@ class RND(nn.Module):
     def compute_bonus(self, next_observation, done):
         phi, predicted_phi, T, _ = self.forward(next_observation, done=done)
         rewards = nn.functional.mse_loss(predicted_phi, phi.detach(), reduction='none').sum(-1)/self.feature_size
+        
+        # update running mean
         rewards_cpu = rewards.clone().cpu().data.numpy()
         done = torch.abs(done-1).cpu().data.numpy()
         total_rew_per_env = list()
@@ -188,9 +168,9 @@ class RND(nn.Module):
             update = self.rew_rff.update(rewards_cpu[i], done=done[i])
             total_rew_per_env.append(update)
         total_rew_per_env = np.array(total_rew_per_env)
-        mean_length = np.mean(np.sum(np.swapaxes(done, 0, 1), axis=1))
+        self.rew_rms.update_from_moments(np.mean(total_rew_per_env), np.var(total_rew_per_env), np.sum(done))
 
-        self.rew_rms.update_from_moments(np.mean(total_rew_per_env), np.var(total_rew_per_env), mean_length)
+        # normalize rewards
         if self.device == torch.device('cuda:0'):
             rew_var = torch.from_numpy(np.array(self.rew_rms.var)).float().cuda()
             done = torch.from_numpy(np.array(done)).float().cuda()
@@ -199,6 +179,7 @@ class RND(nn.Module):
             done = torch.from_numpy(np.array(done)).float()
         rewards /= torch.sqrt(rew_var)
 
+        # apply done mask
         rewards *= done
         return self.prediction_beta * rewards
 
@@ -206,7 +187,7 @@ class RND(nn.Module):
         phi, predicted_phi, T, B = self.forward(observations, done=None)
         forward_loss = nn.functional.mse_loss(predicted_phi, phi.detach(), reduction='none').sum(-1)/self.feature_size
         mask = torch.rand(forward_loss.shape)
-        mask = (mask > self.drop_probability).type(torch.FloatTensor).to(self.device)
+        mask = (mask > self.drop_probability).float().to(self.device)
         forward_loss = forward_loss * mask.detach()
         forward_loss = valid_mean(forward_loss, valid.detach())
         return forward_loss
