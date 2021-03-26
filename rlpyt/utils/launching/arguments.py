@@ -74,6 +74,7 @@ def get_args(args_in=sys.argv[1:]):
     elif environment in _ATARI_ENVS:
         parser.add_argument('-max_episode_steps', default=27000, type=int, help='How many steps to run before the done flag is raised.')
         parser.add_argument('-normalize_obs', action='store_true', help='Whether or not to normalize the observation each step.')
+        parser.add_argument('-score_multiplier', default=1.0, type=float, help='A multiplier for the extrinsic reward.')
 
     # curiosity specific args
     curiosity_alg = args_in[args_in.index('-curiosity_alg')+1]

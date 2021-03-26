@@ -285,6 +285,7 @@ def start_experiment(args):
             record_freq=args.record_freq,
             record_dir=args.log_dir,
             horizon=args.max_episode_steps,
+            score_multiplier=args.score_multiplier,
             )
 
     if args.sample_mode == 'gpu':

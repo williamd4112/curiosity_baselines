@@ -82,7 +82,8 @@ class AtariEnv(Env):
                  normalize_obs_steps=10000,
                  downsampling_scheme='classical',
                  record_freq=0,
-                 record_dir=None
+                 record_dir=None,
+                 score_multiplier=1.0
                  ):
         save__init__args(locals(), underscore=True)
 
@@ -113,6 +114,7 @@ class AtariEnv(Env):
         self._has_fire = "FIRE" in self.get_action_meanings()
         self._has_up = "UP" in self.get_action_meanings()
         self._horizon = int(horizon)
+        self._multiplier = score_multiplier
 
         # Recording
         self.record_env = False # set in samping_process for environment 0
@@ -170,6 +172,7 @@ class AtariEnv(Env):
         self._step_counter += 1
         if self._no_negative_reward and reward < 0.0 or self._no_extrinsic:
             reward = 0.0
+        reward *= self._multiplier
         return EnvStep(self.get_obs(), reward, done, info)
 
     def render(self, cv2=False, wait=10, show_full_obs=False):

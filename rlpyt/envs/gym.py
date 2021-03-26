@@ -201,24 +201,6 @@ def mario_make(*args, info_example=None, **kwargs):
         env = GymEnvWrapper(EnvInfoWrapper(env))
     return env
 
-    # env = retro.make('SuperMarioBros-Nes', 'Level1-1')
-    # buttons = env.buttons
-    # env = MarioXReward(env)
-    # if kwargs['no_extrinsic']:
-    #     env = NoExtrinsicReward(env)
-    # if kwargs['no_negative_reward']:
-    #     env = NoNegativeReward(env)
-    # env = FrameSkip(env, 4)
-    # env = ProcessFrame84(env, crop=False)
-    # env = FrameStack(env, 4)
-    # env = LimitedDiscreteActions(env, buttons)
-    # env = PytorchImage(env) # (h,w,c) -> (c,h,w)
-    # if info_example is None:
-    #     env = GymEnvWrapper(env)
-    # else:
-    #     env = GymEnvWrapper(EnvInfoWrapper(env))
-    # return env
-
 def deepmind_make(*args, info_example=None, **kwargs):
     """Use as factory function for making instances of Pycolab environments with
     rlpyt's ``GymEnvWrapper``, using ``gym.make(*args, **kwargs)``. If
