@@ -159,7 +159,7 @@ class RND(nn.Module):
     def compute_bonus(self, next_observation, done):
         phi, predicted_phi, T, _ = self.forward(next_observation, done=done)
         rewards = nn.functional.mse_loss(predicted_phi, phi.detach(), reduction='none').sum(-1)/self.feature_size
-        
+
         # update running mean
         rewards_cpu = rewards.clone().cpu().data.numpy()
         done = torch.abs(done-1).cpu().data.numpy()
@@ -187,9 +187,9 @@ class RND(nn.Module):
         phi, predicted_phi, T, B = self.forward(observations, done=None)
         forward_loss = nn.functional.mse_loss(predicted_phi, phi.detach(), reduction='none').sum(-1)/self.feature_size
         mask = torch.rand(forward_loss.shape)
-        mask = (mask > self.drop_probability).float().to(self.device)
-        forward_loss = forward_loss * mask.detach()
-        forward_loss = valid_mean(forward_loss, valid.detach())
+        mask = 1.0 - (mask > self.drop_probability).float().to(self.device)
+        net_mask = mask * valid
+        forward_loss = torch.sum(forward_loss * net_mask.detach()) / torch.sum(net_mask.detach())
         return forward_loss
 
 
