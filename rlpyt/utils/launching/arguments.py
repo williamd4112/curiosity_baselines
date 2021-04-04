@@ -71,6 +71,7 @@ def get_args(args_in=sys.argv[1:]):
         parser.add_argument('-obs_type', default='mask', type=str, choices=['mask', 'rgb'], help='Whether to pass binary mask observations or RGB observations.')
         parser.add_argument('-grayscale', action='store_true', help='Whether or not to grayscale images if using rgb.')
         parser.add_argument('-max_episode_steps', default=500, type=int, help='How many steps to run before the done flag is raised.')
+        parser.add_argument('-extrinsic_reward', default=0.0, type=float, help='The extrinsic reward value to assign when using this environment. Only applies to pycolab maps with extrinsic rewards.')
     elif environment in _ATARI_ENVS:
         parser.add_argument('-max_episode_steps', default=27000, type=int, help='How many steps to run before the done flag is raised.')
         parser.add_argument('-normalize_obs', action='store_true', help='Whether or not to normalize the observation each step.')

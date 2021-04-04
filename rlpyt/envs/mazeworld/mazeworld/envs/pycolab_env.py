@@ -124,6 +124,8 @@ class PyColabEnv(gym.Env):
                  resize_scale=8,
                  crop_window=[5, 5],
                  visitable_states=0,
+                 extrinsic_reward=0.0,
+                 extrinsic_reward_obj=None
                  ):
         """Create an `PyColabEnv` adapter to a `pycolab` game as a `gym.Env`.
 
@@ -140,12 +142,16 @@ class PyColabEnv(gym.Env):
                 Used only by the renderer.
             crop_window: dimensions of observation cropping.
             visitable_states: number of states the agent can visit.
+            extrinsic_reward: the extrinsic reward to assign.
+            extrinsic_reward_obj: the object which gives extrinsic reward if it's in frame.
         """
         assert max_iterations > 0
         assert isinstance(default_reward, numbers.Number)
 
         self._max_iterations = max_iterations
         self._default_reward = default_reward
+        self._extrinsic_reward = extrinsic_reward
+        self._extrinsic_reward_obj = extrinsic_reward_obj
 
         # At this point, the game would only want to access the random
         # property, although it is set to None initially.
@@ -283,6 +289,8 @@ class PyColabEnv(gym.Env):
                 if char != ' ':
                     mask = observations.layers[char].astype(float)
                     if char in self.objects and 1. in mask:
+                        if char == self._extrinsic_reward_obj:
+                            reward = self._extrinsic_reward
                         self.visitation_frequency[char] += 1
                     self._state.append(mask)
             self._state = np.array(self._state)
@@ -294,6 +302,8 @@ class PyColabEnv(gym.Env):
                 if char != ' ':
                     mask = observations.layers[char].astype(float)
                     if char in self.objects and 1. in mask:
+                        if char == self._extrinsic_reward_obj:
+                            reward = self._extrinsic_reward
                         self.visitation_frequency[char] += 1
 
         # update heatmap metric
@@ -302,6 +312,7 @@ class PyColabEnv(gym.Env):
             self.heatmap[pr, pc] += 1
             self.visitation_entropy = entropy(self.heatmap.flatten(), base=self.visitable_states)
 
+        # update reward
         self._last_reward = reward if reward is not None else \
             self._default_reward
 

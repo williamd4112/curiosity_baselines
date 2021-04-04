@@ -6,6 +6,8 @@ from .mazeworld_env import DeepmindMazeWorld_5room_randomfixed
 from .mazeworld_env import DeepmindMazeWorld_5room_bouncing
 from .mazeworld_env import DeepmindMazeWorld_5room_brownian
 from .mazeworld_env import DeepmindMazeWorld_8room
-from .mazeworld_env import DeepmindMazeWorld_8room_v1
+from .mazeworld_env import DeepmindMazeWorld_8room_extrinsic
+from .mazeworld_env import DeepmindMazeWorld_8room_oneobj
 from .mazeworld_env import DeepmindMazeWorld_5room_moveable
-from .mazeworld_env import DeepmindMazeWorld_5room_moveable_v1
+from .mazeworld_env import DeepmindMazeWorld_5room_moveable_stoch
+from .mazeworld_env import DeepmindMazeWorld_5room_extint

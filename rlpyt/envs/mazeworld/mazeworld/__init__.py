@@ -11,9 +11,11 @@ from .envs import (MazeWorld,
                     DeepmindMazeWorld_5room_bouncing,
                     DeepmindMazeWorld_5room_brownian,
                     DeepmindMazeWorld_8room,
-                    DeepmindMazeWorld_8room_v1,
+                    DeepmindMazeWorld_8room_extrinsic,
+                    DeepmindMazeWorld_8room_oneobj,
                     DeepmindMazeWorld_5room_moveable,
-                    DeepmindMazeWorld_5room_moveable_v1)
+                    DeepmindMazeWorld_5room_moveable_stoch,
+                    DeepmindMazeWorld_5room_extint)
 
 def register(id, entry_point, max_episode_steps, kwargs):
     env_specs = gym.envs.registry.env_specs
@@ -67,8 +69,14 @@ register(
     kwargs={'level': 0, 'max_iterations': 500})
 
 register(
+    id='Deepmind8RoomExtrinsic-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_extrinsic',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500})
+
+register(
     id='Deepmind8Room-v1',
-    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_oneobj',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500})
 
@@ -80,7 +88,13 @@ register(
 
 register(
     id='Deepmind5RoomMoveable-v1',
-    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_moveable_v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_moveable_stoch',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500})
+
+register(
+    id='Deepmind5RoomExtInt-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_extint',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500})
 
