@@ -9,11 +9,15 @@ from gym import spaces
 from pycolab.examples import (better_scrolly_maze, 
                               deepmind_maze, 
                               deepmind_5room, 
+                              deepmind_5room_noobj,
+                              deepmind_5room_oneobj,
+                              deepmind_5room_onewhite,
                               deepmind_5room_randomfixed, 
                               deepmind_5room_bouncing,
                               deepmind_5room_brownian,
                               deepmind_8room,
-                              deepmind_8room_oneobj,
+                              deepmind_8room_oneobj_singleroom,
+                              deepmind_8room_oneobj_allrooms,
                               deepmind_5room_moveable,
                               deepmind_5room_moveable_stoch,
                               deepmind_5room_extint
@@ -79,6 +83,97 @@ class DeepmindMazeWorld_5room(pycolab_env.PyColabEnv):
 
     def make_croppers(self):
         return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+
+class DeepmindMazeWorld_5room_noobj(pycolab_env.PyColabEnv):
+    """Deepmind World Discovery Models experiment 1 with no reachable objects.
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 extrinsic_reward=0.0):
+        self.level = level
+        self.objects = ['a']
+        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        super(DeepmindMazeWorld_5room_noobj, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            resize_scale=17,
+            visitable_states=224,
+            extrinsic_reward=0.0,
+            extrinsic_reward_obj=None)
+
+    def make_game(self):
+        self._croppers = self.make_croppers()
+        return deepmind_5room_noobj.make_game(self.level)
+
+    def make_croppers(self):
+        return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+
+class DeepmindMazeWorld_5room_oneobj(pycolab_env.PyColabEnv):
+    """Deepmind World Discovery Models experiment 1 with just a fixed object.
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 extrinsic_reward=0.0):
+        self.level = level
+        self.objects = ['a']
+        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        super(DeepmindMazeWorld_5room_oneobj, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            resize_scale=17,
+            visitable_states=224,
+            extrinsic_reward=0.0,
+            extrinsic_reward_obj=None)
+
+    def make_game(self):
+        self._croppers = self.make_croppers()
+        return deepmind_5room_oneobj.make_game(self.level)
+
+    def make_croppers(self):
+        return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+
+class DeepmindMazeWorld_5room_onewhite(pycolab_env.PyColabEnv):
+    """Deepmind World Discovery Models experiment 1 with just a white noise object.
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 extrinsic_reward=0.0):
+        self.level = level
+        self.objects = ['b']
+        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        super(DeepmindMazeWorld_5room_onewhite, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            resize_scale=17,
+            visitable_states=224,
+            extrinsic_reward=0.0,
+            extrinsic_reward_obj=None)
+
+    def make_game(self):
+        self._croppers = self.make_croppers()
+        return deepmind_5room_onewhite.make_game(self.level)
+
+    def make_croppers(self):
+        return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+
 
 class DeepmindMazeWorld_5room_randomfixed(pycolab_env.PyColabEnv):
     """Deepmind World Discovery Models experiment 2.
@@ -263,7 +358,7 @@ class DeepmindMazeWorld_8room_extrinsic(pycolab_env.PyColabEnv):
     def make_croppers(self):
         return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
 
-class DeepmindMazeWorld_8room_oneobj(pycolab_env.PyColabEnv):
+class DeepmindMazeWorld_8room_oneobj_singleroom(pycolab_env.PyColabEnv):
     """An eight room environment with one fixed object.
     """
 
@@ -276,7 +371,7 @@ class DeepmindMazeWorld_8room_oneobj(pycolab_env.PyColabEnv):
         self.level = level
         self.objects = ['a']
         self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
-        super(DeepmindMazeWorld_8room_oneobj, self).__init__(
+        super(DeepmindMazeWorld_8room_oneobj_singleroom, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
@@ -289,7 +384,38 @@ class DeepmindMazeWorld_8room_oneobj(pycolab_env.PyColabEnv):
 
     def make_game(self):
         self._croppers = self.make_croppers()
-        return deepmind_8room_v1.make_game(self.level)
+        return deepmind_8room_oneobj_singleroom.make_game(self.level)
+
+    def make_croppers(self):
+        return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+
+class DeepmindMazeWorld_8room_oneobj_allrooms(pycolab_env.PyColabEnv):
+    """An eight room environment with one fixed object.
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 extrinsic_reward=0.0):
+        self.level = level
+        self.objects = ['a']
+        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        super(DeepmindMazeWorld_8room_oneobj_allrooms, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            act_null_value=4,
+            resize_scale=17,
+            visitable_states=833,
+            extrinsic_reward=0.0,
+            extrinsic_reward_obj=None)
+
+    def make_game(self):
+        self._croppers = self.make_croppers()
+        return deepmind_8room_oneobj_allrooms.make_game(self.level)
 
     def make_croppers(self):
         return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]

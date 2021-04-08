@@ -7,12 +7,16 @@ import gym
 from .envs import (MazeWorld, 
                     DeepmindMazeWorld_maze, 
                     DeepmindMazeWorld_5room, 
+                    DeepmindMazeWorld_5room_noobj, 
+                    DeepmindMazeWorld_5room_oneobj, 
+                    DeepmindMazeWorld_5room_onewhite, 
                     DeepmindMazeWorld_5room_randomfixed, 
                     DeepmindMazeWorld_5room_bouncing,
                     DeepmindMazeWorld_5room_brownian,
                     DeepmindMazeWorld_8room,
                     DeepmindMazeWorld_8room_extrinsic,
-                    DeepmindMazeWorld_8room_oneobj,
+                    DeepmindMazeWorld_8room_oneobj_allrooms,
+                    DeepmindMazeWorld_8room_oneobj_singleroom,
                     DeepmindMazeWorld_5room_moveable,
                     DeepmindMazeWorld_5room_moveable_stoch,
                     DeepmindMazeWorld_5room_extint)
@@ -37,6 +41,24 @@ register(
     entry_point='mazeworld.envs:DeepmindMazeWorld_5room',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomNoObj-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_noobj',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomOneObj-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_oneobj',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500})
+
+register(
+    id='Deepmind5RoomOneObj-v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_onewhite',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500})
 
 register(
     id='Deepmind5RoomRandomFixed-v0',
@@ -75,8 +97,14 @@ register(
     kwargs={'level': 0, 'max_iterations': 500})
 
 register(
-    id='Deepmind8Room-v1',
-    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_oneobj',
+    id='Deepmind8RoomOneObj-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_oneobj_singleroom',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500})
+
+register(
+    id='Deepmind8RoomOneObj-v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_oneobj_allrooms',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500})
 

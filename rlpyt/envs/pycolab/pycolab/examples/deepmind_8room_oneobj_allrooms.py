@@ -70,7 +70,7 @@ MAZES_ART = [
     '######### ##           ## ###########',
     '#######   ###         ###   #########',
     '#######   ###         ###   #########',
-    '#####      ###   a   ###      #######',
+    '#####      ###       ###      #######',
     '#####      ###       ###      #######',
     '###         ###     ###         #####',
     '###         ###     ###         #####',
@@ -82,7 +82,7 @@ MAZES_ART = [
     '#      ######         ######      ###',
     '#          ##         ##          ###',
     '#          #           #          ###',
-    '#                P                ###',
+    '#                P           a    ###',
     '#          #           #          ###',
     '#          ##         ##          ###',
     '#      ######         ######      ###',
@@ -128,25 +128,14 @@ ROOMS = {
 def make_game(level):
   """Builds and returns a Better Scrolly Maze game for the selected level."""
   maze_ascii = deepcopy(MAZES_ART[level])
-  empty_row = maze_ascii[7]
-  maze_ascii[7] = empty_row[:19] + ' ' + empty_row[20:]
+
+  # change location of fixed object in any of the rooms
   new_room = random.randint(1, 8)
+  for row in range(3, 35):
+    if 'a' in maze_ascii[row]:
+      maze_ascii[row] = maze_ascii[row].replace('a', ' ', 1)
   new_coord = random.sample(ROOMS[new_room], 1)[0]
   maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'a' + maze_ascii[new_coord[0]][new_coord[1]+1:]
-
-  # # change location of fixed object in all the rooms
-  # for row in range(3, 35):
-  #   if 'a' in maze_ascii[row]:
-  #     maze_ascii[row] = maze_ascii[row].replace('a', ' ', 1)
-  #     new_coord = random.sample(ROOMS[1], 1)[0]
-  #     maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'a' + maze_ascii[new_coord[0]][new_coord[1]+1:]
-
-  # new_room = random.randint(1, 8)
-  # for row in range(3, 35):
-  #   if 'a' in maze_ascii[row]:
-  #     maze_ascii[row] = maze_ascii[row].replace('a', ' ', 1)
-  # new_coord = random.sample(ROOMS[new_room], 1)[0]
-  # maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'a' + maze_ascii[new_coord[0]][new_coord[1]+1:]
 
   return ascii_art.ascii_art_to_game(
       maze_ascii, what_lies_beneath=' ',
