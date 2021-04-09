@@ -254,19 +254,20 @@ class MinibatchRl(MinibatchRlBase):
             starting_itr = int(status_file_read.read().split('\n')[-2])
         else:
             starting_itr = 0
-        with open(self.log_dir + '/last_itr.txt', 'a') as status_file: # for restart purposes
-            for itr in range(starting_itr, n_itr):
-                logger.set_iteration(itr)
-                with logger.prefix(f"itr #{itr} "):
-                    self.agent.sample_mode(itr)  # Might not be this agent sampling.
-                    samples, traj_infos = self.sampler.obtain_samples(itr)
-                    self.agent.train_mode(itr)
-                    opt_info, layer_info = self.algo.optimize_agent(itr, samples)
-                    self.store_diagnostics(itr, traj_infos, opt_info)
-                    if (itr + 1) % self.log_interval_itrs == 0:
+        # with open(self.log_dir + '/last_itr.txt', 'a') as status_file: # for restart purposes
+        for itr in range(starting_itr, n_itr):
+            logger.set_iteration(itr)
+            with logger.prefix(f"itr #{itr} "):
+                self.agent.sample_mode(itr)  # Might not be this agent sampling.
+                samples, traj_infos = self.sampler.obtain_samples(itr)
+                self.agent.train_mode(itr)
+                opt_info, layer_info = self.algo.optimize_agent(itr, samples)
+                self.store_diagnostics(itr, traj_infos, opt_info)
+                if (itr + 1) % self.log_interval_itrs == 0:
+                    with open(self.log_dir + '/last_itr.txt', 'a') as status_file:
                         status_file.write(str(itr) + '\n')
-                        self.log_diagnostics(itr)
-                        self.log_weights(layer_info)
+                    self.log_diagnostics(itr)
+                    self.log_weights(layer_info)
         self.shutdown()
 
     def initialize_logging(self):
