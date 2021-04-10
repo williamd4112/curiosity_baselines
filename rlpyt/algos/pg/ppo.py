@@ -39,7 +39,6 @@ class PPO(PolicyGradientAlgo):
             linear_lr_schedule=True,
             normalize_advantage=False,
             normalize_reward=False,
-            kernel_params=None,
             curiosity_type='none'
             ):
         """Saves input settings."""
@@ -51,11 +50,6 @@ class PPO(PolicyGradientAlgo):
             self.reward_rms = RunningMeanStd()
         self.intrinsic_rewards = None
         
-        if kernel_params is not None:
-            self.mu, self.sigma = self.kernel_params
-            self.kernel_line = lambda x: x
-            self.kernel_gauss = lambda x: np.sign(x)*self.mu*np.exp(-(abs(x)-self.mu)**2/(2*self.sigma**2))
-
     def initialize(self, *args, **kwargs):
         """
         Extends base ``initialize()`` to initialize learning rate schedule, if
