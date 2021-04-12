@@ -58,44 +58,43 @@ MAZES_ART = [
     #   4
 
     # Maze #0: (paper: 5 rooms environment)
-    ['###################',
-     '##               ##',
-     '# #      a      # #',
-     '#  #           #  #',
-     '#   #         #   #',
-     '#    #### ####    #',
-     '#    #### ####    #',
-     '#    ##     ##    #',
-     '#    ##     ##    #',
-     '#        P        #',
-     '#    ##     ##    #',
-     '#    ##     ##    #',
-     '#    #### ####    #',
-     '#    #### ####    #',
-     '#   #         #   #',
-     '#  #           #  #',
-     '# #      b      # #',
-     '##               ##',
-     '###################']
+   ['###############################',
+    '##               ##############',
+    '# #             ############# #',
+    '#  #           #############  #',
+    '#   #         #############   #',
+    '#    #### ################    #',
+    '#    #### ################    #',
+    '#    ##     ##############    #',
+    '#    ##     ##############    #',
+    '#        P                 a  #',
+    '#    ##     ##############    #',
+    '#    ##     ##############    #',
+    '#    #### ################    #',
+    '#    #### ################    #',
+    '#   #         #############   #',
+    '#  #           #############  #',
+    '# #             ############# #',
+    '##               ##############',
+    '###############################']
 ]
 
 # These colours are only for humans to see in the CursesUi.
 COLOUR_FG = {' ': (0, 0, 0),        # Default black background
              '#': (764, 0, 999),    # Walls of the maze
              'P': (0, 999, 999),    # This is you, the player
-             'a': (999, 0, 780),    # Patroller A
-             'b': (145, 987, 341)}  # Patroller B
+             'a': (999, 0, 780)}    # Patroller A
 
 COLOUR_BG = {'@': (0, 0, 0)}  # So the coins look like @ and not solid blocks.
 
-ENEMIES = {'a', 'b'} # Globally accessible set of sprites
+ENEMIES = {'a'} # Globally accessible set of sprites
 
 # Empty coordinates corresponding to each numbered room (width 1 passageways not blocked)
 ROOMS = {
   0 : [[7, 7], [7, 8], [7, 9], [7, 10], [7, 11], [8, 7], [8, 8], [8, 9], [8, 10], [8, 11], [9, 7], [9, 8], [9, 9], [9, 10], [9, 11], [10, 7], [10, 8], [10, 9], [10, 10], [10, 11], [11, 7], [11, 8], [11, 9], [11, 10], [11, 11]],
   1 : [[4, 1], [4, 2], [5, 1], [5, 2], [5, 3], [6, 1], [6, 2], [6, 3], [6, 4], [7, 1], [7, 2], [7, 3], [7, 4], [8, 1], [8, 2], [8, 3], [9, 1], [9, 2], [9, 3], [10, 1], [10, 2], [10, 3], [11, 1], [11, 2], [11, 3], [11, 4], [12, 1], [12, 2], [12, 3], [12, 4], [13, 1], [13, 2], [13, 3], [14, 1], [14, 2]],
   2 : [[1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10], [1, 11], [1, 12], [1, 13], [1, 14], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9], [2, 10], [2, 11], [2, 12], [2, 13], [2, 14], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10], [3, 11], [3, 12], [3, 13], [4, 6], [4, 7], [4, 11], [4, 12]],
-  3 : [[4, 16], [4, 17], [5, 15], [5, 16], [5, 17], [6, 14], [6, 15], [6, 16], [6, 17], [7, 14], [7, 15], [7, 16], [7, 17], [8, 15], [8, 16], [8, 17], [9, 15], [9, 16], [9, 17], [10, 15], [10, 16], [10, 17], [11, 14], [11, 15], [11, 16], [11, 17], [12, 14], [12, 15], [12, 16], [12, 17], [13, 15], [13, 16], [13, 17], [14, 16], [14, 17]],
+  3 : [[4, 28], [4, 29], [5, 27], [5, 28], [5, 29], [6, 26], [6, 27], [6, 28], [6, 29], [7, 26], [7, 27], [7, 28], [7, 29], [8, 27], [8, 28], [8, 29], [9, 27], [9, 28], [9, 29], [10, 27], [10, 28], [10, 29], [11, 26], [11, 27], [11, 28], [11, 29], [12, 26], [12, 27], [12, 28], [12, 29], [13, 27], [13, 28], [13, 29], [14, 28], [14, 29]],
   4 : [[14, 6], [14, 7], [14, 11], [14, 12], [15, 5], [15, 6], [15, 7], [15, 8], [15, 9], [15, 10], [15, 11], [15, 12], [15, 13], [16, 4], [16, 5], [16, 6], [16, 7], [16, 8], [16, 9], [16, 10], [16, 11], [16, 12], [16, 13], [16, 14], [17, 4], [17, 5], [17, 6], [17, 7], [17, 8], [17, 9], [17, 10], [17, 11], [17, 12], [17, 13], [17, 14]],
 }
 
@@ -104,20 +103,19 @@ def make_game(level):
   maze_ascii = MAZES_ART[level]
 
   # change location of fixed object in the top room
-  for row in range(1, 5):
+  for row in range(2, 17):
     if 'a' in maze_ascii[row]:
       maze_ascii[row] = maze_ascii[row].replace('a', ' ', 1)
-  new_coord = random.sample(ROOMS[2], 1)[0]
+  new_coord = random.sample(ROOMS[3], 1)[0]
   maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'a' + maze_ascii[new_coord[0]][new_coord[1]+1:]
 
   return ascii_art.ascii_art_to_game(
       maze_ascii, what_lies_beneath=' ',
       sprites={
           'P': PlayerSprite,
-          'a': FixedObject,
-          'b': WhiteNoiseObject},
-      update_schedule=['P', 'a', 'b'],
-      z_order='abP')
+          'a': FixedObject},
+      update_schedule=['P', 'a'],
+      z_order='aP')
 
 def make_croppers(level):
   """Builds and returns `ObservationCropper`s for the selected level.
@@ -160,26 +158,6 @@ class PlayerSprite(prefab_sprites.MazeWalker):
     if actions == 5:    # just quit?
       the_plot.terminate_episode()
 
-class WhiteNoiseObject(prefab_sprites.MazeWalker):
-  """Randomly sample direction from left/right/up/down"""
-
-  def __init__(self, corner, position, character):
-    """Constructor: list impassables, initialise direction."""
-    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='#')
-    # Initialize empty space in surrounding radius.
-    self._empty_coords = ROOMS[4]
-
-  def update(self, actions, board, layers, backdrop, things, the_plot):
-    del actions, backdrop  # Unused.
-
-    # We only move once every two game iterations.
-    # if the_plot.frame % 1:
-    #   self._stay(board, the_plot)
-    #   return
-
-    # Sample and make a move
-    self._teleport(self._empty_coords[np.random.choice(len(self._empty_coords))])
-
 class FixedObject(plab_things.Sprite):
   """Static object. Doesn't move."""
 
@@ -189,23 +167,6 @@ class FixedObject(plab_things.Sprite):
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     del actions, backdrop  # Unused.
-
-class CashDrape(plab_things.Drape):
-  """A `Drape` handling all of the coins.
-
-  This Drape detects when a player traverses a coin, removing the coin and
-  crediting the player for the collection. Terminates if all coins are gone.
-  """
-
-  def update(self, actions, board, layers, backdrop, things, the_plot):
-    # If the player has reached a coin, credit one reward and remove the coin
-    # from the scrolling pattern. If the player has obtained all coins, quit!
-    player_pattern_position = things['P'].position
-
-    if self.curtain[player_pattern_position]:
-      the_plot.log('Coin collected at {}!'.format(player_pattern_position))
-      the_plot.add_reward(1.0)
-      self.curtain[player_pattern_position] = False
 
 def main(argv=()):
   level = int(argv[1]) if len(argv) > 1 else 0
