@@ -8,6 +8,7 @@ from .envs import (MazeWorld,
                     DeepmindMazeWorld_maze, 
                     DeepmindMazeWorld_5room, 
                     DeepmindMazeWorld_5room_long,
+                    DeepmindMazeWorld_5room_longwide,
                     DeepmindMazeWorld_5room_noobj, 
                     DeepmindMazeWorld_5room_oneobj, 
                     DeepmindMazeWorld_5room_onewhite, 
@@ -46,6 +47,12 @@ register(
 register(
     id='Deepmind5RoomLong-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5room_long',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomLong-v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_longwide',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
