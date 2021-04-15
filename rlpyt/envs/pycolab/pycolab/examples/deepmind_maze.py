@@ -208,7 +208,6 @@ class PlayerSprite(prefab_sprites.MazeWalker):
     if actions == 5:    # just quit?
       the_plot.terminate_episode()
 
-
 class WhiteNoiseObject1(prefab_sprites.MazeWalker):
   """Randomly sample direction from left/right/up/down"""
 
@@ -220,13 +219,6 @@ class WhiteNoiseObject1(prefab_sprites.MazeWalker):
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     del actions, backdrop  # Unused.
-
-    # We only move once every two game iterations.
-    if the_plot.frame % 2:
-      self._stay(board, the_plot)
-      return
-
-    # Sample and make a move
     self._teleport(self._empty_coords[np.random.choice(len(self._empty_coords))])
 
 class FixedObject(plab_things.Sprite):

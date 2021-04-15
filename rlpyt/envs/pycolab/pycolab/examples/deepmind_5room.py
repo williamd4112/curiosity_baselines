@@ -171,13 +171,6 @@ class WhiteNoiseObject(prefab_sprites.MazeWalker):
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     del actions, backdrop  # Unused.
-
-    # We only move once every two game iterations.
-    # if the_plot.frame % 1:
-    #   self._stay(board, the_plot)
-    #   return
-
-    # Sample and make a move
     self._teleport(self._empty_coords[np.random.choice(len(self._empty_coords))])
 
 class FixedObject(plab_things.Sprite):

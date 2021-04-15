@@ -162,19 +162,12 @@ class WhiteNoiseObject(prefab_sprites.MazeWalker):
 
   def __init__(self, corner, position, character):
     """Constructor: list impassables, initialise direction."""
-    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='P#e')
+    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='Pe#')
     # Initialize empty space in surrounding radius.
     self._empty_coords = ROOMS[4]
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     del actions, backdrop  # Unused.
-
-    # We only move once every two game iterations.
-    if the_plot.frame % 2:
-      self._stay(board, the_plot)
-      return
-
-    # Sample and make a move
     self._teleport(self._empty_coords[np.random.choice(len(self._empty_coords))])
 
 class MoveableObject(prefab_sprites.MazeWalker):

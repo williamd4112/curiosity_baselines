@@ -59,7 +59,7 @@ MAZES_ART = [
 
     # Maze #0: (paper: 5 rooms environment)
     ['###################',
-     '##               ##',
+     '##       P       ##',
      '# #             # #',
      '#  #     e     #  #',
      '#   #         #   #',
@@ -67,7 +67,7 @@ MAZES_ART = [
      '#    #### ####    #',
      '#    ##     ##    #',
      '#    ##     ##    #',
-     '#        P        #',
+     '#                 #',
      '#    ##     ##    #',
      '#    ##     ##    #',
      '#    #### ####    #',
@@ -162,19 +162,12 @@ class WhiteNoiseObject(prefab_sprites.MazeWalker):
 
   def __init__(self, corner, position, character):
     """Constructor: list impassables, initialise direction."""
-    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='P#e')
+    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='Pe#')
     # Initialize empty space in surrounding radius.
     self._empty_coords = ROOMS[4]
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     del actions, backdrop  # Unused.
-
-    # We only move once every two game iterations.
-    if the_plot.frame % 2:
-      self._stay(board, the_plot)
-      return
-
-    # Sample and make a move
     self._teleport(self._empty_coords[np.random.choice(len(self._empty_coords))])
 
 class MoveableObject(prefab_sprites.MazeWalker):
@@ -205,7 +198,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
     if (mc == pc) and (mr - pr == -1) and (p_action == 0):
       rand = np.random.rand() <= self.eps
       if rand == True:
-        direction_ind = np.random.randint(4)
+        direction_ind = np.random.choice([1, 3])
         box_direction = self.directions[direction_ind]
       else:
         box_direction = self._north
@@ -218,7 +211,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
     elif (mc == pc) and (mr - pr == 1) and (p_action == 1):
       rand = np.random.rand() <= self.eps
       if rand == True:
-        direction_ind = np.random.randint(4)
+        direction_ind = np.random.choice([1, 3])
         box_direction = self.directions[direction_ind]
         no_go_coord = self.no_go[direction_ind]
       else:
@@ -227,18 +220,18 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
       exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
-        things['P']._west(board, the_plot)
+        things['P']._north(board, the_plot)
         self._stay(board, the_plot)
       else:
         moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
-          things['P']._west(board, the_plot)
+          things['P']._north(board, the_plot)
 
     # move right
     elif (mc - pc == 1) and (mr == pr) and (p_action == 3):
       rand = np.random.rand() <= self.eps
       if rand == True:
-        direction_ind = np.random.randint(4)
+        direction_ind = np.random.choice([0, 2])
         box_direction = self.directions[direction_ind]
         no_go_coord = self.no_go[direction_ind]
       else:
@@ -258,7 +251,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
     elif (mc - pc == -1) and (mr == pr) and (p_action == 2):
       rand = np.random.rand() <= self.eps
       if rand == True:
-        direction_ind = np.random.randint(4)
+        direction_ind = np.random.choice([0, 2])
         box_direction = self.directions[direction_ind]
         no_go_coord = self.no_go[direction_ind]
       else:
