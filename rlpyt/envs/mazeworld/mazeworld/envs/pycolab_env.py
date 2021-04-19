@@ -125,7 +125,7 @@ class PyColabEnv(gym.Env):
                  crop_window=[5, 5],
                  visitable_states=0,
                  extrinsic_reward=0.0,
-                 extrinsic_reward_obj=None
+                 extrinsic_reward_spec=None
                  ):
         """Create an `PyColabEnv` adapter to a `pycolab` game as a `gym.Env`.
 
@@ -143,7 +143,7 @@ class PyColabEnv(gym.Env):
             crop_window: dimensions of observation cropping.
             visitable_states: number of states the agent can visit.
             extrinsic_reward: the extrinsic reward to assign.
-            extrinsic_reward_obj: the object which gives extrinsic reward if it's in frame.
+            extrinsic_reward_spec: specifies the extrinsic reward objective. [player/object: character, goal: either coordinate or character]
         """
         assert max_iterations > 0
         assert isinstance(default_reward, numbers.Number)
@@ -151,7 +151,8 @@ class PyColabEnv(gym.Env):
         self._max_iterations = max_iterations
         self._default_reward = default_reward
         self._extrinsic_reward = extrinsic_reward
-        self._extrinsic_reward_obj = extrinsic_reward_obj
+        self._extrinsic_reward_spec = extrinsic_reward_spec
+        self._extrinsic_coord_based = (type(self._extrinsic_reward_spec[1]) == tuple)
 
         # At this point, the game would only want to access the random
         # property, although it is set to None initially.
@@ -282,6 +283,9 @@ class PyColabEnv(gym.Env):
     def _update_for_game_step(self, observations, reward):
         """Update internal state with data from an environment interaction."""
         # disentangled one hot state
+        if self._extrinsic_reward > 0.0 and self._extrinsic_coord_based: # extrinsic reward is based on a coordinate
+            if self.current_game.things[self._extrinsic_reward_spec[0]].position == self._extrinsic_reward_spec[1]:
+                reward = self._extrinsic_reward
 
         if self.obs_type == 'mask':
             self._state = []
@@ -289,7 +293,7 @@ class PyColabEnv(gym.Env):
                 if char != ' ':
                     mask = observations.layers[char].astype(float)
                     if char in self.objects and 1. in mask:
-                        if char == self._extrinsic_reward_obj:
+                        if not self._extrinsic_coord_based and char == self._extrinsic_reward_spec[1]:
                             reward = self._extrinsic_reward
                         self.visitation_frequency[char] += 1
                     self._state.append(mask)
@@ -302,7 +306,7 @@ class PyColabEnv(gym.Env):
                 if char != ' ':
                     mask = observations.layers[char].astype(float)
                     if char in self.objects and 1. in mask:
-                        if char == self._extrinsic_reward_obj:
+                        if self._extrinsic_reward > 0.0 and not self._extrinsic_coord_based and char == self._extrinsic_reward_spec[1]:
                             reward = self._extrinsic_reward
                         self.visitation_frequency[char] += 1
 
