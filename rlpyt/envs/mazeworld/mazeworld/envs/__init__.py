@@ -19,3 +19,4 @@ from .mazeworld_env import DeepmindMazeWorld_8room_oneobj_allrooms
 from .mazeworld_env import DeepmindMazeWorld_5room_moveable
 from .mazeworld_env import DeepmindMazeWorld_5room_moveable_stoch
 from .mazeworld_env import DeepmindMazeWorld_5room_extint
+from .mazeworld_env import DeepmindMazeWorld_piano_long

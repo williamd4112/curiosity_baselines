@@ -23,7 +23,8 @@ from .envs import (MazeWorld,
                     DeepmindMazeWorld_8room_oneobj_singleroom,
                     DeepmindMazeWorld_5room_moveable,
                     DeepmindMazeWorld_5room_moveable_stoch,
-                    DeepmindMazeWorld_5room_extint)
+                    DeepmindMazeWorld_5room_extint,
+                    DeepmindMazeWorld_piano_long)
 
 def register(id, entry_point, max_episode_steps, kwargs):
     env_specs = gym.envs.registry.env_specs
@@ -151,6 +152,12 @@ register(
 register(
     id='Deepmind5RoomExtInt-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5room_extint',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='DeepmindPianoLong-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_piano_long',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
