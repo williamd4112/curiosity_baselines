@@ -65,8 +65,8 @@ class Disagreement(nn.Module):
     def forward(self, obs1, obs2, action):
 
         if self.obs_stats is not None:
-            img1 = (obs1 - self.obs_mean) / self.obs_std
-            img2 = (obs2 - self.obs_mean) / self.obs_std
+            img1 = (obs1 - self.obs_mean) / (self.obs_std+1e-10)
+            img2 = (obs2 - self.obs_mean) / (self.obs_std+1e-10)
 
         img1 = obs1.type(torch.float)
         img2 = obs2.type(torch.float) # Expect torch.uint8 inputs
