@@ -64,16 +64,22 @@ def generate_observation_stats(env, nsteps=10000):
     From https://github.com/openai/large-scale-curiosity/blob/master/utils.py
     '''
     wrap_print('Generating observation mean/std... ({} random steps)'.format(nsteps))
-    ob = np.asarray(env.reset())
-    obs = [ob]
+    ob = env.reset()
+    obs = []
     for _ in range(nsteps):
         ac = env.action_space.sample()
-        ob, _, done, _ = env.step(ac.item(0)) # mainly used for mario with discrete action space (hacky .item() call to make it work)
+        ob, _, done, _ = env.step(ac.item())
         if done:
             ob = env.reset()
-        obs.append(np.asarray(ob))
+        ob = np.split(ob, ob.shape[0])
+        for o in ob: # stacked observations
+            obs.append(o)
+    obs = np.array(obs)
     mean = np.mean(obs, 0).astype(np.float32)
-    std = np.std(obs, 0).mean().astype(np.float32)
+    std = np.std(obs, 0).astype(np.float32)
+    # print(set(list(np.squeeze(mean).ravel())))
+    # cv2.imwrite('norm_images/mean.png', np.squeeze(mean))
+    # cv2.imwrite('norm_images/std.png', np.squeeze(std))
     return mean, std
 
 

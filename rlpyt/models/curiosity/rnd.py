@@ -19,6 +19,7 @@ class RND(nn.Module):
     def __init__(
             self, 
             image_shape, 
+            obs_stats,
             prediction_beta=1.0,
             drop_probability=1.0,
             gamma=0.99,
@@ -32,6 +33,9 @@ class RND(nn.Module):
 
         c, h, w = 1, image_shape[1], image_shape[2] # assuming grayscale inputs
         self.obs_rms = RunningMeanStd(shape=(1, c, h, w)) # (T, B, c, h, w)
+        # self.obs_rms.mean = np.expand_dims(obs_stats[0], 0)
+        # self.obs_rms.var = np.expand_dims(obs_stats[1]**2, 0)
+        # print(self.obs_rms.mean.shape, self.obs_rms.var.shape)
         self.rew_rms = RunningMeanStd()
         self.rew_rff = RewardForwardFilter(gamma)
         self.feature_size = 512
@@ -119,6 +123,8 @@ class RND(nn.Module):
         # cv2.imwrite('images/whitened.png', img-mean)
         # cv2.imwrite('images/final.png', (img-mean)/std)
         # cv2.imwrite('images/scaled_final.png', ((img-mean)/std)*111)
+        # print("Final", np.min(((img-mean)/std).ravel()), np.mean(((img-mean)/std).ravel()), np.max(((img-mean)/std).ravel()))
+        # print("#"*100 + "\n")
 
         # Infer (presence of) leading dimensions: [T,B], [B], or [].
         # lead_dim is just number of leading dimensions: e.g. [T, B] = 2 or [] = 0.

@@ -73,6 +73,7 @@ class AtariLstmModel(torch.nn.Module):
                                              )
             elif curiosity_kwargs['curiosity_alg'] == 'rnd':
                 self.curiosity_model = RND(image_shape=image_shape,
+                                           obs_stats=self.obs_stats,
                                            prediction_beta=curiosity_kwargs['prediction_beta'],
                                            drop_probability=curiosity_kwargs['drop_probability'],
                                            gamma=curiosity_kwargs['gamma'],
@@ -129,8 +130,7 @@ class AtariLstmModel(torch.nn.Module):
         next RNN state.
         """       
         if self.obs_stats is not None: # don't normalize observation
-            image = (image - self.obs_mean) / self.obs_std
-
+            image = (image - self.obs_mean) / (self.obs_std+1e-10)
         img = image.type(torch.float)  # Expect torch.uint8 inputs
 
         # Infer (presence of) leading dimensions: [T,B], [B], or [].
@@ -151,5 +151,4 @@ class AtariLstmModel(torch.nn.Module):
         pi, v = restore_leading_dims((pi, v), lead_dim, T, B)
         # Model should always leave B-dimension in rnn state: [N,B,H].
         next_rnn_state = RnnState(h=hn, c=cn)
-
         return pi, v, next_rnn_state
