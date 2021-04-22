@@ -140,7 +140,7 @@ class DeepmindMazeWorld_5room_large(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=643,
             extrinsic_reward=extrinsic_reward,
-            extrinsic_reward_spec=['e',(3,21)]) # 3, 21
+            extrinsic_reward_spec=['e',(4,18)]) # 3, 21
 
     def make_game(self):
         self._croppers = self.make_croppers()

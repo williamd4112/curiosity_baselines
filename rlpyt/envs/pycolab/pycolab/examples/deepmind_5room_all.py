@@ -192,7 +192,20 @@ class MoveableObject(prefab_sprites.MazeWalker):
   """Moveable object. Can be pushed by agent."""
 
   def __init__(self, corner, position, character):
-    super(MoveableObject, self).__init__(corner, position, character, impassable='#')
+    super(MoveableObject, self).__init__(corner, position, character, impassable='#b')
+    self.eps = 0.25 # probability you move randomly when interacted with
+    self.directions = {0:self._north,
+                       1:self._east,
+                       2:self._south,
+                       3:self._west}
+    self.opp_directions = {0:self._south,
+                           1:self._west,
+                           2:self._north,
+                           3:self._east}
+    self.no_go = {0:None,
+                  1:(4,8),
+                  2:(3,9),
+                  3:(4,10)}
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     mr, mc = self.position
@@ -201,40 +214,74 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move up
     if (mc == pc) and (mr - pr == -1) and (p_action == 0):
-      moved = self._north(board, the_plot)
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([1, 3])
+        box_direction = self.directions[direction_ind]
+      else:
+        box_direction = self._north
+
+      moved = box_direction(board, the_plot)
       if moved is not None:
         things['P']._south(board, the_plot)
 
     # move down
     elif (mc == pc) and (mr - pr == 1) and (p_action == 1):
-      exiting_room = (self.position == (3, 9))
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([1, 3])
+        box_direction = self.directions[direction_ind]
+        no_go_coord = self.no_go[direction_ind]
+      else:
+        box_direction = self._south
+        no_go_coord = (3,9)
+
+      exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
         things['P']._north(board, the_plot)
         self._stay(board, the_plot)
       else:
-        moved = self._south(board, the_plot)
+        moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
           things['P']._north(board, the_plot)
 
     # move right
     elif (mc - pc == 1) and (mr == pr) and (p_action == 3):
-      exiting_room = (self.position == (4, 8))
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([0, 2])
+        box_direction = self.directions[direction_ind]
+        no_go_coord = self.no_go[direction_ind]
+      else:
+        box_direction = self._east
+        no_go_coord = (4,8)
+
+      exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
         things['P']._west(board, the_plot)
         self._stay(board, the_plot)
       else:
-        moved = self._east(board, the_plot)
+        moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
           things['P']._west(board, the_plot)
 
     # move left
     elif (mc - pc == -1) and (mr == pr) and (p_action == 2):
-      exiting_room = (self.position == (4, 10))
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([0, 2])
+        box_direction = self.directions[direction_ind]
+        no_go_coord = self.no_go[direction_ind]
+      else:
+        box_direction = self._west
+        no_go_coord = (4,10)
+
+      exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
         things['P']._east(board, the_plot)
         self._stay(board, the_plot)
       else:
-        moved = self._west(board, the_plot)
+        moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
           things['P']._east(board, the_plot)
 
