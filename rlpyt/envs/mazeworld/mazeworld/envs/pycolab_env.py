@@ -125,7 +125,8 @@ class PyColabEnv(gym.Env):
                  crop_window=[5, 5],
                  visitable_states=0,
                  extrinsic_reward=0.0,
-                 extrinsic_reward_spec=None
+                 extrinsic_reward_spec=None,
+                 color_palette=0
                  ):
         """Create an `PyColabEnv` adapter to a `pycolab` game as a `gym.Env`.
 
@@ -144,6 +145,7 @@ class PyColabEnv(gym.Env):
             visitable_states: number of states the agent can visit.
             extrinsic_reward: the extrinsic reward to assign.
             extrinsic_reward_spec: specifies the extrinsic reward objective. [player/object: character, goal: either coordinate or character]
+            color_palette: which color palette to use for objects.
         """
         assert max_iterations > 0
         assert isinstance(default_reward, numbers.Number)
@@ -157,7 +159,7 @@ class PyColabEnv(gym.Env):
         # At this point, the game would only want to access the random
         # property, although it is set to None initially.
         self.np_random = None
-
+        self._color_palette = color_palette
         self._colors = self.make_colors()
         test_game = self.make_game()
         test_game.the_plot.info = {}
@@ -228,18 +230,41 @@ class PyColabEnv(gym.Env):
             Dictionary mapping key name to `tuple(R, G, B)`.
         """
 
-        return {'P' : (255., 255., 255.),
-                'a' : (175., 255., 15.),
-                'b' : (21., 0., 255.),
-                'c' : (255., 0., 0.),
-                'd' : (19., 139., 67.),
-                'e' : (250., 0., 129.),
-                'f' : (114., 206., 227.),
-                'g' : (136., 3., 252.),
-                'h' : (245., 119., 34.),
-                '#' : (61., 61., 61.),
-                '@' : (255., 255., 0.),
-                ' ' : (0., 0., 0.)}
+        if self._color_palette == 0:
+            return {'P' : (255., 255., 255.),
+                    'a' : (175., 255., 15.),
+                    'b' : (21., 0., 255.),
+                    'c' : (255., 0., 0.),
+                    'd' : (19., 139., 67.),
+                    'e' : (250., 0., 129.),
+                    'f' : (114., 206., 227.),
+                    'g' : (136., 3., 252.),
+                    'h' : (245., 119., 34.),
+                    '#' : (61., 61., 61.),
+                    '@' : (255., 255., 0.),
+                    ' ' : (0., 0., 0.)}
+        elif self._color_palette == 1:
+            return {'P' : (255., 255., 255.),
+                    'a' : (136., 3., 252.),
+                    'b' : (21., 0., 255.),
+                    'c' : (255., 0., 0.),
+                    'd' : (19., 139., 67.),
+                    '#' : (61., 61., 61.),
+                    '@' : (255., 255., 0.),
+                    ' ' : (0., 0., 0.)}
+        elif self._color_palette == 2:
+            return {'P' : (255., 255., 255.),
+                    'a' : (255., 0., 0.),
+                    'b' : (255., 0., 0.),
+                    'c' : (255., 0., 0.),
+                    'd' : (255., 0., 0.),
+                    'e' : (255., 0., 0.),
+                    'f' : (255., 0., 0.),
+                    'g' : (255., 0., 0.),
+                    'h' : (255., 0., 0.),
+                    '#' : (61., 61., 61.),
+                    '@' : (255., 255., 0.),
+                    ' ' : (0., 0., 0.)}
 
 
     def _paint_board(self, layers, cropped=False):

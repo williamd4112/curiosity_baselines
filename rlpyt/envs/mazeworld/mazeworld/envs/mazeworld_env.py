@@ -80,7 +80,8 @@ class DeepmindMazeWorld_5room(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=223,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -110,7 +111,8 @@ class DeepmindMazeWorld_5room_all(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=221,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -140,7 +142,8 @@ class DeepmindMazeWorld_5room_large(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=643,
             extrinsic_reward=extrinsic_reward,
-            extrinsic_reward_spec=['e',(4,18)]) # 3, 21
+            extrinsic_reward_spec=['e',(4,18)],
+            color_palette=1,) # 3, 21
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -170,7 +173,8 @@ class DeepmindMazeWorld_5room_long(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=236,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -200,7 +204,8 @@ class DeepmindMazeWorld_5room_longwide(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=208,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -230,7 +235,8 @@ class DeepmindMazeWorld_5room_noobj(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=224,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -260,7 +266,8 @@ class DeepmindMazeWorld_5room_oneobj(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=224,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -290,7 +297,8 @@ class DeepmindMazeWorld_5room_onewhite(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=224,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -321,7 +329,8 @@ class DeepmindMazeWorld_5room_randomfixed(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=223,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -351,7 +360,8 @@ class DeepmindMazeWorld_5room_bouncing(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=222,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -381,7 +391,8 @@ class DeepmindMazeWorld_5room_brownian(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=223,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -412,7 +423,8 @@ class DeepmindMazeWorld_maze(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=150.,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=0,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -443,7 +455,8 @@ class DeepmindMazeWorld_8room(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=833,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=2,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -474,7 +487,8 @@ class DeepmindMazeWorld_8room_extrinsic(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=833,
             extrinsic_reward=extrinsic_reward,
-            extrinsic_reward_spec=['P','d'])
+            extrinsic_reward_spec=['P','d'],
+            color_palette=2,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -505,7 +519,8 @@ class DeepmindMazeWorld_8room_oneobj_singleroom(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=833,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -536,7 +551,8 @@ class DeepmindMazeWorld_8room_oneobj_allrooms(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=833,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -567,7 +583,8 @@ class DeepmindMazeWorld_5room_moveable(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=223,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -599,7 +616,8 @@ class DeepmindMazeWorld_5room_moveable_stoch(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=223,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -630,7 +648,8 @@ class DeepmindMazeWorld_5room_extint(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=223,
             extrinsic_reward=extrinsic_reward,
-            extrinsic_reward_spec=['P','b'])
+            extrinsic_reward_spec=['P','b'],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
@@ -661,7 +680,8 @@ class DeepmindMazeWorld_piano_long(pycolab_env.PyColabEnv):
             resize_scale=17,
             visitable_states=1516,
             extrinsic_reward=0.0,
-            extrinsic_reward_spec=[None,None])
+            extrinsic_reward_spec=[None,None],
+            color_palette=1,)
 
     def make_game(self):
         self._croppers = self.make_croppers()
