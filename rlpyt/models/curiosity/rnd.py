@@ -111,6 +111,7 @@ class RND(nn.Module):
         # in case of frame stacking
         obs = obs[:,:,-1,:,:]
         obs = obs.unsqueeze(2)
+        obs_cpu = obs.clone().cpu().data.numpy()
 
         # img = np.squeeze(obs.data.numpy()[0][0])
         # mean = np.squeeze(self.obs_rms.mean)
@@ -123,25 +124,12 @@ class RND(nn.Module):
         # cv2.imwrite('images/whitened.png', img-mean)
         # cv2.imwrite('images/final.png', (img-mean)/std)
         # cv2.imwrite('images/scaled_final.png', ((img-mean)/std)*111)
-        # print("Final", np.min(((img-mean)/std).ravel()), np.mean(((img-mean)/std).ravel()), np.max(((img-mean)/std).ravel()))
+        #print("Final", np.min(((img-mean)/std).ravel()), np.mean(((img-mean)/std).ravel()), np.max(((img-mean)/std).ravel()))
         # print("#"*100 + "\n")
 
         # Infer (presence of) leading dimensions: [T,B], [B], or [].
         # lead_dim is just number of leading dimensions: e.g. [T, B] = 2 or [] = 0.
         lead_dim, T, B, img_shape = infer_leading_dims(obs, 3)
-        
-        # normalize observations and clip (see paper for details)
-        if done is not None:
-            obs_cpu = obs.clone().cpu().data.numpy()
-            done = done.cpu().data.numpy()
-            done = np.sum(np.abs(done-1), axis=0)
-            obs_cpu = np.swapaxes(obs_cpu, 0, 1)
-            sliced_obs = obs_cpu[0][:int(done[0].item())]
-            for i in range(1, B):
-                c = obs_cpu[i]
-                data_chunk = obs_cpu[i][:int(done[i].item())]
-                sliced_obs = np.concatenate((sliced_obs, data_chunk))
-            self.obs_rms.update(sliced_obs)
         
         if self.device == torch.device('cuda:0'):
             obs_mean = torch.from_numpy(self.obs_rms.mean).float().cuda()
@@ -150,47 +138,53 @@ class RND(nn.Module):
             obs_mean = torch.from_numpy(self.obs_rms.mean).float()
             obs_var = torch.from_numpy(self.obs_rms.var).float()
 
-        obs = ((obs - obs_mean) / torch.sqrt(obs_var))
-        obs = torch.clamp(obs, -5, 5)
-        obs = obs.type(torch.float) # expect torch.uint8 inputs
+        norm_obs = ((obs - obs_mean) / torch.sqrt(obs_var))
+        norm_obs = torch.clamp(norm_obs, -5, 5).float()
 
         # prediction target
-        phi = self.target_model(obs.clone().detach().view(T * B, *img_shape)).view(T, B, -1)
+        phi = self.target_model(norm_obs.clone().detach().view(T * B, *img_shape)).view(T, B, -1)
 
         # make prediction
-        predicted_phi = self.forward_model(obs.detach().view(T * B, *img_shape)).view(T, B, -1)
+        predicted_phi = self.forward_model(norm_obs.detach().view(T * B, *img_shape)).view(T, B, -1)
 
-        return phi, predicted_phi, T, B
+        # update statistics
+        if done is not None:
+            done = done.cpu().data.numpy()
+            num_not_done = np.sum(np.abs(done-1), axis=0)
+            obs_cpu = np.swapaxes(obs_cpu, 0, 1)
+            valid_obs = obs_cpu[0][:int(num_not_done[0].item())]
+            for i in range(1, B):
+                obs_slice = obs_cpu[i][:int(num_not_done[i].item())]
+                valid_obs = np.concatenate((valid_obs, obs_slice))
+            self.obs_rms.update(valid_obs)
+
+        return phi, predicted_phi, T
 
     def compute_bonus(self, next_observation, done):
-        phi, predicted_phi, T, _ = self.forward(next_observation, done=done)
+        phi, predicted_phi, T = self.forward(next_observation, done=done)
         rewards = nn.functional.mse_loss(predicted_phi, phi.detach(), reduction='none').sum(-1)/self.feature_size
 
         # update running mean
         rewards_cpu = rewards.clone().cpu().data.numpy()
-        done = torch.abs(done-1).cpu().data.numpy()
-        total_rew_per_env = list()
-        for i in range(T):
-            update = self.rew_rff.update(rewards_cpu[i], done=done[i])
-            total_rew_per_env.append(update)
-        total_rew_per_env = np.array(total_rew_per_env)
-        self.rew_rms.update_from_moments(np.mean(total_rew_per_env), np.var(total_rew_per_env), np.sum(done))
+        not_done = torch.abs(done-1).cpu().data.numpy()
+        total_rew_per_env = np.array([self.rew_rff.update(rewards_cpu[i], not_done=not_done[i]) for i in range(T)])
+        self.rew_rms.update_from_moments(np.mean(total_rew_per_env), np.var(total_rew_per_env), np.sum(not_done))
 
         # normalize rewards
         if self.device == torch.device('cuda:0'):
             rew_var = torch.from_numpy(np.array(self.rew_rms.var)).float().cuda()
-            done = torch.from_numpy(np.array(done)).float().cuda()
+            not_done = torch.from_numpy(not_done).float().cuda()
         else:
             rew_var = torch.from_numpy(np.array(self.rew_rms.var)).float()
-            done = torch.from_numpy(np.array(done)).float()
+            not_done = torch.from_numpy(not_done).float()
         rewards /= torch.sqrt(rew_var)
 
         # apply done mask
-        rewards *= done
+        rewards *= not_done
         return self.prediction_beta * rewards
 
-    def compute_loss(self, observations, valid):
-        phi, predicted_phi, T, B = self.forward(observations, done=None)
+    def compute_loss(self, next_observations, valid):
+        phi, predicted_phi, _ = self.forward(next_observations, done=None)
         forward_loss = nn.functional.mse_loss(predicted_phi, phi.detach(), reduction='none').sum(-1)/self.feature_size
         mask = torch.rand(forward_loss.shape)
         mask = 1.0 - (mask > self.drop_probability).float().to(self.device)

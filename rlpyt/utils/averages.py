@@ -42,8 +42,8 @@ class RewardForwardFilter(object):
         self.rewems = None
         self.gamma = gamma
 
-    def update(self, rews, done=None):
-        if done is None:
+    def update(self, rews, not_done=None):
+        if not_done is None:
             if self.rewems is None:
                 self.rewems = rews
             else:
@@ -54,7 +54,7 @@ class RewardForwardFilter(object):
             if self.rewems is None:
                 self.rewems = rews
             else:
-                mask = np.where(done == 1.0)
+                mask = np.where(not_done == 1.0)
                 self.rewems[mask] = self.rewems[mask] * self.gamma + rews[mask]
             return deepcopy(self.rewems)
 
