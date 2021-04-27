@@ -19,7 +19,7 @@ class RND(nn.Module):
     def __init__(
             self, 
             image_shape, 
-            obs_stats,
+            obs_stats=None,
             prediction_beta=1.0,
             drop_probability=1.0,
             gamma=0.99,
@@ -33,9 +33,9 @@ class RND(nn.Module):
 
         c, h, w = 1, image_shape[1], image_shape[2] # assuming grayscale inputs
         self.obs_rms = RunningMeanStd(shape=(1, c, h, w)) # (T, B, c, h, w)
-        # self.obs_rms.mean = np.expand_dims(obs_stats[0], 0)
-        # self.obs_rms.var = np.expand_dims(obs_stats[1]**2, 0)
-        # print(self.obs_rms.mean.shape, self.obs_rms.var.shape)
+        if obs_stats is not None:
+            self.obs_rms.mean[0] = obs_stats[0]
+            self.obs_rms.var[0] = obs_stats[1]**2
         self.rew_rms = RunningMeanStd()
         self.rew_rff = RewardForwardFilter(gamma)
         self.feature_size = 512
@@ -137,9 +137,8 @@ class RND(nn.Module):
         else:
             obs_mean = torch.from_numpy(self.obs_rms.mean).float()
             obs_var = torch.from_numpy(self.obs_rms.var).float()
-
-        norm_obs = ((obs - obs_mean) / torch.sqrt(obs_var))
-        norm_obs = torch.clamp(norm_obs, -5, 5).float()
+        norm_obs = (obs.clone().float() - obs_mean) / (torch.sqrt(obs_var)+1e-10)
+        norm_obs = torch.clamp(norm_obs, min=-5, max=5).float()
 
         # prediction target
         phi = self.target_model(norm_obs.clone().detach().view(T * B, *img_shape)).view(T, B, -1)
