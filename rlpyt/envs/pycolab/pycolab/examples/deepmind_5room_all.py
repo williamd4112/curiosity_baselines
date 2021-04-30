@@ -105,10 +105,6 @@ def make_game(level):
   """Builds and returns a Better Scrolly Maze game for the selected level."""
   maze_ascii = MAZES_ART[level]
 
-  print("MAKING GAME")
-  for row in maze_ascii:
-    print(row)
-  print('~'*100)
   # change location of fixed object in the top room
   for row in range(14, 18):
     if 'c' in maze_ascii[row]:
@@ -116,9 +112,6 @@ def make_game(level):
   new_coord = random.sample(ROOMS[4], 1)[0]
   maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'c' + maze_ascii[new_coord[0]][new_coord[1]+1:]
 
-  for row in maze_ascii:
-    print(row)
-  print('#'*100)
   return ascii_art.ascii_art_to_game(
       maze_ascii, what_lies_beneath=' ',
       sprites={
