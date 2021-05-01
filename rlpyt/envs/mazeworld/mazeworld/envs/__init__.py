@@ -13,6 +13,7 @@ from .mazeworld_env import DeepmindMazeWorld_5room_randomfixed
 from .mazeworld_env import DeepmindMazeWorld_5room_bouncing
 from .mazeworld_env import DeepmindMazeWorld_5room_brownian
 from .mazeworld_env import DeepmindMazeWorld_8room
+from .mazeworld_env import DeepmindMazeWorld_8room_diff
 from .mazeworld_env import DeepmindMazeWorld_8room_extrinsic
 from .mazeworld_env import DeepmindMazeWorld_8room_oneobj_singleroom
 from .mazeworld_env import DeepmindMazeWorld_8room_oneobj_allrooms

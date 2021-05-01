@@ -18,6 +18,7 @@ from .envs import (MazeWorld,
                     DeepmindMazeWorld_5room_bouncing,
                     DeepmindMazeWorld_5room_brownian,
                     DeepmindMazeWorld_8room,
+                    DeepmindMazeWorld_8room_diff,
                     DeepmindMazeWorld_8room_extrinsic,
                     DeepmindMazeWorld_8room_oneobj_allrooms,
                     DeepmindMazeWorld_8room_oneobj_singleroom,
@@ -116,6 +117,12 @@ register(
 register(
     id='Deepmind8Room-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_8room',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind8Room-v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_diff',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
