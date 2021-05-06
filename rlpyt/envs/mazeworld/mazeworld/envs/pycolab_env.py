@@ -47,46 +47,88 @@ class PycolabTrajInfo(TrajInfo):
         self.first_visit_f = 500
         self.first_visit_g = 500
         self.first_visit_h = 500
+        self.num_eps_a = 0
+        self.num_eps_b = 0
+        self.num_eps_c = 0
+        self.num_eps_d = 0
+        self.num_eps_e = 0
+        self.num_eps_f = 0
+        self.num_eps_g = 0
+        self.num_eps_h = 0
+        self.percent_eps_a = 0
+        self.percent_eps_b = 0
+        self.percent_eps_c = 0
+        self.percent_eps_d = 0
+        self.percent_eps_e = 0
+        self.percent_eps_f = 0
+        self.percent_eps_g = 0
+        self.percent_eps_h = 0
         self.visitation_entropy = 0
 
     def step(self, observation, action, reward_ext, done, agent_info, env_info):
         visitation_frequency = getattr(env_info, 'visitation_frequency', None)
         first_visit_time = getattr(env_info, 'first_time_visit', None)
         self.visitation_entropy = getattr(env_info, 'visitation_entropy', None)
+        episodes = getattr(env_info, 'episodes', None)
+        num_obj_eps = getattr(env_info, 'num_obj_eps', None)
 
         if visitation_frequency is not None and first_visit_time is not None:
             if len(visitation_frequency) >= 1:
                 if first_visit_time[0] == 500 and visitation_frequency[0] == 1:
                     self.first_visit_a = self.Length
                 self.visit_freq_a = visitation_frequency[0]
+                if done == True:
+                    self.num_eps_a = num_obj_eps[0]
+                    self.percent_eps_a = self.num_eps_a/episodes
             if len(visitation_frequency) >= 2:
                 if first_visit_time[1] == 500 and visitation_frequency[1] == 1:
                     self.first_visit_b = self.Length
                 self.visit_freq_b = visitation_frequency[1]
+                if done == True:
+                    self.num_eps_b = num_obj_eps[1]
+                    self.percent_eps_b = self.num_eps_b/episodes
             if len(visitation_frequency) >= 3:
                 if first_visit_time[2] == 500 and visitation_frequency[2] == 1:
                     self.first_visit_c = self.Length
                 self.visit_freq_c = visitation_frequency[2]
+                if done == True:
+                    self.num_eps_c = num_obj_eps[2]
+                    self.percent_eps_c = self.num_eps_c/episodes
             if len(visitation_frequency) >= 4:
                 if first_visit_time[3] == 500 and visitation_frequency[3] == 1:
                     self.first_visit_d = self.Length
                 self.visit_freq_d = visitation_frequency[3]
+                if done == True:
+                    self.num_eps_d = num_obj_eps[3]
+                    self.percent_eps_d = self.num_eps_d/episodes
             if len(visitation_frequency) >= 5:
                 if first_visit_time[4] == 500 and visitation_frequency[4] == 1:
                     self.first_visit_e = self.Length
                 self.visit_freq_e = visitation_frequency[4]
+                if done == True:
+                    self.num_eps_e = num_obj_eps[4]
+                    self.percent_eps_e = self.num_eps_e/episodes
             if len(visitation_frequency) >= 6:
                 if first_visit_time[5] == 500 and visitation_frequency[5] == 1:
-                    self.first_visit_e = self.Length
-                self.visit_freq_e = visitation_frequency[5]
+                    self.first_visit_f = self.Length
+                self.visit_freq_f = visitation_frequency[5]
+                if done == True:
+                    self.num_eps_f = num_obj_eps[5]
+                    self.percent_eps_f = self.num_eps_f/episodes
             if len(visitation_frequency) >= 7:
                 if first_visit_time[6] == 500 and visitation_frequency[6] == 1:
-                    self.first_visit_e = self.Length
-                self.visit_freq_e = visitation_frequency[6]
+                    self.first_visit_g = self.Length
+                self.visit_freq_g = visitation_frequency[6]
+                if done == True:
+                    self.num_eps_g = num_obj_eps[6]
+                    self.percent_eps_g = self.num_eps_g/episodes
             if len(visitation_frequency) >= 8:
                 if first_visit_time[7] == 500 and visitation_frequency[7] == 1:
-                    self.first_visit_e = self.Length
-                self.visit_freq_e = visitation_frequency[7]
+                    self.first_visit_h = self.Length
+                self.visit_freq_h = visitation_frequency[7]
+                if done == True:
+                    self.num_eps_h = num_obj_eps[7]
+                    self.percent_eps_h = self.num_eps_h/episodes
 
         super().step(observation, action, reward_ext, done, agent_info, env_info)
 
@@ -200,6 +242,7 @@ class PyColabEnv(gym.Env):
         self.visitation_frequency = {char:0 for char in self.objects}
         self.first_visit_time = {char:500 for char in self.objects}
         self.visitation_entropy = 0
+        self.num_obj_eps = {char:0 for char in self.objects}
 
         # Heatmaps
         self.episodes = 0 # number of episodes run (to determine when to save heatmaps)
@@ -371,6 +414,9 @@ class PyColabEnv(gym.Env):
             self._empty_cropped_board = np.zeros_like(self._last_cropped_observations)
 
         # save and reset metrics
+        for char in self.objects:
+            if self.visitation_frequency[char] > 0:
+                self.num_obj_eps[char] += 1
         self.visitation_frequency = {char:0 for char in self.objects}
         if self.log_heatmaps == True and self.episodes % self.heatmap_save_freq == 0:
             np.save('{}/{}.npy'.format(self.heatmap_path, self.episodes), self.heatmap)
@@ -418,6 +464,8 @@ class PyColabEnv(gym.Env):
         info['visitation_frequency'] = self.visitation_frequency
         info['first_time_visit'] = self.first_visit_time
         info['visitation_entropy'] = self.visitation_entropy
+        info['episodes'] = self.episodes
+        info['num_obj_eps'] = self.num_obj_eps
 
         # Check the current status of the game.
         reward = self._last_reward
