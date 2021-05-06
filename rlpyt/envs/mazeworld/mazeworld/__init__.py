@@ -7,6 +7,7 @@ import gym
 from .envs import (MazeWorld, 
                     DeepmindMazeWorld_maze, 
                     DeepmindMazeWorld_5room, 
+                    DeepmindMazeWorld_5room_flipped,
                     DeepmindMazeWorld_5room_all,
                     DeepmindMazeWorld_5room_large,
                     DeepmindMazeWorld_5room_long,
@@ -45,6 +46,12 @@ register(
 register(
     id='Deepmind5Room-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5room',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5Room-v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_flipped',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
