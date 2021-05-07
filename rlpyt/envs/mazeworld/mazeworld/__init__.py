@@ -176,6 +176,12 @@ register(
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
 register(
+    id='Deepmind5RoomLong-v2',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_longunpadded',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
     id='Deepmind5RoomNoObj-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5room_noobj',
     max_episode_steps=500,
