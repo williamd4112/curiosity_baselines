@@ -17,6 +17,7 @@ from .mazeworld_env import DeepmindMazeWorld_5room_moveable_stoch
 from .mazeworld_env import DeepmindMazeWorld_5room_extint
 from .mazeworld_env import DeepmindMazeWorld_5room_moveable_brownian
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge
+from .mazeworld_env import DeepmindMazeWorld_5roomlarge_randomfixed
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge_moveable
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge_moveable_stoch
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge_moveable_brownian

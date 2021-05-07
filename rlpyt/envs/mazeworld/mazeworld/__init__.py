@@ -98,6 +98,12 @@ register(
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
 register(
+    id='Deepmind5RoomLargeRandomFixed-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_randomfixed',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
     id='Deepmind5RoomLargeMoveable-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_moveable',
     max_episode_steps=500,
