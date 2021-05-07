@@ -32,6 +32,12 @@ register(
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
 register(
+    id='Deepmind5RoomWhitenoise-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5room_whitenoise',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
     id='Deepmind5RoomAll-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5room_all',
     max_episode_steps=500,
@@ -70,6 +76,18 @@ register(
 register(
     id='Deepmind5RoomLargeText-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlargetext',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomLargeWhitenoise-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_whitenoise',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomLargeTextWhitenoise-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlargetext_whitenoise',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 

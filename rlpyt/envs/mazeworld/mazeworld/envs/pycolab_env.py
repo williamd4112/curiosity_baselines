@@ -284,7 +284,7 @@ class PyColabEnv(gym.Env):
                     'g' : (136., 3., 252.),
                     'h' : (245., 119., 34.),
                     '#' : (61., 61., 61.),
-                    '@' : (255., 255., 0.),
+                    '@' : (90., 90., 90.),
                     ' ' : (0., 0., 0.)}
         elif self._color_palette == 1:
             return {'P' : (255., 255., 255.),
@@ -294,7 +294,7 @@ class PyColabEnv(gym.Env):
                     'd' : (19., 139., 67.),
                     'e' : (150., 0., 129.),
                     '#' : (61., 61., 61.),
-                    '@' : (255., 255., 0.),
+                    '@' : (90., 90., 90.),
                     ' ' : (0., 0., 0.)}
         elif self._color_palette == 2:
             return {'P' : (255., 255., 255.),
@@ -307,7 +307,7 @@ class PyColabEnv(gym.Env):
                     'g' : (255., 0., 0.),
                     'h' : (255., 0., 0.),
                     '#' : (61., 61., 61.),
-                    '@' : (255., 255., 0.),
+                    '@' : (90., 90., 90.),
                     ' ' : (0., 0., 0.)}
 
 
@@ -332,17 +332,24 @@ class PyColabEnv(gym.Env):
         board_mask = np.zeros(list(board_shape) + [3], np.bool)
 
         for key in self._render_order:
+
             color = self._colors.get(key, (0, 0, 0))
             color = np.reshape(color, [1, 1, -1]).astype(np.uint32)
 
             # Broadcast the layer to [H, W, C].
             board_layer_mask = np.array(layers[key])[..., None]
             board_layer_mask = np.repeat(board_layer_mask, 3, axis=-1)
+            
+            # @ correspond to white noise
+            perturbation = np.zeros(board_layer_mask.shape)
+            if key == '@':
+                h, w = board_layer_mask.shape[:2]
+                perturbation = np.random.randint(-15,15, (h, w, 1))
 
             # Update the board with the new layer.
             board = np.where(
                 np.logical_not(board_mask),
-                board_layer_mask * color,
+                board_layer_mask * color + perturbation,
                 board)
 
             # Update the mask.

@@ -2,6 +2,7 @@ from .pycolab_env import PyColabEnv
 from .mazeworld_env import MazeWorld
 from .mazeworld_env import DeepmindMazeWorld_maze
 from .mazeworld_env import DeepmindMazeWorld_5room
+from .mazeworld_env import DeepmindMazeWorld_5room_whitenoise
 from .mazeworld_env import DeepmindMazeWorld_5room_flipped
 from .mazeworld_env import DeepmindMazeWorld_5room_all
 from .mazeworld_env import DeepmindMazeWorld_5room_long
@@ -17,7 +18,9 @@ from .mazeworld_env import DeepmindMazeWorld_5room_moveable_stoch
 from .mazeworld_env import DeepmindMazeWorld_5room_extint
 from .mazeworld_env import DeepmindMazeWorld_5room_moveable_brownian
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge
+from .mazeworld_env import DeepmindMazeWorld_5roomlarge_whitenoise
 from .mazeworld_env import DeepmindMazeWorld_5roomlargetext
+from .mazeworld_env import DeepmindMazeWorld_5roomlargetext_whitenoise
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge_randomfixed
 from .mazeworld_env import DeepmindMazeWorld_5roomlargetext_randomfixed
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge_moveable
