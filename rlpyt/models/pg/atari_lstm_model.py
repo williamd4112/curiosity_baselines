@@ -10,6 +10,7 @@ from rlpyt.models.conv2d import Conv2dHeadModel
 from rlpyt.models.curiosity.encoders import UniverseHead, BurdaHead, MazeHead
 from rlpyt.models.curiosity.disagreement import Disagreement
 from rlpyt.models.curiosity.icm import ICM
+from rlpyt.models.curiosity.micm import MICM
 from rlpyt.models.curiosity.ndigo import NDIGO
 from rlpyt.models.curiosity.rnd import RND
 
@@ -52,6 +53,17 @@ class AtariLstmModel(torch.nn.Module):
                                            obs_stats=self.obs_stats,
                                            forward_loss_wt=curiosity_kwargs['forward_loss_wt'],
                                            forward_model=curiosity_kwargs['forward_model'])
+            if curiosity_kwargs['curiosity_alg'] == 'micm':
+                self.curiosity_model = MICM(image_shape=image_shape,
+                                           action_size=output_size,
+                                           feature_encoding=curiosity_kwargs['feature_encoding'],
+                                           batch_norm=curiosity_kwargs['batch_norm'],
+                                           prediction_beta=curiosity_kwargs['prediction_beta'],
+                                           obs_stats=self.obs_stats,
+                                           forward_loss_wt=curiosity_kwargs['forward_loss_wt'],
+                                           forward_model=curiosity_kwargs['forward_model'],
+                                           ensemble_mode=curiosity_kwargs['ensemble_mode'],
+                                           device=curiosity_kwargs['device'],)
             elif curiosity_kwargs['curiosity_alg'] == 'disagreement':
                 self.curiosity_model = Disagreement(image_shape=image_shape,
                                                     action_size=output_size,

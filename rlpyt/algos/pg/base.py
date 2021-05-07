@@ -61,7 +61,7 @@ class PolicyGradientAlgo(RlAlgorithm):
         reward, done, value, bv = (samples.env.reward, samples.env.done, samples.agent.agent_info.value, samples.agent.bootstrap_value)
         done = done.type(reward.dtype)
 
-        if self.curiosity_type == 'icm' or self.curiosity_type == 'disagreement':
+        if self.curiosity_type in {'icm', 'disagreement', 'micm'}:
             intrinsic_rewards, _ = self.agent.curiosity_step(self.curiosity_type, samples.env.observation.clone(), samples.env.next_observation.clone(), samples.agent.action.clone())
             reward += intrinsic_rewards
             self.intrinsic_rewards = intrinsic_rewards.clone().data.numpy()
