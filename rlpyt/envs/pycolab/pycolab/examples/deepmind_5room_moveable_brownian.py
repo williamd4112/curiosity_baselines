@@ -48,7 +48,7 @@ MAZES_ART = [
     # Make sure that the Player will have no way to "escape" the maze.
     #
     # Legend:
-    #     '#': impassable walls.            'a': fixed object A.
+    #     '#': impassable walls.            'a': moveable object A.
     #     'P': player starting location.    'b': white noise object B.
     #     ' ': boring old maze floor.
     #
@@ -60,21 +60,21 @@ MAZES_ART = [
     # Maze #0: (paper: 5 rooms environment)
     ['###################',
      '##               ##',
-     '# #      a      # #',
-     '#  #           #  #',
+     '# #             # #',
+     '#  #     e     #  #',
      '#   #         #   #',
      '#    #### ####    #',
      '#    #### ####    #',
      '#    ##     ##    #',
      '#    ##     ##    #',
-     '#  d     P      b #',
+     '#        P        #',
      '#    ##     ##    #',
      '#    ##     ##    #',
      '#    #### ####    #',
      '#    #### ####    #',
      '#   #         #   #',
      '#  #           #  #',
-     '# #      c      # #',
+     '# # b           # #',
      '##               ##',
      '###################']
 ]
@@ -83,14 +83,12 @@ MAZES_ART = [
 COLOUR_FG = {' ': (0, 0, 0),        # Default black background
              '#': (764, 0, 999),    # Walls of the maze
              'P': (0, 999, 999),    # This is you, the player
-             'a': (999, 0, 780),    # Patroller A
-             'b': (145, 987, 341),  # Patroller B
-             'c': (252, 186, 3),    # Patroller C
-             'd': (3, 240, 252)}    # Patroller D
+             'e': (99, 140, 140),    # Patroller A
+             'b': (145, 987, 341)}  # Patroller B
 
 COLOUR_BG = {'@': (0, 0, 0)}  # So the coins look like @ and not solid blocks.
 
-ENEMIES = {'a', 'b', 'c', 'd'} # Globally accessible set of sprites
+ENEMIES = {'e', 'b'} # Globally accessible set of sprites
 
 # Empty coordinates corresponding to each numbered room (width 1 passageways not blocked)
 ROOMS = {
@@ -105,23 +103,14 @@ def make_game(level):
   """Builds and returns a Better Scrolly Maze game for the selected level."""
   maze_ascii = MAZES_ART[level]
 
-  # change location of fixed object in the top room
-  for row in range(14, 18):
-    if 'c' in maze_ascii[row]:
-      maze_ascii[row] = maze_ascii[row].replace('c', ' ', 1)
-  new_coord = random.sample(ROOMS[4], 1)[0]
-  maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'c' + maze_ascii[new_coord[0]][new_coord[1]+1:]
-
   return ascii_art.ascii_art_to_game(
       maze_ascii, what_lies_beneath=' ',
       sprites={
           'P': PlayerSprite,
-          'a': MoveableObject,
-          'b': WhiteNoiseObject,
-          'c': FixedObject,
-          'd': BrownianObject},
-      update_schedule=['P', 'a', 'b', 'c', 'd'],
-      z_order='abcdP')
+          'e': MoveableObject,
+          'b': BrownianObject},
+      update_schedule=['P', 'e', 'b'],
+      z_order='ebP')
 
 def make_croppers(level):
   """Builds and returns `ObservationCropper`s for the selected level.
@@ -146,7 +135,7 @@ class PlayerSprite(prefab_sprites.MazeWalker):
   def __init__(self, corner, position, character):
     """Constructor: just tells `MazeWalker` we can't walk through walls or objects."""
     super(PlayerSprite, self).__init__(
-        corner, position, character, impassable='#abcd')
+        corner, position, character, impassable='#')
     self.last_position = None # store last position for moveable object
     self.last_action = None # store last action for moveable object
 
@@ -168,118 +157,6 @@ class PlayerSprite(prefab_sprites.MazeWalker):
     if actions == 5:    # just quit?
       the_plot.terminate_episode()
 
-class WhiteNoiseObject(prefab_sprites.MazeWalker):
-  """Randomly sample direction from left/right/up/down"""
-
-  def __init__(self, corner, position, character):
-    """Constructor: list impassables, initialise direction."""
-    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='#')
-    # Initialize empty space in surrounding radius.
-    self._empty_coords = ROOMS[3]
-
-  def update(self, actions, board, layers, backdrop, things, the_plot):
-    del actions, backdrop  # Unused.
-    self._teleport(self._empty_coords[np.random.choice(len(self._empty_coords))])
-
-class MoveableObject(prefab_sprites.MazeWalker):
-  """Moveable object. Can be pushed by agent."""
-
-  def __init__(self, corner, position, character):
-    super(MoveableObject, self).__init__(corner, position, character, impassable='#b')
-    self.eps = 0.25 # probability you move randomly when interacted with
-    self.directions = {0:self._north,
-                       1:self._east,
-                       2:self._south,
-                       3:self._west}
-    self.opp_directions = {0:self._south,
-                           1:self._west,
-                           2:self._north,
-                           3:self._east}
-    self.no_go = {0:None,
-                  1:(4,8),
-                  2:(3,9),
-                  3:(4,10)}
-
-  def update(self, actions, board, layers, backdrop, things, the_plot):
-    mr, mc = self.position
-    pr, pc = things['P'].last_position
-    p_action = things['P'].last_action
-
-    # move up
-    if (mc == pc) and (mr - pr == -1) and (p_action == 0):
-      rand = np.random.rand() <= self.eps
-      if rand == True:
-        direction_ind = np.random.choice([1, 3])
-        box_direction = self.directions[direction_ind]
-      else:
-        box_direction = self._north
-
-      moved = box_direction(board, the_plot)
-      if moved is not None:
-        things['P']._south(board, the_plot)
-
-    # move down
-    elif (mc == pc) and (mr - pr == 1) and (p_action == 1):
-      rand = np.random.rand() <= self.eps
-      if rand == True:
-        direction_ind = np.random.choice([1, 3])
-        box_direction = self.directions[direction_ind]
-        no_go_coord = self.no_go[direction_ind]
-      else:
-        box_direction = self._south
-        no_go_coord = (3,9)
-
-      exiting_room = (self.position == no_go_coord)
-      if exiting_room == True:
-        things['P']._north(board, the_plot)
-        self._stay(board, the_plot)
-      else:
-        moved = box_direction(board, the_plot)
-        if moved is not None: # obstructed
-          things['P']._north(board, the_plot)
-
-    # move right
-    elif (mc - pc == 1) and (mr == pr) and (p_action == 3):
-      rand = np.random.rand() <= self.eps
-      if rand == True:
-        direction_ind = np.random.choice([0, 2])
-        box_direction = self.directions[direction_ind]
-        no_go_coord = self.no_go[direction_ind]
-      else:
-        box_direction = self._east
-        no_go_coord = (4,8)
-
-      exiting_room = (self.position == no_go_coord)
-      if exiting_room == True:
-        things['P']._west(board, the_plot)
-        self._stay(board, the_plot)
-      else:
-        moved = box_direction(board, the_plot)
-        if moved is not None: # obstructed
-          things['P']._west(board, the_plot)
-
-    # move left
-    elif (mc - pc == -1) and (mr == pr) and (p_action == 2):
-      rand = np.random.rand() <= self.eps
-      if rand == True:
-        direction_ind = np.random.choice([0, 2])
-        box_direction = self.directions[direction_ind]
-        no_go_coord = self.no_go[direction_ind]
-      else:
-        box_direction = self._west
-        no_go_coord = (4,10)
-
-      exiting_room = (self.position == no_go_coord)
-      if exiting_room == True:
-        things['P']._east(board, the_plot)
-        self._stay(board, the_plot)
-      else:
-        moved = box_direction(board, the_plot)
-        if moved is not None: # obstructed
-          things['P']._east(board, the_plot)
-
-    del actions, backdrop  # Unused.
-
 class BrownianObject(prefab_sprites.MazeWalker):
   """Randomly sample direction from left/right/up/down"""
 
@@ -293,8 +170,8 @@ class BrownianObject(prefab_sprites.MazeWalker):
     del actions, backdrop  # Unused.
 
     # Sample a move
-    if self.position[0] == 9 and self.position[1] == 4: # prevent escaping the left room
-      self._direction = np.random.choice([1, 2, 3])
+    if self.position[0] == 14 and self.position[1] == 9: # prevent escaping the bottom room
+      self._direction = np.random.choice([0, 1, 3])
     else:
       self._direction = np.random.choice(4) # 0 = east, 1 = west, 2 = north, 3 = south
 
@@ -304,14 +181,56 @@ class BrownianObject(prefab_sprites.MazeWalker):
     elif self._direction == 2: self._north(board, the_plot)
     elif self._direction == 3: self._south(board, the_plot)
 
-class FixedObject(plab_things.Sprite):
-  """Static object. Doesn't move."""
+class MoveableObject(prefab_sprites.MazeWalker):
+  """Moveable object. Can be pushed by agent."""
 
   def __init__(self, corner, position, character):
-    super(FixedObject, self).__init__(
-        corner, position, character)
+    super(MoveableObject, self).__init__(corner, position, character, impassable='#b')
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
+    mr, mc = self.position
+    pr, pc = things['P'].last_position
+    p_action = things['P'].last_action
+
+    # move up
+    if (mc == pc) and (mr - pr == -1) and (p_action == 0):
+      moved = self._north(board, the_plot)
+      if moved is not None:
+        things['P']._south(board, the_plot)
+
+    # move down
+    elif (mc == pc) and (mr - pr == 1) and (p_action == 1):
+      exiting_room = (self.position == (3, 9))
+      if exiting_room == True:
+        things['P']._north(board, the_plot)
+        self._stay(board, the_plot)
+      else:
+        moved = self._south(board, the_plot)
+        if moved is not None: # obstructed
+          things['P']._north(board, the_plot)
+
+    # move right
+    elif (mc - pc == 1) and (mr == pr) and (p_action == 3):
+      exiting_room = (self.position == (4, 8))
+      if exiting_room == True:
+        things['P']._west(board, the_plot)
+        self._stay(board, the_plot)
+      else:
+        moved = self._east(board, the_plot)
+        if moved is not None: # obstructed
+          things['P']._west(board, the_plot)
+
+    # move left
+    elif (mc - pc == -1) and (mr == pr) and (p_action == 2):
+      exiting_room = (self.position == (4, 10))
+      if exiting_room == True:
+        things['P']._east(board, the_plot)
+        self._stay(board, the_plot)
+      else:
+        moved = self._west(board, the_plot)
+        if moved is not None: # obstructed
+          things['P']._east(board, the_plot)
+
     del actions, backdrop  # Unused.
 
 

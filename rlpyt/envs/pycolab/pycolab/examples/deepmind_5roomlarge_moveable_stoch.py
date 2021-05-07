@@ -58,70 +58,69 @@ MAZES_ART = [
     #   4
 
     # Maze #0: (paper: 5 rooms environment)
-    ['###################',
-     '##               ##',
-     '# #      a      # #',
-     '#  #           #  #',
-     '#   #         #   #',
-     '#    #### ####    #',
-     '#    #### ####    #',
-     '#    ##     ##    #',
-     '#    ##     ##    #',
-     '#  d     P      b #',
-     '#    ##     ##    #',
-     '#    ##     ##    #',
-     '#    #### ####    #',
-     '#    #### ####    #',
-     '#   #         #   #',
-     '#  #           #  #',
-     '# #      c      # #',
-     '##               ##',
-     '###################']
+   ['#############################',
+    '##                         ##',
+    '# #                       # #',
+    '#  #                     #  #',
+    '#   #                   #   #',
+    '#    #                 #    #',
+    '#     #               #     #',
+    '#      #      e      #      #',
+    '#       #           #       #',
+    '#        #         #        #',
+    '#         #### ####         #',
+    '#         #### ####         #',
+    '#         ##     ##         #',
+    '#         ##     ##         #',
+    '#             P             #',
+    '#         ##     ##         #',
+    '#         ##     ##         #',
+    '#         #### ####         #',
+    '#         #### ####         #',
+    '#        #         #        #',
+    '#       #           #       #',
+    '#      #      b      #      #',
+    '#     #               #     #',
+    '#    #                 #    #',
+    '#   #                   #   #',
+    '#  #                     #  #',
+    '# #                       # #',
+    '##                         ##',
+    '#############################']
 ]
 
 # These colours are only for humans to see in the CursesUi.
 COLOUR_FG = {' ': (0, 0, 0),        # Default black background
              '#': (764, 0, 999),    # Walls of the maze
              'P': (0, 999, 999),    # This is you, the player
-             'a': (999, 0, 780),    # Patroller A
-             'b': (145, 987, 341),  # Patroller B
-             'c': (252, 186, 3),    # Patroller C
-             'd': (3, 240, 252)}    # Patroller D
+             'e': (99, 140, 140),   # Patroller A
+             'b': (145, 987, 341)}  # Patroller B
 
-COLOUR_BG = {'@': (0, 0, 0)}  # So the coins look like @ and not solid blocks.
+COLOUR_BG = {'@': (0, 0, 0)}  # Target spot
 
-ENEMIES = {'a', 'b', 'c', 'd'} # Globally accessible set of sprites
+ENEMIES = {'e', 'b'} # Globally accessible set of sprites
 
 # Empty coordinates corresponding to each numbered room (width 1 passageways not blocked)
 ROOMS = {
-  0 : [[7, 7], [7, 8], [7, 9], [7, 10], [7, 11], [8, 7], [8, 8], [8, 9], [8, 10], [8, 11], [9, 7], [9, 8], [9, 9], [9, 10], [9, 11], [10, 7], [10, 8], [10, 9], [10, 10], [10, 11], [11, 7], [11, 8], [11, 9], [11, 10], [11, 11]],
-  1 : [[4, 1], [4, 2], [5, 1], [5, 2], [5, 3], [6, 1], [6, 2], [6, 3], [6, 4], [7, 1], [7, 2], [7, 3], [7, 4], [8, 1], [8, 2], [8, 3], [9, 1], [9, 2], [9, 3], [10, 1], [10, 2], [10, 3], [11, 1], [11, 2], [11, 3], [11, 4], [12, 1], [12, 2], [12, 3], [12, 4], [13, 1], [13, 2], [13, 3], [14, 1], [14, 2]],
-  2 : [[1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10], [1, 11], [1, 12], [1, 13], [1, 14], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9], [2, 10], [2, 11], [2, 12], [2, 13], [2, 14], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10], [3, 11], [3, 12], [3, 13], [4, 6], [4, 7], [4, 11], [4, 12]],
-  3 : [[4, 16], [4, 17], [5, 15], [5, 16], [5, 17], [6, 14], [6, 15], [6, 16], [6, 17], [7, 14], [7, 15], [7, 16], [7, 17], [8, 15], [8, 16], [8, 17], [9, 15], [9, 16], [9, 17], [10, 15], [10, 16], [10, 17], [11, 14], [11, 15], [11, 16], [11, 17], [12, 14], [12, 15], [12, 16], [12, 17], [13, 15], [13, 16], [13, 17], [14, 16], [14, 17]],
-  4 : [[14, 6], [14, 7], [14, 11], [14, 12], [15, 5], [15, 6], [15, 7], [15, 8], [15, 9], [15, 10], [15, 11], [15, 12], [15, 13], [16, 4], [16, 5], [16, 6], [16, 7], [16, 8], [16, 9], [16, 10], [16, 11], [16, 12], [16, 13], [16, 14], [17, 4], [17, 5], [17, 6], [17, 7], [17, 8], [17, 9], [17, 10], [17, 11], [17, 12], [17, 13], [17, 14]],
+  0: [[12, 12], [12, 13], [12, 14], [12, 15], [12, 16], [13, 12], [13, 13], [13, 14], [13, 15], [13, 16], [14, 12], [14, 13], [14, 14], [14, 15], [14, 16], [15, 12], [15, 13], [15, 14], [15, 15], [15, 16], [16, 12], [16, 13], [16, 14], [16, 15], [16, 16]],
+  1: [[4, 2], [5, 2], [5, 3], [6, 2], [6, 3], [6, 4], [7, 2], [7, 3], [7, 4], [7, 5], [8, 2], [8, 3], [8, 4], [8, 5], [8, 6], [9, 2], [9, 3], [9, 4], [9, 5], [9, 6], [9, 7], [10, 2], [10, 3], [10, 4], [10, 5], [10, 6], [10, 7], [10, 8], [11, 2], [11, 3], [11, 4], [11, 5], [11, 6], [11, 7], [11, 8], [11, 9], [12, 2], [12, 3], [12, 4], [12, 5], [12, 6], [12, 7], [12, 8], [12, 9], [13, 2], [13, 3], [13, 4], [13, 5], [13, 6], [13, 7], [13, 8], [14, 2], [14, 3], [14, 4], [14, 5], [14, 6], [14, 7], [14, 8], [15, 2], [15, 3], [15, 4], [15, 5], [15, 6], [15, 7], [15, 8], [16, 2], [16, 3], [16, 4], [16, 5], [16, 6], [16, 7], [16, 8], [16, 9], [17, 2], [17, 3], [17, 4], [17, 5], [17, 6], [17, 7], [17, 8], [17, 9], [18, 2], [18, 3], [18, 4], [18, 5], [18, 6], [18, 7], [18, 8], [19, 2], [19, 3], [19, 4], [19, 5], [19, 6], [19, 7], [20, 2], [20, 3], [20, 4], [20, 5], [20, 6], [21, 2], [21, 3], [21, 4], [21, 5], [22, 2], [22, 3], [22, 4], [23, 2], [23, 3], [24, 2]],
+  2: [[2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9], [2, 10], [2, 11], [2, 12], [2, 13], [2, 14], [2, 15], [2, 16], [2, 17], [2, 18], [2, 19], [2, 20], [2, 21], [2, 22], [2, 23], [2, 24], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10], [3, 11], [3, 12], [3, 13], [3, 14], [3, 15], [3, 16], [3, 17], [3, 18], [3, 19], [3, 20], [3, 21], [3, 22], [3, 23], [4, 6], [4, 7], [4, 8], [4, 9], [4, 10], [4, 11], [4, 12], [4, 13], [4, 14], [4, 15], [4, 16], [4, 17], [4, 18], [4, 19], [4, 20], [4, 21], [4, 22], [5, 7], [5, 8], [5, 9], [5, 10], [5, 11], [5, 12], [5, 13], [5, 14], [5, 15], [5, 16], [5, 17], [5, 18], [5, 19], [5, 20], [5, 21], [6, 8], [6, 9], [6, 10], [6, 11], [6, 12], [6, 13], [6, 14], [6, 15], [6, 16], [6, 17], [6, 18], [6, 19], [6, 20], [7, 9], [7, 10], [7, 11], [7, 12], [7, 13], [7, 14], [7, 15], [7, 16], [7, 17], [7, 18], [7, 19], [8, 10], [8, 11], [8, 12], [8, 13], [8, 14], [8, 15], [8, 16], [8, 17], [8, 18], [9, 11], [9, 12], [9, 16], [9, 17]],
+  3: [[4, 26], [5, 25], [5, 26], [6, 24], [6, 25], [6, 26], [7, 23], [7, 24], [7, 25], [7, 26], [8, 22], [8, 23], [8, 24], [8, 25], [8, 26], [9, 21], [9, 22], [9, 23], [9, 24], [9, 25], [9, 26], [10, 20], [10, 21], [10, 22], [10, 23], [10, 24], [10, 25], [10, 26], [11, 19], [11, 20], [11, 21], [11, 22], [11, 23], [11, 24], [11, 25], [11, 26], [12, 19], [12, 20], [12, 21], [12, 22], [12, 23], [12, 24], [12, 25], [12, 26], [13, 20], [13, 21], [13, 22], [13, 23], [13, 24], [13, 25], [13, 26], [14, 20], [14, 21], [14, 22], [14, 23], [14, 24], [14, 25], [14, 26], [15, 20], [15, 21], [15, 22], [15, 23], [15, 24], [15, 25], [15, 26], [16, 19], [16, 20], [16, 21], [16, 22], [16, 23], [16, 24], [16, 25], [16, 26], [17, 19], [17, 20], [17, 21], [17, 22], [17, 23], [17, 24], [17, 25], [17, 26], [18, 20], [18, 21], [18, 22], [18, 23], [18, 24], [18, 25], [18, 26], [19, 21], [19, 22], [19, 23], [19, 24], [19, 25], [19, 26], [20, 22], [20, 23], [20, 24], [20, 25], [20, 26], [21, 23], [21, 24], [21, 25], [21, 26], [22, 24], [22, 25], [22, 26], [23, 25], [23, 26], [24, 26]],
+  4: [[19, 11], [19, 12], [19, 16], [19, 17], [20, 10], [20, 11], [20, 12], [20, 13], [20, 14], [20, 15], [20, 16], [20, 17], [20, 18], [21, 9], [21, 10], [21, 11], [21, 12], [21, 13], [21, 14], [21, 15], [21, 16], [21, 17], [21, 18], [21, 19], [22, 8], [22, 9], [22, 10], [22, 11], [22, 12], [22, 13], [22, 14], [22, 15], [22, 16], [22, 17], [22, 18], [22, 19], [22, 20], [23, 7], [23, 8], [23, 9], [23, 10], [23, 11], [23, 12], [23, 13], [23, 14], [23, 15], [23, 16], [23, 17], [23, 18], [23, 19], [23, 20], [23, 21], [24, 6], [24, 7], [24, 8], [24, 9], [24, 10], [24, 11], [24, 12], [24, 13], [24, 14], [24, 15], [24, 16], [24, 17], [24, 18], [24, 19], [24, 20], [24, 21], [24, 22], [25, 5], [25, 6], [25, 7], [25, 8], [25, 9], [25, 10], [25, 11], [25, 12], [25, 13], [25, 14], [25, 15], [25, 16], [25, 17], [25, 18], [25, 19], [25, 20], [25, 21], [25, 22], [25, 23], [26, 4], [26, 5], [26, 6], [26, 7], [26, 8], [26, 9], [26, 10], [26, 11], [26, 12], [26, 13], [26, 14], [26, 15], [26, 16], [26, 17], [26, 18], [26, 19], [26, 20], [26, 21], [26, 22], [26, 23], [26, 24]]
 }
 
 def make_game(level):
   """Builds and returns a Better Scrolly Maze game for the selected level."""
   maze_ascii = MAZES_ART[level]
 
-  # change location of fixed object in the top room
-  for row in range(14, 18):
-    if 'c' in maze_ascii[row]:
-      maze_ascii[row] = maze_ascii[row].replace('c', ' ', 1)
-  new_coord = random.sample(ROOMS[4], 1)[0]
-  maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'c' + maze_ascii[new_coord[0]][new_coord[1]+1:]
-
   return ascii_art.ascii_art_to_game(
       maze_ascii, what_lies_beneath=' ',
       sprites={
           'P': PlayerSprite,
-          'a': MoveableObject,
-          'b': WhiteNoiseObject,
-          'c': FixedObject,
-          'd': BrownianObject},
-      update_schedule=['P', 'a', 'b', 'c', 'd'],
-      z_order='abcdP')
+          'e': MoveableObject,
+          'b': WhiteNoiseObject},
+      update_schedule=['P', 'e', 'b'],
+      z_order='ebP')
 
 def make_croppers(level):
   """Builds and returns `ObservationCropper`s for the selected level.
@@ -146,7 +145,7 @@ class PlayerSprite(prefab_sprites.MazeWalker):
   def __init__(self, corner, position, character):
     """Constructor: just tells `MazeWalker` we can't walk through walls or objects."""
     super(PlayerSprite, self).__init__(
-        corner, position, character, impassable='#abcd')
+        corner, position, character, impassable='#')
     self.last_position = None # store last position for moveable object
     self.last_action = None # store last action for moveable object
 
@@ -175,7 +174,7 @@ class WhiteNoiseObject(prefab_sprites.MazeWalker):
     """Constructor: list impassables, initialise direction."""
     super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='#')
     # Initialize empty space in surrounding radius.
-    self._empty_coords = ROOMS[3]
+    self._empty_coords = ROOMS[4]
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     del actions, backdrop  # Unused.
@@ -196,9 +195,9 @@ class MoveableObject(prefab_sprites.MazeWalker):
                            2:self._north,
                            3:self._east}
     self.no_go = {0:None,
-                  1:(4,8),
-                  2:(3,9),
-                  3:(4,10)}
+                  1:(9,13),
+                  2:(8,14),
+                  3:(9,15)}
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     mr, mc = self.position
@@ -227,7 +226,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
         no_go_coord = self.no_go[direction_ind]
       else:
         box_direction = self._south
-        no_go_coord = (3,9)
+        no_go_coord = (8,14)
 
       exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
@@ -247,7 +246,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
         no_go_coord = self.no_go[direction_ind]
       else:
         box_direction = self._east
-        no_go_coord = (4,8)
+        no_go_coord = (9,13)
 
       exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
@@ -267,7 +266,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
         no_go_coord = self.no_go[direction_ind]
       else:
         box_direction = self._west
-        no_go_coord = (4,10)
+        no_go_coord = (9,15)
 
       exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
@@ -279,41 +278,6 @@ class MoveableObject(prefab_sprites.MazeWalker):
           things['P']._east(board, the_plot)
 
     del actions, backdrop  # Unused.
-
-class BrownianObject(prefab_sprites.MazeWalker):
-  """Randomly sample direction from left/right/up/down"""
-
-  def __init__(self, corner, position, character):
-    """Constructor: list impassables, initialise direction."""
-    super(BrownianObject, self).__init__(corner, position, character, impassable='#')
-    # Choose our initial direction.
-    self._direction = np.random.choice(4) # 0 = east, 1 = west, 2 = north, 3 = south
-
-  def update(self, actions, board, layers, backdrop, things, the_plot):
-    del actions, backdrop  # Unused.
-
-    # Sample a move
-    if self.position[0] == 9 and self.position[1] == 4: # prevent escaping the left room
-      self._direction = np.random.choice([1, 2, 3])
-    else:
-      self._direction = np.random.choice(4) # 0 = east, 1 = west, 2 = north, 3 = south
-
-    # Make a move
-    if self._direction == 0: self._east(board, the_plot)
-    elif self._direction == 1: self._west(board, the_plot)
-    elif self._direction == 2: self._north(board, the_plot)
-    elif self._direction == 3: self._south(board, the_plot)
-
-class FixedObject(plab_things.Sprite):
-  """Static object. Doesn't move."""
-
-  def __init__(self, corner, position, character):
-    super(FixedObject, self).__init__(
-        corner, position, character)
-
-  def update(self, actions, board, layers, backdrop, things, the_plot):
-    del actions, backdrop  # Unused.
-
 
 def main(argv=()):
   level = int(argv[1]) if len(argv) > 1 else 0
