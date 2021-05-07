@@ -154,7 +154,7 @@ class PlayerSprite(prefab_sprites.MazeWalker):
   def __init__(self, corner, position, character):
     """Constructor: just tells `MazeWalker` we can't walk through walls or objects."""
     super(PlayerSprite, self).__init__(
-        corner, position, character, impassable='#')
+        corner, position, character, impassable='#ab')
     self.last_position = None # store last position for moveable object
     self.last_action = None # store last action for moveable object
 

@@ -145,7 +145,7 @@ class PlayerSprite(prefab_sprites.MazeWalker):
   def __init__(self, corner, position, character):
     """Constructor: just tells `MazeWalker` we can't walk through walls or objects."""
     super(PlayerSprite, self).__init__(
-        corner, position, character, impassable='#')
+        corner, position, character, impassable='#b')
     self.last_position = None # store last position for moveable object
     self.last_action = None # store last action for moveable object
 
@@ -172,7 +172,7 @@ class WhiteNoiseObject(prefab_sprites.MazeWalker):
 
   def __init__(self, corner, position, character):
     """Constructor: list impassables, initialise direction."""
-    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='#')
+    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='#e')
     # Initialize empty space in surrounding radius.
     self._empty_coords = ROOMS[4]
 
