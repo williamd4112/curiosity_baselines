@@ -546,6 +546,38 @@ class DeepmindMazeWorld_8room(pycolab_env.PyColabEnv):
     def make_croppers(self):
         return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
 
+class DeepmindMazeWorld_8room_rgb(pycolab_env.PyColabEnv):
+    """An eight room environment with many fixed objects.
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 extrinsic_reward=0.0):
+        self.level = level
+        self.objects = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        super(DeepmindMazeWorld_8room_rgb, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            act_null_value=4,
+            resize_scale=17,
+            visitable_states=833,
+            extrinsic_reward=0.0,
+            extrinsic_reward_spec=[None,None],
+            color_palette=3,)
+
+    def make_game(self):
+        self._croppers = self.make_croppers()
+        return deepmind_8room.make_game(self.level)
+
+    def make_croppers(self):
+        return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+
 class DeepmindMazeWorld_8room_diff(pycolab_env.PyColabEnv):
     """An eight room environment with many fixed objects.
     """

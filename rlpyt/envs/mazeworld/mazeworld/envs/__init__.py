@@ -36,6 +36,7 @@ from .mazeworld_env import DeepmindMazeWorld_5roomlarge_all
 from .mazeworld_env import DeepmindMazeWorld_5roomlargetext_all
 from .mazeworld_env import DeepmindMazeWorld_8room
 from .mazeworld_env import DeepmindMazeWorld_8room_diff
+from .mazeworld_env import DeepmindMazeWorld_8room_rgb
 from .mazeworld_env import DeepmindMazeWorld_8room_extrinsic
 from .mazeworld_env import DeepmindMazeWorld_8room_oneobj_singleroom
 from .mazeworld_env import DeepmindMazeWorld_8room_oneobj_allrooms

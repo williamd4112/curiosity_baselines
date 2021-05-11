@@ -1,6 +1,8 @@
 
 import torch
 from torch import nn
+import numpy as np
+import cv2
 
 from rlpyt.utils.tensor import infer_leading_dims, restore_leading_dims, valid_mean
 from rlpyt.models.curiosity.encoders import *
@@ -68,6 +70,9 @@ class Disagreement(nn.Module):
         if self.obs_stats is not None:
             img1 = (obs1 - self.obs_mean) / (self.obs_std+1e-10)
             img2 = (obs2 - self.obs_mean) / (self.obs_std+1e-10)
+
+        # img = np.squeeze(obs1.data.numpy()[20][0])
+        # cv2.imwrite('disimages/original.png', img.transpose(1, 2, 0))
 
         img1 = obs1.type(torch.float)
         img2 = obs2.type(torch.float) # Expect torch.uint8 inputs

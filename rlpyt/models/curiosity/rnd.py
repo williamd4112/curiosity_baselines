@@ -30,7 +30,9 @@ class RND(nn.Module):
         self.drop_probability = drop_probability
         self.device = torch.device('cuda:0' if device == 'gpu' else 'cpu')
 
-        c, h, w = 1, image_shape[1], image_shape[2] # assuming grayscale inputs
+        c, h, w = image_shape[0], image_shape[1], image_shape[2]
+        if image_shape[0] == 4:
+            c = 1
         self.c = c
         self.h = h
         self.w = w
@@ -46,7 +48,7 @@ class RND(nn.Module):
         # Learned predictor model
         self.forward_model = nn.Sequential(
                                             nn.Conv2d(
-                                                in_channels=1,
+                                                in_channels=c,
                                                 out_channels=32,
                                                 kernel_size=8,
                                                 stride=4),
@@ -79,7 +81,7 @@ class RND(nn.Module):
         # Fixed weight target model
         self.target_model = nn.Sequential(
                                             nn.Conv2d(
-                                                in_channels=1,
+                                                in_channels=c,
                                                 out_channels=32,
                                                 kernel_size=8,
                                                 stride=4),
@@ -111,21 +113,22 @@ class RND(nn.Module):
     def forward(self, obs, not_done=None):
 
         # in case of frame stacking
-        obs = obs[:,:,-1,:,:]
-        obs = obs.unsqueeze(2)
+        if obs.shape[2] == 4:
+            obs = obs[:,:,-1,:,:]
+            obs = obs.unsqueeze(2)
         obs_cpu = obs.clone().cpu().data.numpy()
 
         # img = np.squeeze(obs.data.numpy()[0][0])
         # mean = np.squeeze(self.obs_rms.mean)
         # var = np.squeeze(self.obs_rms.var)
         # std = np.squeeze(np.sqrt(self.obs_rms.var))
-        # cv2.imwrite('images/original.png', img)
-        # cv2.imwrite('images/mean.png', mean)
-        # cv2.imwrite('images/var.png', var)
-        # cv2.imwrite('images/std.png', std)
-        # cv2.imwrite('images/whitened.png', img-mean)
-        # cv2.imwrite('images/final.png', (img-mean)/std)
-        # cv2.imwrite('images/scaled_final.png', ((img-mean)/std)*111)
+        # cv2.imwrite('rndimages/original.png', img.transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/mean.png', mean.transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/var.png', var.transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/std.png', std.transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/whitened.png', (img-mean).transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/final.png', ((img-mean)/std).transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/scaled_final.png', (((img-mean)/std)*111).transpose(1, 2, 0))
         #print("Final", np.min(((img-mean)/std).ravel()), np.mean(((img-mean)/std).ravel()), np.max(((img-mean)/std).ravel()))
         # print("#"*100 + "\n")
 

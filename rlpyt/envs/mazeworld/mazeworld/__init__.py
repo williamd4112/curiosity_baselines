@@ -231,6 +231,12 @@ register(
 
 register(
     id='Deepmind8Room-v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_rgb',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind8Room-v2',
     entry_point='mazeworld.envs:DeepmindMazeWorld_8room_diff',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
