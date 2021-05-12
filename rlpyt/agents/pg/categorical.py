@@ -83,7 +83,7 @@ class RecurrentCategoricalPgAgentBase(BaseAgent):
     @torch.no_grad()
     def curiosity_step(self, curiosity_type, *args):
 
-        if curiosity_type == 'icm' or curiosity_type == 'disagreement':
+        if curiosity_type in {'icm', 'micm', 'disagreement'}:
             observation, next_observation, actions = args
             actions = self.distribution.to_onehot(actions)
             curiosity_agent_inputs = buffer_to((observation, next_observation, actions), device=self.device)
@@ -105,7 +105,7 @@ class RecurrentCategoricalPgAgentBase(BaseAgent):
 
     def curiosity_loss(self, curiosity_type, *args):
 
-        if curiosity_type == 'icm':
+        if curiosity_type in {'icm', 'micm'}:
             observation, next_observation, actions, valid = args
             actions = self.distribution.to_onehot(actions)
             actions = actions.squeeze() # ([batch, 1, size]) -> ([batch, size])

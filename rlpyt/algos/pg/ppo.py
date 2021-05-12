@@ -82,7 +82,7 @@ class PPO(PolicyGradientAlgo):
             self.agent.update_obs_rms(agent_inputs.observation)
         return_, advantage, valid = self.process_returns(samples)
 
-        if self.curiosity_type == 'icm' or self.curiosity_type == 'disagreement':
+        if self.curiosity_type in {'icm', 'micm', 'disagreement'}:
             agent_curiosity_inputs = IcmAgentCuriosityInputs(
                 observation=samples.env.observation.clone(),
                 next_observation=samples.env.next_observation.clone(),
@@ -149,7 +149,7 @@ class PPO(PolicyGradientAlgo):
                 opt_info.value_loss.append(value_loss.item())
                 opt_info.entropy_loss.append(entropy_loss.item())
 
-                if self.curiosity_type == 'icm':
+                if self.curiosity_type in {'icm', 'micm'}:
                     inv_loss, forward_loss = curiosity_losses
                     opt_info.inv_loss.append(inv_loss.item())
                     opt_info.forward_loss.append(forward_loss.item())
@@ -220,7 +220,7 @@ class PPO(PolicyGradientAlgo):
 
         loss = pi_loss + value_loss + entropy_loss
 
-        if self.curiosity_type == 'icm': 
+        if self.curiosity_type in {'icm', 'micm'}: 
             inv_loss, forward_loss = self.agent.curiosity_loss(self.curiosity_type, *agent_curiosity_inputs)
             loss += inv_loss
             loss += forward_loss
