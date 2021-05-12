@@ -71,6 +71,7 @@ class MICM(nn.Module):
         self.forward_model_2 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(device)
         self.forward_model_3 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(device)
         self.forward_model_4 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(device)
+        self.forward_model_5 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(device)
 
     def forward(self, obs1, obs2, action):
 
@@ -100,6 +101,7 @@ class MICM(nn.Module):
         predicted_phi2.append(self.forward_model_2(phi1.detach(), action.view(T, B, -1).detach()))
         predicted_phi2.append(self.forward_model_3(phi1.detach(), action.view(T, B, -1).detach()))
         predicted_phi2.append(self.forward_model_4(phi1.detach(), action.view(T, B, -1).detach()))
+        predicted_phi2.append(self.forward_model_5(phi1.detach(), action.view(T, B, -1).detach()))
         predicted_phi2_stacked = torch.stack(predicted_phi2)
 
         return phi1, phi2, predicted_phi2_stacked, predicted_action
@@ -112,10 +114,11 @@ class MICM(nn.Module):
         rewards.append(nn.functional.mse_loss(predicted_phi2[1], phi2, reduction='none').sum(-1)/self.feature_size)
         rewards.append(nn.functional.mse_loss(predicted_phi2[2], phi2, reduction='none').sum(-1)/self.feature_size)
         rewards.append(nn.functional.mse_loss(predicted_phi2[3], phi2, reduction='none').sum(-1)/self.feature_size)
+        rewards.append(nn.functional.mse_loss(predicted_phi2[4], phi2, reduction='none').sum(-1)/self.feature_size)
         rewards = torch.stack(rewards)
 
         if self.ensemble_mode == 'sample':
-            reward = rewards[np.random.choice(4)]
+            reward = rewards[np.random.choice(5)]
         elif self.ensemble_mode == 'mean':
             reward = torch.mean(rewards, dim=0)
         elif self.ensemble_mode == 'var':
@@ -144,6 +147,9 @@ class MICM(nn.Module):
 
         forward_loss_4 = nn.functional.dropout(nn.functional.mse_loss(predicted_phi2[3], phi2.detach(), reduction='none'), p=0.2).sum(-1)/self.feature_size
         forward_loss += valid_mean(forward_loss_4, valid)
+
+        forward_loss_5 = nn.functional.dropout(nn.functional.mse_loss(predicted_phi2[4], phi2.detach(), reduction='none'), p=0.2).sum(-1)/self.feature_size
+        forward_loss += valid_mean(forward_loss_5, valid)
 
         return self.inverse_loss_wt*inverse_loss, self.forward_loss_wt*forward_loss
 
