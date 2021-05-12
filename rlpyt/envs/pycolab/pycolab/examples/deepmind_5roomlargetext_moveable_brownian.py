@@ -58,35 +58,48 @@ MAZES_ART = [
     #   4
 
     # Maze #0: (paper: 5 rooms environment)
-   ['#############################',
-    '##                         ##',
-    '# #                       # #',
-    '#  #   #   #     #   #   #  #',
-    '#   #                   #   #',
-    '#    #        e        #    #',
-    '#     #               #     #',
-    '#  #   #   #     #   #   #  #',
-    '#       #           #       #',
-    '#        #         #        #',
-    '#         #### ####         #',
-    '#  #   #  #### ####  #   #  #',
-    '#         ##     ##         #',
-    '#         ##     ##         #',
-    '#             P             #',
-    '#         ##     ##         #',
-    '#         ##     ##         #',
-    '#  #   #  #### ####  #   #  #',
-    '#         #### ####         #',
-    '#        #         #        #',
-    '#       #           #       #',
-    '#  #   #   #     #   #   #  #',
-    '#     #               #     #',
-    '#    #        b        #    #',
-    '#   #                   #   #',
-    '#  #   #   #     #   #   #  #',
-    '# #                       # #',
-    '##                         ##',
-    '#############################',]
+    ['##########################################',
+    '##########################################',
+    '##########################################',
+    '######                             #######',
+    '#######                           ########',
+    '########     #   #     #   #     #########',
+    '### #####                       ##### ####',
+    '###  #####                     #####  ####',
+    '###   #####                   #####   ####',
+    '###    #####     #     #     #####    ####',
+    '###     #####               #####     ####',
+    '###      #####             #####      ####',
+    '###       #####     e     #####       ####',
+    '###  #     #####         #####     #  ####',
+    '###         #####       #####         ####',
+    '###          #####     #####          ####',
+    '###           ###### ######           ####',
+    '###  #   #     ##### #####     #   #  ####',
+    '###             ##     ##             ####',
+    '###             ##     ##             ####',
+    '###                 P                 ####',
+    '###             ##     ##             ####',
+    '###             ##     ##             ####',
+    '###  #   #     ##### #####     #   #  ####',
+    '###           ###### ######           ####',
+    '###          #####     #####          ####',
+    '###         #####       #####         ####',
+    '###  #     #####         #####     #  ####',
+    '###       #####           #####       ####',
+    '###      #####      b      #####      ####',
+    '###     #####               #####     ####',
+    '###    #####     #     #     #####    ####',
+    '###   #####                   #####   ####',
+    '###  #####                     #####  ####',
+    '### #####                       ##### ####',
+    '########     #   #     #   #     #########',
+    '#######                           ########',
+    '######                             #######',
+    '##########################################',
+    '##########################################',
+    '##########################################',
+    '##########################################',]
 ]
 
 # These colours are only for humans to see in the CursesUi.
@@ -145,7 +158,7 @@ class PlayerSprite(prefab_sprites.MazeWalker):
   def __init__(self, corner, position, character):
     """Constructor: just tells `MazeWalker` we can't walk through walls or objects."""
     super(PlayerSprite, self).__init__(
-        corner, position, character, impassable='#b')
+        corner, position, character, impassable='#')
     self.last_position = None # store last position for moveable object
     self.last_action = None # store last action for moveable object
 
@@ -172,7 +185,7 @@ class BrownianObject(prefab_sprites.MazeWalker):
 
   def __init__(self, corner, position, character):
     """Constructor: list impassables, initialise direction."""
-    super(BrownianObject, self).__init__(corner, position, character, impassable='#')
+    super(BrownianObject, self).__init__(corner, position, character, impassable='#P')
     # Choose our initial direction.
     self._direction = np.random.choice(4) # 0 = east, 1 = west, 2 = north, 3 = south
 
@@ -180,7 +193,7 @@ class BrownianObject(prefab_sprites.MazeWalker):
     del actions, backdrop  # Unused.
 
     # Sample a move
-    if self.position[0] == 19 and self.position[1] == 14: # prevent escaping the bottom room
+    if self.position[0] == 25 and self.position[1] == 20: # prevent escaping the bottom room
       self._direction = np.random.choice([0, 1, 3])
     else:
       self._direction = np.random.choice(4) # 0 = east, 1 = west, 2 = north, 3 = south
@@ -195,7 +208,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
   """Moveable object. Can be pushed by agent."""
 
   def __init__(self, corner, position, character):
-    super(MoveableObject, self).__init__(corner, position, character, impassable='#b')
+    super(MoveableObject, self).__init__(corner, position, character, impassable='#')
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     mr, mc = self.position
@@ -210,7 +223,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move down
     elif (mc == pc) and (mr - pr == 1) and (p_action == 1):
-      exiting_room = (self.position == (8, 14))
+      exiting_room = (self.position == (14, 20))
       if exiting_room == True:
         things['P']._north(board, the_plot)
         self._stay(board, the_plot)
@@ -221,7 +234,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move right
     elif (mc - pc == 1) and (mr == pr) and (p_action == 3):
-      exiting_room = (self.position == (9, 13))
+      exiting_room = (self.position == (15, 19))
       if exiting_room == True:
         things['P']._west(board, the_plot)
         self._stay(board, the_plot)
@@ -232,7 +245,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move left
     elif (mc - pc == -1) and (mr == pr) and (p_action == 2):
-      exiting_room = (self.position == (9, 15))
+      exiting_room = (self.position == (15, 21))
       if exiting_room == True:
         things['P']._east(board, the_plot)
         self._stay(board, the_plot)

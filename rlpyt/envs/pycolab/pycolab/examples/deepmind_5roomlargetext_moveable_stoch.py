@@ -58,35 +58,48 @@ MAZES_ART = [
     #   4
 
     # Maze #0: (paper: 5 rooms environment)
-   ['#############################',
-    '##                         ##',
-    '# #                       # #',
-    '#  #   #   #     #   #   #  #',
-    '#   #                   #   #',
-    '#    #        e        #    #',
-    '#     #               #     #',
-    '#  #   #   #     #   #   #  #',
-    '#       #           #       #',
-    '#        #         #        #',
-    '#         #### ####         #',
-    '#  #   #  #### ####  #   #  #',
-    '#         ##     ##         #',
-    '#         ##     ##         #',
-    '#             P             #',
-    '#         ##     ##         #',
-    '#         ##     ##         #',
-    '#  #   #  #### ####  #   #  #',
-    '#         #### ####         #',
-    '#        #         #        #',
-    '#       #           #       #',
-    '#  #   #   #     #   #   #  #',
-    '#     #               #     #',
-    '#    #        b        #    #',
-    '#   #                   #   #',
-    '#  #   #   #     #   #   #  #',
-    '# #                       # #',
-    '##                         ##',
-    '#############################',]
+    ['##########################################',
+    '##########################################',
+    '##########################################',
+    '######                             #######',
+    '#######                           ########',
+    '########     #   #     #   #     #########',
+    '### #####                       ##### ####',
+    '###  #####                     #####  ####',
+    '###   #####                   #####   ####',
+    '###    #####     #     #     #####    ####',
+    '###     #####               #####     ####',
+    '###      #####             #####      ####',
+    '###       #####     e     #####       ####',
+    '###  #     #####         #####     #  ####',
+    '###         #####       #####         ####',
+    '###          #####     #####          ####',
+    '###           ###### ######           ####',
+    '###  #   #     ##### #####     #   #  ####',
+    '###             ##     ##             ####',
+    '###             ##     ##             ####',
+    '###                 P                 ####',
+    '###             ##     ##             ####',
+    '###             ##     ##             ####',
+    '###  #   #     ##### #####     #   #  ####',
+    '###           ###### ######           ####',
+    '###          #####     #####          ####',
+    '###         #####       #####         ####',
+    '###  #     #####         #####     #  ####',
+    '###       #####           #####       ####',
+    '###      #####      b      #####      ####',
+    '###     #####               #####     ####',
+    '###    #####     #     #     #####    ####',
+    '###   #####                   #####   ####',
+    '###  #####                     #####  ####',
+    '### #####                       ##### ####',
+    '########     #   #     #   #     #########',
+    '#######                           ########',
+    '######                             #######',
+    '##########################################',
+    '##########################################',
+    '##########################################',
+    '##########################################',]
 ]
 
 # These colours are only for humans to see in the CursesUi.
@@ -145,7 +158,7 @@ class PlayerSprite(prefab_sprites.MazeWalker):
   def __init__(self, corner, position, character):
     """Constructor: just tells `MazeWalker` we can't walk through walls or objects."""
     super(PlayerSprite, self).__init__(
-        corner, position, character, impassable='#b')
+        corner, position, character, impassable='#')
     self.last_position = None # store last position for moveable object
     self.last_action = None # store last action for moveable object
 
@@ -184,7 +197,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
   """Moveable object. Can be pushed by agent."""
 
   def __init__(self, corner, position, character):
-    super(MoveableObject, self).__init__(corner, position, character, impassable='#b')
+    super(MoveableObject, self).__init__(corner, position, character, impassable='#')
     self.eps = 0.25 # probability you move randomly when interacted with
     self.directions = {0:self._north,
                        1:self._east,
@@ -195,9 +208,9 @@ class MoveableObject(prefab_sprites.MazeWalker):
                            2:self._north,
                            3:self._east}
     self.no_go = {0:None,
-                  1:(9,13),
-                  2:(8,14),
-                  3:(9,15)}
+                  1:(15,19),
+                  2:(14,20),
+                  3:(15,21)}
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     mr, mc = self.position
@@ -226,7 +239,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
         no_go_coord = self.no_go[direction_ind]
       else:
         box_direction = self._south
-        no_go_coord = (8,14)
+        no_go_coord = (14,20)
 
       exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
@@ -246,7 +259,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
         no_go_coord = self.no_go[direction_ind]
       else:
         box_direction = self._east
-        no_go_coord = (9,13)
+        no_go_coord = (15,19)
 
       exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
@@ -266,7 +279,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
         no_go_coord = self.no_go[direction_ind]
       else:
         box_direction = self._west
-        no_go_coord = (9,15)
+        no_go_coord = (15,21)
 
       exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
