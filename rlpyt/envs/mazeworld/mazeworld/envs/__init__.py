@@ -1,5 +1,4 @@
 from .pycolab_env import PyColabEnv
-from .mazeworld_env import MazeWorld
 from .mazeworld_env import DeepmindMazeWorld_maze
 from .mazeworld_env import DeepmindMazeWorld_5room
 from .mazeworld_env import DeepmindMazeWorld_5room_whitenoise

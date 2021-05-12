@@ -208,13 +208,18 @@ def deepmind_make(*args, info_example=None, **kwargs):
     """
     import rlpyt.envs.mazeworld.mazeworld
 
-    env = gym.make(kwargs['game'], obs_type=kwargs['obs_type'], max_iterations=kwargs['max_steps_per_episode'], extrinsic_reward=kwargs['extrinsic_reward'])
+    env = gym.make(kwargs['game'], 
+                   obs_type=kwargs['obs_type'], 
+                   max_iterations=kwargs['max_steps_per_episode'], 
+                   extrinsic_reward=kwargs['extrinsic_reward'])
     env.pycolab_init(kwargs['logdir'], kwargs['log_heatmaps'])
 
     if kwargs['no_negative_reward']:
         env = NoNegativeReward(env)
 
-    if kwargs['obs_type'] == 'rgb':
+    if 'rgb' in kwargs['obs_type']:
+        if kwargs['obs_type'] == 'rgb_full':
+            env = ResizeFull(env)
         if kwargs['grayscale'] == True:
             env = Grayscale(env)
         env = PytorchImage(env)

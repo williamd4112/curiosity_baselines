@@ -168,7 +168,8 @@ class PyColabEnv(gym.Env):
                  visitable_states=0,
                  extrinsic_reward=0.0,
                  extrinsic_reward_spec=None,
-                 color_palette=0
+                 color_palette=0,
+                 dimensions=(19,19)
                  ):
         """Create an `PyColabEnv` adapter to a `pycolab` game as a `gym.Env`.
 
@@ -188,6 +189,7 @@ class PyColabEnv(gym.Env):
             extrinsic_reward: the extrinsic reward to assign.
             extrinsic_reward_spec: specifies the extrinsic reward objective. [player/object: character, goal: either coordinate or character]
             color_palette: which color palette to use for objects.
+            dimensions: dimensions of the map
         """
         assert max_iterations > 0
         assert isinstance(default_reward, numbers.Number)
@@ -217,6 +219,8 @@ class PyColabEnv(gym.Env):
             self.observation_space = spaces.Box(0., 1., [len(self.state_layer_chars)] + crop_window) # don't count empty space layer
         elif self.obs_type == 'rgb':
             self.observation_space = spaces.Box(0., 255., [crop_window[0]*resize_scale, crop_window[1]*resize_scale] + [3])
+        elif self.obs_type == 'rgb_full':
+            self.observation_space = spaces.Box(0., 255., [dimensions[0]*resize_scale, dimensions[1]*resize_scale] + [3])
         self.width, self.height = crop_window[0]*resize_scale, crop_window[1]*resize_scale
         self.action_space = action_space
         self.act_null_value = act_null_value
@@ -388,8 +392,11 @@ class PyColabEnv(gym.Env):
                     self._state.append(mask)
             self._state = np.array(self._state)
 
-        elif self.obs_type == 'rgb':
-            rgb_img = self._paint_board(observations.layers, cropped=True).astype(float)
+        elif 'rgb' in self.obs_type:
+            if self.obs_type == 'rgb':
+                rgb_img = self._paint_board(observations.layers, cropped=True).astype(float)
+            elif self.obs_type == 'rgb_full':
+                rgb_img = self._paint_board(observations.layers, cropped=False).astype(float)
             self._state = self.resize(rgb_img)
             for char in self.state_layer_chars:
                 if char != ' ':

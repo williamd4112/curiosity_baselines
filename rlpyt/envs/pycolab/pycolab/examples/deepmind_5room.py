@@ -58,25 +58,27 @@ MAZES_ART = [
     #   4
 
     # Maze #0: (paper: 5 rooms environment)
-    ['###################',
-     '##               ##',
-     '# #      a      # #',
-     '#  #           #  #',
-     '#   #         #   #',
-     '#    #### ####    #',
-     '#    #### ####    #',
-     '#    ##     ##    #',
-     '#    ##     ##    #',
-     '#        P        #',
-     '#    ##     ##    #',
-     '#    ##     ##    #',
-     '#    #### ####    #',
-     '#    #### ####    #',
-     '#   #         #   #',
-     '#  #           #  #',
-     '# #      b      # #',
-     '##               ##',
-     '###################']
+    ['#####################',
+    '#####################',
+     '###               ###',
+     '## #      a      # ##',
+     '##  #           #  ##',
+     '##   #         #   ##',
+     '##    #### ####    ##',
+     '##    #### ####    ##',
+     '##    ##     ##    ##',
+     '##    ##     ##    ##',
+     '##        P        ##',
+     '##    ##     ##    ##',
+     '##    ##     ##    ##',
+     '##    #### ####    ##',
+     '##    #### ####    ##',
+     '##   #         #   ##',
+     '##  #           #  ##',
+     '## #      b      # ##',
+     '###               ###',
+     '#####################',
+     '#####################']
 ]
 
 # These colours are only for humans to see in the CursesUi.
@@ -104,11 +106,11 @@ def make_game(level):
   maze_ascii = MAZES_ART[level]
 
   # change location of fixed object in the top room
-  for row in range(1, 5):
-    if 'a' in maze_ascii[row]:
-      maze_ascii[row] = maze_ascii[row].replace('a', ' ', 1)
-  new_coord = random.sample(ROOMS[2], 1)[0]
-  maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'a' + maze_ascii[new_coord[0]][new_coord[1]+1:]
+  # for row in range(1, 5):
+  #   if 'a' in maze_ascii[row]:
+  #     maze_ascii[row] = maze_ascii[row].replace('a', ' ', 1)
+  # new_coord = random.sample(ROOMS[2], 1)[0]
+  # maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'a' + maze_ascii[new_coord[0]][new_coord[1]+1:]
 
   return ascii_art.ascii_art_to_game(
       maze_ascii, what_lies_beneath=' ',
