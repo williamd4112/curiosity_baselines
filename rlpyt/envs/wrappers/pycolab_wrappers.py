@@ -16,7 +16,7 @@ class ResizeFull(gym.ObservationWrapper):
     def __init__(self, env, crop=True):
         super(ResizeFull, self).__init__(env)
         self._shape = (84, 84)
-        self.observation_space = gym.spaces.Box(low=0., high=255., shape=(env.width, env.height, 3), dtype=np.uint8)
+        self.observation_space = gym.spaces.Box(low=0., high=255., shape=(84, 84, 3), dtype=np.uint8)
 
     def observation(self, obs):
         img = cv2.resize(obs, self._shape, interpolation=cv2.INTER_NEAREST)

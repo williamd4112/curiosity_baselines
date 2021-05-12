@@ -18,8 +18,7 @@ OptInfo = namedtuple("OptInfo", ["return_",
                                  "inv_loss", 
                                  "forward_loss",
                                  "reward_total_std", 
-                                 "curiosity_loss", 
-                                 "gradNorm", 
+                                 "curiosity_loss",
                                  "entropy", 
                                  "perplexity"])
 AgentTrain = namedtuple("AgentTrain", ["dist_info", "value"])
