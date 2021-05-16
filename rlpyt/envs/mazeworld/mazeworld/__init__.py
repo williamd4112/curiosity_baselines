@@ -68,6 +68,18 @@ register(
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
 register(
+    id='Deepmind5RoomLargeEnemy-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_enemy',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomLargeWeather-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_weather',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
     id='Deepmind5RoomLargeText-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlargetext',
     max_episode_steps=500,
@@ -104,6 +116,18 @@ register(
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
 register(
+    id='Deepmind5RoomLargeMoveable-v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_moveable_ext',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomLargeTextMoveable-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlargetext_moveable',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
     id='Deepmind5RoomLargeTextMoveable-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlargetext_moveable',
     max_episode_steps=500,
@@ -112,6 +136,12 @@ register(
 register(
     id='Deepmind5RoomLargeMoveableStoch-v0',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_moveable_stoch',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomLargeMoveableStoch-v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_moveable_stoch_ext',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
@@ -232,24 +262,6 @@ register(
 register(
     id='Deepmind8Room-v2',
     entry_point='mazeworld.envs:DeepmindMazeWorld_8room_diff',
-    max_episode_steps=500,
-    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
-
-register(
-    id='Deepmind8RoomExtrinsic-v0',
-    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_extrinsic',
-    max_episode_steps=500,
-    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
-
-register(
-    id='Deepmind8RoomOneObj-v0',
-    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_oneobj_singleroom',
-    max_episode_steps=500,
-    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
-
-register(
-    id='Deepmind8RoomOneObj-v1',
-    entry_point='mazeworld.envs:DeepmindMazeWorld_8room_oneobj_allrooms',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
