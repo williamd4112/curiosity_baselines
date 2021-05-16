@@ -208,8 +208,6 @@ def deepmind_make(*args, info_example=None, **kwargs):
     """
     import rlpyt.envs.mazeworld.mazeworld
 
-    print(kwargs['extrinsic_reward'], type(kwargs['extrinsic_reward']))
-
     if kwargs['extrinsic_reward'] != 0.0:
         env = gym.make(kwargs['game'], 
                        obs_type=kwargs['obs_type'], 
