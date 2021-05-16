@@ -330,6 +330,17 @@ class PyColabEnv(gym.Env):
                     ' ' : (0., 0., 0.),
                     '.' : (110., 35., 35.)}
 
+    def _check_visit(self, char):
+        """Private method to check if the player
+        has visited "char". A visit is when the
+        character is within the 5x5 tile window
+        around the player.
+        """
+        pr, pc = self.current_game.things['P'].position
+        cr, cc = self.current_game.things[char].position
+        if (pr-2) <= cr <= (pr+2) and (pc-2) <= cc <= (pc+2):
+            return True
+        return False
 
     def _paint_board(self, layers, cropped=False):
         """Method to privately paint layers to RGB.
@@ -385,7 +396,7 @@ class PyColabEnv(gym.Env):
         if self.obs_type == 'mask':
             self._state = []
             for char in self.state_layer_chars:
-                if char != ' ':
+                if char in self.objects:
                     mask = observations.layers[char].astype(float)
                     if char in self.objects and 1. in mask:
                         if char == self._reward_target:
@@ -401,9 +412,9 @@ class PyColabEnv(gym.Env):
                 rgb_img = self._paint_board(observations.layers, cropped=False).astype(float)
             self._state = self.resize(rgb_img)
             for char in self.state_layer_chars:
-                if char != ' ':
+                if char in self.objects:
                     mask = observations.layers[char].astype(float)
-                    if char in self.objects and 1. in mask:
+                    if self._check_visit(char):
                         if char == self._reward_target:
                             reward = self._default_reward
                         self.visitation_frequency[char] += 1
