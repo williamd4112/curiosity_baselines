@@ -82,9 +82,9 @@ def launch_tmux(args):
             if arg == 'launch_tmux':
                 args_string += '-launch_tmux no '
             elif arg == 'enemy_reward':
-                args_string += '-enemy_reward {}'.format(value, 'f')
+                args_string += '-enemy_reward {} '.format(format(value, 'f'))
             elif arg == 'obj_reward':
-                args_string += '-obj_reward {}'.format(value, 'f')
+                args_string += '-obj_reward {} '.format(format(value, 'f'))
             elif value is None and arg == 'log_dir':
                 args_string += f'-log_dir {log_dir} '
             elif value is True:
