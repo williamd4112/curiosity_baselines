@@ -120,9 +120,9 @@ ROOMS = {0: [[18, 18], [18, 19], [18, 20], [18, 21], [18, 22], [19, 18], [19, 19
 3: [[9, 35], [10, 34], [10, 35], [11, 33], [11, 34], [11, 35], [12, 32], [12, 33], [12, 34], [12, 35], [13, 31], [13, 32], [13, 33], [13, 34], [13, 35], [14, 30], [14, 31], [14, 32], [14, 33], [14, 34], [14, 35], [15, 29], [15, 30], [15, 31], [15, 32], [15, 33], [15, 34], [15, 35], [16, 28], [16, 29], [16, 30], [16, 31], [16, 32], [16, 33], [16, 34], [16, 35], [17, 27], [17, 28], [17, 29], [17, 30], [17, 31], [17, 32], [17, 33], [17, 34], [17, 35], [18, 26], [18, 27], [18, 28], [18, 29], [18, 30], [18, 31], [18, 32], [18, 33], [18, 34], [18, 35], [19, 26], [19, 27], [19, 28], [19, 29], [19, 30], [19, 31], [19, 32], [19, 33], [19, 34], [19, 35], [20, 27], [20, 28], [20, 29], [20, 30], [20, 31], [20, 32], [20, 33], [20, 34], [20, 35], [21, 26], [21, 27], [21, 28], [21, 29], [21, 30], [21, 31], [21, 32], [21, 33], [21, 34], [21, 35], [22, 26], [22, 27], [22, 28], [22, 29], [22, 30], [22, 31], [22, 32], [22, 33], [22, 34], [22, 35], [23, 27], [23, 28], [23, 29], [23, 30], [23, 31], [23, 32], [23, 33], [23, 34], [23, 35], [24, 28], [24, 29], [24, 30], [24, 31], [24, 32], [24, 33], [24, 34], [24, 35], [25, 29], [25, 30], [25, 31], [25, 32], [25, 33], [25, 34], [25, 35], [26, 30], [26, 31], [26, 32], [26, 33], [26, 34], [26, 35], [27, 31], [27, 32], [27, 33], [27, 34], [27, 35], [28, 32], [28, 33], [28, 34], [28, 35], [29, 33], [29, 34], [29, 35], [30, 34], [30, 35], [31, 35]], 
 4: [[26, 18], [26, 19], [26, 21], [26, 22], [27, 17], [27, 18], [27, 19], [27, 20], [27, 21], [27, 22], [27, 23], [28, 16], [28, 17], [28, 18], [28, 19], [28, 20], [28, 21], [28, 22], [28, 23], [28, 24], [29, 15], [29, 16], [29, 17], [29, 18], [29, 19], [29, 20], [29, 21], [29, 22], [29, 23], [29, 24], [29, 25], [30, 14], [30, 15], [30, 16], [30, 17], [30, 18], [30, 19], [30, 20], [30, 21], [30, 22], [30, 23], [30, 24], [30, 25], [30, 26], [31, 13], [31, 14], [31, 15], [31, 16], [31, 17], [31, 18], [31, 19], [31, 20], [31, 21], [31, 22], [31, 23], [31, 24], [31, 25], [31, 26], [31, 27], [32, 12], [32, 13], [32, 14], [32, 15], [32, 16], [32, 17], [32, 18], [32, 19], [32, 20], [32, 21], [32, 22], [32, 23], [32, 24], [32, 25], [32, 26], [32, 27], [32, 28], [33, 11], [33, 12], [33, 13], [33, 14], [33, 15], [33, 16], [33, 17], [33, 18], [33, 19], [33, 20], [33, 21], [33, 22], [33, 23], [33, 24], [33, 25], [33, 26], [33, 27], [33, 28], [33, 29], [34, 10], [34, 11], [34, 12], [34, 13], [34, 14], [34, 15], [34, 16], [34, 17], [34, 18], [34, 19], [34, 20], [34, 21], [34, 22], [34, 23], [34, 24], [34, 25], [34, 26], [34, 27], [34, 28], [34, 29], [34, 30], [35, 9], [35, 10], [35, 11], [35, 12], [35, 13], [35, 14], [35, 15], [35, 16], [35, 17], [35, 18], [35, 19], [35, 20], [35, 21], [35, 22], [35, 23], [35, 24], [35, 25], [35, 26], [35, 27], [35, 28], [35, 29], [35, 30], [35, 31]]}
 
-def make_game(level):
+def make_game(level, reward_config):
   """Builds and returns a Better Scrolly Maze game for the selected level."""
-  maze_ascii = MAZES_ART[level]
+  maze_ascii = MAZES_ART[0]
 
   # change location of fixed object along row 4
   maze_ascii[4] = maze_ascii[4].replace('a', ' ', 1)
@@ -132,7 +132,7 @@ def make_game(level):
   return ascii_art.ascii_art_to_game(
       maze_ascii, what_lies_beneath=' ',
       sprites={
-          'P': PlayerSprite,
+          'P': ascii_art.Partial(PlayerSprite, enemy_r=reward_config['b'], obj_r=reward_config['a']),
           'a': FixedObject,
           'b': BouncingObject},
       update_schedule=['P', 'a', 'b'],
@@ -158,12 +158,14 @@ def make_croppers(level):
 class PlayerSprite(prefab_sprites.MazeWalker):
   """A `Sprite` for our player, the maze explorer."""
 
-  def __init__(self, corner, position, character):
+  def __init__(self, corner, position, character, enemy_r=1.0, obj_r=-2.0):
     """Constructor: just tells `MazeWalker` we can't walk through walls or objects."""
     super(PlayerSprite, self).__init__(
         corner, position, character, impassable='#ab')
     self.last_position = None # store last position for moveable object
     self.last_action = None # store last action for moveable object
+    self.obj_r = obj_r
+    self.enemy_r = enemy_r
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     del backdrop, layers  # Unused
@@ -185,9 +187,9 @@ class PlayerSprite(prefab_sprites.MazeWalker):
     ar, ac = things['a'].position
     br, bc = things['b'].position
     if ((ar-2) <= pr <= (ar+2)) and ((ac-2) <= pc <= (ac+2)):
-      the_plot.add_reward(1.0)
+      the_plot.add_reward(self.obj_r)
     if ((br-2) <= pr <= (br+2)) and ((bc-2) <= pc <= (bc+2)):
-      the_plot.add_reward(-2.0)
+      the_plot.add_reward(self.enemy_r)
 
 class BouncingObject(prefab_sprites.MazeWalker):
   """Randomly sample direction from left/right/up/down"""

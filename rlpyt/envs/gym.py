@@ -208,15 +208,16 @@ def deepmind_make(*args, info_example=None, **kwargs):
     """
     import rlpyt.envs.mazeworld.mazeworld
 
-    if kwargs['extrinsic_reward'] != 0.0:
+    if kwargs['obj_reward'] != 1.0 or kwargs['enemy_reward'] != -2.0:
         env = gym.make(kwargs['game'], 
                        obs_type=kwargs['obs_type'], 
                        max_iterations=kwargs['max_steps_per_episode'],
-                       default_reward=kwargs['extrinsic_reward'])
+                       reward_config={"a":kwargs['obj_reward'], "b":kwargs['enemy_reward']})
     else:
         env = gym.make(kwargs['game'], 
                        obs_type=kwargs['obs_type'], 
                        max_iterations=kwargs['max_steps_per_episode'])
+
     env.pycolab_init(kwargs['logdir'], kwargs['log_heatmaps'])
 
     if kwargs['no_negative_reward']:

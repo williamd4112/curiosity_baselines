@@ -265,7 +265,8 @@ def start_experiment(args):
             obs_type=args.obs_type,
             grayscale=args.grayscale,
             max_steps_per_episode=args.max_episode_steps,
-            extrinsic_reward=args.extrinsic_reward
+            obj_reward=args.obj_reward,
+            enemy_reward=args.enemy_reward
             )
     elif args.env in _MUJOCO_ENVS:
         env_cl = gym_make

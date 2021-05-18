@@ -168,6 +168,7 @@ class PyColabEnv(gym.Env):
                  visitable_states=0,
                  color_palette=0,
                  reward_switch=[],
+                 reward_config=dict(),
                  ):
         """Create an `PyColabEnv` adapter to a `pycolab` game as a `gym.Env`.
 
@@ -186,6 +187,7 @@ class PyColabEnv(gym.Env):
             visitable_states: number of states the agent can visit.
             color_palette: which color palette to use for objects.
             reward_switch: list of objects or coords if the reward function switches.
+            reward_config: list of objects and their associated rewards.
         """
         assert max_iterations > 0
         assert isinstance(default_reward, numbers.Number)
@@ -198,13 +200,14 @@ class PyColabEnv(gym.Env):
         self._reward_switch = reward_switch
         self._reward_target = None
         self._switch_perturbations = [(-80., -80., 70.),(-65., 40., -65.),(-40., -50., 0.),(40., -65., -65.)]
+        self._reward_config = reward_config
 
         # At this point, the game would only want to access the random
         # property, although it is set to None initially.
         self.np_random = None
         self._color_palette = color_palette
         self._colors = self.make_colors()
-        test_game = self.make_game()
+        test_game = self.make_game(reward_config=self._reward_config)
         test_game.the_plot.info = {}
         observations, _, _ = test_game.its_showtime()
         layers = list(observations.layers.keys())
@@ -399,8 +402,6 @@ class PyColabEnv(gym.Env):
                 if char in self.objects:
                     mask = observations.layers[char].astype(float)
                     if char in self.objects and 1. in mask:
-                        if char == self._reward_target:
-                            reward = self._default_reward
                         self.visitation_frequency[char] += 1
                     self._state.append(mask)
             self._state = np.array(self._state)
@@ -415,8 +416,6 @@ class PyColabEnv(gym.Env):
                 if char in self.objects:
                     mask = observations.layers[char].astype(float)
                     if self._check_visit(char):
-                        if char == self._reward_target:
-                            reward = self._default_reward
                         self.visitation_frequency[char] += 1
 
         # update heatmap metric
@@ -482,7 +481,12 @@ class PyColabEnv(gym.Env):
 
     def reset(self):
         """Start a new episode."""
-        self.current_game = self.make_game()
+        if len(self._reward_switch) > 0:
+            self._switch = np.random.randint(len(self._reward_switch))
+            self._reward_target = self._reward_switch[self._switch]
+            self._reward_config = {char:0.0 for char in self._reward_switch}
+            self._reward_config[self._reward_switch[self._switch]] = 1.0
+        self.current_game = self.make_game(reward_config=self._reward_config)
         for cropper in self._croppers:
             cropper.set_engine(self.current_game)
         self._colors = self.make_colors()
@@ -490,9 +494,6 @@ class PyColabEnv(gym.Env):
         self._game_over = None
         self._last_observations = None
         self._last_reward = None
-        if len(self._reward_switch) > 0:
-            self._switch = np.random.randint(len(self._reward_switch))
-            self._reward_target = self._reward_switch[self._switch]
 
         observations, reward, _ = self.current_game.its_showtime()
         self._last_uncropped_observations = observations
