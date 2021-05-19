@@ -52,7 +52,8 @@ class AtariLstmModel(torch.nn.Module):
                                            prediction_beta=curiosity_kwargs['prediction_beta'],
                                            obs_stats=self.obs_stats,
                                            forward_loss_wt=curiosity_kwargs['forward_loss_wt'],
-                                           forward_model=curiosity_kwargs['forward_model'])
+                                           forward_model=curiosity_kwargs['forward_model'],
+                                           feature_space=curiosity_kwargs['feature_space'])
             if curiosity_kwargs['curiosity_alg'] == 'micm':
                 self.curiosity_model = MICM(image_shape=image_shape,
                                            action_size=output_size,
