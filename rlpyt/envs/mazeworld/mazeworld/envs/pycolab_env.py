@@ -64,6 +64,7 @@ class PycolabTrajInfo(TrajInfo):
         self.percent_eps_g = 0
         self.percent_eps_h = 0
         self.visitation_entropy = 0
+        self.pushes = 0
 
     def step(self, observation, action, reward_ext, done, agent_info, env_info):
         visitation_frequency = getattr(env_info, 'visitation_frequency', None)
@@ -71,6 +72,10 @@ class PycolabTrajInfo(TrajInfo):
         self.visitation_entropy = getattr(env_info, 'visitation_entropy', None)
         episodes = getattr(env_info, 'episodes', None)
         num_obj_eps = getattr(env_info, 'num_obj_eps', None)
+
+        controllable_interactions = getattr(env_info, 'controllable_interactions', None)
+        if controllable_interactions is not None:
+            self.pushes = controllable_interactions 
 
         if visitation_frequency is not None and first_visit_time is not None:
             if len(visitation_frequency) >= 1:
@@ -475,6 +480,10 @@ class PyColabEnv(gym.Env):
         info['visitation_entropy'] = self.visitation_entropy
         info['episodes'] = self.episodes
         info['num_obj_eps'] = self.num_obj_eps
+        for ob in self.objects:
+            pushes = getattr(self.current_game.things[ob], 'pushes', None)
+            if pushes is not None:
+                info['controllable_interactions'] = pushes
 
         # Check the current status of the game.
         reward = self._last_reward

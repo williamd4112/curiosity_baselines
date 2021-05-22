@@ -220,6 +220,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
                   1:(15,19),
                   2:(14,20),
                   3:(15,21)}
+    self.pushes = 0
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     mr, mc = self.position
@@ -228,6 +229,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move up
     if (mc == pc) and (mr - pr == -1) and (p_action == 0):
+      self.pushes += 1
       rand = np.random.rand() <= self.eps
       if rand == True:
         direction_ind = np.random.choice([1, 3])
@@ -241,6 +243,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move down
     elif (mc == pc) and (mr - pr == 1) and (p_action == 1):
+      self.pushes += 1
       rand = np.random.rand() <= self.eps
       if rand == True:
         direction_ind = np.random.choice([1, 3])
@@ -261,6 +264,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move right
     elif (mc - pc == 1) and (mr == pr) and (p_action == 3):
+      self.pushes += 1
       rand = np.random.rand() <= self.eps
       if rand == True:
         direction_ind = np.random.choice([0, 2])
@@ -281,6 +285,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move left
     elif (mc - pc == -1) and (mr == pr) and (p_action == 2):
+      self.pushes += 1
       rand = np.random.rand() <= self.eps
       if rand == True:
         direction_ind = np.random.choice([0, 2])

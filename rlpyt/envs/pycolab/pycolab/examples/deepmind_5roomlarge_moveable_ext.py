@@ -183,6 +183,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
   def __init__(self, corner, position, character, reward):
     super(MoveableObject, self).__init__(corner, position, character, impassable='#')
     self.reward = reward
+    self.pushes = 0
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     mr, mc = self.position
@@ -191,12 +192,14 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move up
     if (mc == pc) and (mr - pr == -1) and (p_action == 0):
+      self.pushes += 1
       moved = self._north(board, the_plot)
       if moved is not None:
         things['P']._south(board, the_plot)
 
     # move down
     elif (mc == pc) and (mr - pr == 1) and (p_action == 1):
+      self.pushes += 1
       exiting_room = (self.position == (14, 20))
       if exiting_room == True:
         things['P']._north(board, the_plot)
@@ -208,6 +211,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move right
     elif (mc - pc == 1) and (mr == pr) and (p_action == 3):
+      self.pushes += 1
       exiting_room = (self.position == (15, 19))
       if exiting_room == True:
         things['P']._west(board, the_plot)
@@ -219,6 +223,7 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move left
     elif (mc - pc == -1) and (mr == pr) and (p_action == 2):
+      self.pushes += 1
       exiting_room = (self.position == (15, 21))
       if exiting_room == True:
         things['P']._east(board, the_plot)
