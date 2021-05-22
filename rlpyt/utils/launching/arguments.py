@@ -75,6 +75,7 @@ def get_args(args_in=sys.argv[1:]):
         parser.add_argument('-max_episode_steps', default=27000, type=int, help='How many steps to run before the done flag is raised.')
         parser.add_argument('-normalize_obs', action='store_true', help='Whether or not to normalize the observation each step.')
         parser.add_argument('-score_multiplier', default=1.0, type=float, help='A multiplier for the extrinsic reward.')
+        parser.add_argument('-repeat_action_probability', default=0.0, type=float, help='Probability that an action will repeat (sticky actions).')
 
     # curiosity specific args
     curiosity_alg = args_in[args_in.index('-curiosity_alg')+1]
