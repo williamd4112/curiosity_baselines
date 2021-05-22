@@ -250,18 +250,24 @@ class PyColabEnv(gym.Env):
         self.visitation_entropy = 0
         self.num_obj_eps = {char:0 for char in self.objects}
 
+    def pycolab_init(self, logdir, log_heatmaps):
         # Heatmaps
         self.episodes = 0 # number of episodes run (to determine when to save heatmaps)
         self.heatmap_save_freq = 3 # save heatmaps every 3 episodes
-        self.heatmap = np.ones((5, 5)) # stores counts each episode (5x5 is a placeholder)
-
-    def pycolab_init(self, logdir, log_heatmaps):
+        self.heatmap = np.zeros((5, 5)) # stores counts each episode (5x5 is a placeholder)
         self.log_heatmaps = log_heatmaps
         root_path = os.path.abspath(__file__).split('/')[1:]
         root_path = root_path[:root_path.index('curiosity_baselines')+1]
         self.heatmap_path = '/' + '/'.join(root_path) + '/' + '/'.join(logdir.split('/')[1:]) + '/heatmaps'
+        self.startup = True
         if os.path.isdir(self.heatmap_path) == False and log_heatmaps == True:
             os.makedirs(self.heatmap_path)
+        elif os.path.isdir(self.heatmap_path) == True:
+            heatmaps = os.listdir(self.heatmap_path)
+            if len(heatmaps) != 0:
+                sorted_images = sorted(heatmaps, key=lambda img: int(img.split('.')[0]))
+                last_episode = int(sorted_images[-1].split('.')[0])
+                self.episodes = last_episode
 
     @abc.abstractmethod
     def make_game(self):
@@ -508,11 +514,12 @@ class PyColabEnv(gym.Env):
             if self.visitation_frequency[char] > 0:
                 self.num_obj_eps[char] += 1
         self.visitation_frequency = {char:0 for char in self.objects}
-        if self.log_heatmaps == True and self.episodes % self.heatmap_save_freq == 0:
+        if self.log_heatmaps == True and self.episodes % self.heatmap_save_freq == 0 and self.startup == False:
             np.save('{}/{}.npy'.format(self.heatmap_path, self.episodes), self.heatmap)
-            heatmap_normed = self.heatmap / np.linalg.norm(self.heatmap)
+            heatmap_normed = self.heatmap / np.linalg.norm(self.heatmap)+0.0000000000000000001
             plt.imsave('{}/{}.png'.format(self.heatmap_path, self.episodes), heatmap_normed, cmap='afmhot', vmin=0.0, vmax=1.0)
         self.episodes += 1
+        self.startup = False
         self.heatmap = np.zeros(self._last_uncropped_observations.board.shape)
         
         # run update
