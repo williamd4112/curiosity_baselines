@@ -207,6 +207,19 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
   def __init__(self, corner, position, character):
     super(MoveableObject, self).__init__(corner, position, character, impassable='#')
+    self.eps = 0.25 # probability you move randomly when interacted with
+    self.directions = {0:self._north,
+                       1:self._east,
+                       2:self._south,
+                       3:self._west}
+    self.opp_directions = {0:self._south,
+                           1:self._west,
+                           2:self._north,
+                           3:self._east}
+    self.no_go = {0:None,
+                  1:(15,19),
+                  2:(14,20),
+                  3:(15,21)}
     self.pushes = 0
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
@@ -217,43 +230,77 @@ class MoveableObject(prefab_sprites.MazeWalker):
     # move up
     if (mc == pc) and (mr - pr == -1) and (p_action == 0):
       self.pushes += 1
-      moved = self._north(board, the_plot)
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([1, 3])
+        box_direction = self.directions[direction_ind]
+      else:
+        box_direction = self._north
+
+      moved = box_direction(board, the_plot)
       if moved is not None:
         things['P']._south(board, the_plot)
 
     # move down
     elif (mc == pc) and (mr - pr == 1) and (p_action == 1):
       self.pushes += 1
-      exiting_room = (self.position == (14, 20))
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([1, 3])
+        box_direction = self.directions[direction_ind]
+        no_go_coord = self.no_go[direction_ind]
+      else:
+        box_direction = self._south
+        no_go_coord = (14,20)
+
+      exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
         things['P']._north(board, the_plot)
         self._stay(board, the_plot)
       else:
-        moved = self._south(board, the_plot)
+        moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
           things['P']._north(board, the_plot)
 
     # move right
     elif (mc - pc == 1) and (mr == pr) and (p_action == 3):
       self.pushes += 1
-      exiting_room = (self.position == (15, 19))
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([0, 2])
+        box_direction = self.directions[direction_ind]
+        no_go_coord = self.no_go[direction_ind]
+      else:
+        box_direction = self._east
+        no_go_coord = (15,19)
+
+      exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
         things['P']._west(board, the_plot)
         self._stay(board, the_plot)
       else:
-        moved = self._east(board, the_plot)
+        moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
           things['P']._west(board, the_plot)
 
     # move left
     elif (mc - pc == -1) and (mr == pr) and (p_action == 2):
       self.pushes += 1
-      exiting_room = (self.position == (15, 21))
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([0, 2])
+        box_direction = self.directions[direction_ind]
+        no_go_coord = self.no_go[direction_ind]
+      else:
+        box_direction = self._west
+        no_go_coord = (15,21)
+
+      exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
         things['P']._east(board, the_plot)
         self._stay(board, the_plot)
       else:
-        moved = self._west(board, the_plot)
+        moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
           things['P']._east(board, the_plot)
 
@@ -264,7 +311,7 @@ class BrownianObject(prefab_sprites.MazeWalker):
 
   def __init__(self, corner, position, character):
     """Constructor: list impassables, initialise direction."""
-    super(BrownianObject, self).__init__(corner, position, character, impassable='#P')
+    super(BrownianObject, self).__init__(corner, position, character, impassable='P#')
     # Choose our initial direction.
     self._direction = np.random.choice(4) # 0 = east, 1 = west, 2 = north, 3 = south
 

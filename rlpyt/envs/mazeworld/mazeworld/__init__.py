@@ -177,6 +177,12 @@ register(
 
 register(
     id='Deepmind5RoomLargeAll-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_all_stoch',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomLargeAll-v1',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_all',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
