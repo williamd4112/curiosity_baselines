@@ -297,6 +297,7 @@ def start_experiment(args):
             horizon=args.max_episode_steps,
             score_multiplier=args.score_multiplier,
             repeat_action_probability=args.repeat_action_probability,
+            fire_on_reset=args.fire_on_reset
             )
 
     if args.sample_mode == 'gpu':

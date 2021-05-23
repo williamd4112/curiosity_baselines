@@ -56,6 +56,7 @@ class AtariEnv(Env):
         num_img_obs (int): number of frames in observation (>=1)
         clip_reward (bool): if ``True``, clip reward to np.sign(reward)
         episodic_lives (bool): if ``True``, output ``done=True`` but ``env_info[traj_done]=False`` when a life is lost
+        fire_on_reset (bool): if ``True`` then input fire action automatically to start the game.
         max_start_noops (int): upper limit for random number of noop actions after reset
         repeat_action_probability (0-1): probability for sticky actions
         horizon (int): max number of steps before timeout / ``traj_done=True``

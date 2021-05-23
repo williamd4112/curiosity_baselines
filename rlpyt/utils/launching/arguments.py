@@ -76,6 +76,7 @@ def get_args(args_in=sys.argv[1:]):
         parser.add_argument('-normalize_obs', action='store_true', help='Whether or not to normalize the observation each step.')
         parser.add_argument('-score_multiplier', default=1.0, type=float, help='A multiplier for the extrinsic reward.')
         parser.add_argument('-repeat_action_probability', default=0.0, type=float, help='Probability that an action will repeat (sticky actions).')
+        parser.add_argument('-fire_on_reset', action='store_true', help='Whether or not to automatically press the fire button to start the game, or have the agent do this.')
 
     # curiosity specific args
     curiosity_alg = args_in[args_in.index('-curiosity_alg')+1]
