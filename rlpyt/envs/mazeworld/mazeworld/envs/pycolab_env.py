@@ -174,6 +174,7 @@ class PyColabEnv(gym.Env):
                  color_palette=0,
                  reward_switch=[],
                  reward_config=dict(),
+                 switch_perturbations=[]
                  ):
         """Create an `PyColabEnv` adapter to a `pycolab` game as a `gym.Env`.
 
@@ -204,7 +205,7 @@ class PyColabEnv(gym.Env):
         self._switch = 0
         self._reward_switch = reward_switch
         self._reward_target = None
-        self._switch_perturbations = [(-80., -80., 70.),(-65., 40., -65.),(-40., -50., 0.),(40., -65., -65.)]
+        self._switch_perturbations = switch_perturbations
         self._reward_config = reward_config
 
         # At this point, the game would only want to access the random

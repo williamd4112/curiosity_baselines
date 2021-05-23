@@ -47,6 +47,7 @@ from pycolab.examples import (better_scrolly_maze,
                               deepmind_5roomlarge_all_stoch,
                               deepmind_5roomlargetext_all,
                               deepmind_8room,
+                              deepmind_8room_weather,
                               deepmind_piano_long
                               )
 from pycolab import cropping
@@ -823,7 +824,8 @@ class DeepmindMazeWorld_5roomlarge_weather(pycolab_env.PyColabEnv):
             visitable_states=913,
             color_palette=3,
             reward_switch=['a', 'b', 'c', 'd'],
-            reward_config=reward_config,) # 3, 21
+            reward_config=reward_config,
+            switch_perturbations=[(-80., -80., 70.),(-65., 40., -65.),(-40., -50., 0.),(40., -65., -65.)])
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1575,3 +1577,60 @@ class DeepmindMazeWorld_8room_diff(pycolab_env.PyColabEnv):
           return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
         elif self.obs_type == 'rgb_full':
           return []
+
+class DeepmindMazeWorld_8room_weather(pycolab_env.PyColabEnv):
+    """An eight room environment with many fixed objects.
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 reward_config={'a':1.0,'b':0.0,'c':0.0,'d':0.0,'e':0.0,'f':0.0,'g':0.0,'h':0.0}):
+        self.level = level
+        self.objects = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.obs_type = obs_type
+        super(DeepmindMazeWorld_8room_weather, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            act_null_value=4,
+            resize_scale=17,
+            visitable_states=633,
+            color_palette=3,
+            reward_switch=['a','b','c','d','e','f','g','h'],
+            reward_config=reward_config,
+            switch_perturbations=[(-45.,-25.,-20.),(-20.,-20.,-40.),(-70.,20.,-40.),(-60.,-60.,30.),(-90.,0.,0.),(0.,-90.,0.),(-20.,-20.,-40.),(-20.,-80.,10.)])
+
+    def make_game(self, reward_config):
+        self._croppers = self.make_croppers()
+        return deepmind_8room_weather.make_game(self.level, reward_config)
+
+    def make_croppers(self):
+        if self.obs_type in {'rgb', 'mask'}:
+          return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+        elif self.obs_type == 'rgb_full':
+          return []
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
