@@ -7,6 +7,7 @@ from .mazeworld_env import DeepmindMazeWorld_5room_all
 from .mazeworld_env import DeepmindMazeWorld_5room_long
 from .mazeworld_env import DeepmindMazeWorld_5room_longwide
 from .mazeworld_env import DeepmindMazeWorld_5room_longunpadded
+from .mazeworld_env import DeepmindMazeWorld_5room_longext
 from .mazeworld_env import DeepmindMazeWorld_5room_noobj
 from .mazeworld_env import DeepmindMazeWorld_5room_oneobj
 from .mazeworld_env import DeepmindMazeWorld_5room_onewhite
