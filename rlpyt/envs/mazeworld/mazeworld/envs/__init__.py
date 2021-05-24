@@ -41,6 +41,7 @@ from .mazeworld_env import DeepmindMazeWorld_5roomlarge_all_stoch
 from .mazeworld_env import DeepmindMazeWorld_5roomlargetext_all
 from .mazeworld_env import DeepmindMazeWorld_8room
 from .mazeworld_env import DeepmindMazeWorld_8room_diff
+from .mazeworld_env import DeepmindMazeWorld_8room_ext
 from .mazeworld_env import DeepmindMazeWorld_8room_rgb
 from .mazeworld_env import DeepmindMazeWorld_8room_weather
 from .mazeworld_env import DeepmindMazeWorld_piano_long
