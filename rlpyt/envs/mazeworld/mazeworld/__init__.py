@@ -272,6 +272,12 @@ register(
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
 register(
+    id='Deepmind8RoomLargeWeather-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_8roomlarge_weather',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
     id='Deepmind8Room-v1',
     entry_point='mazeworld.envs:DeepmindMazeWorld_8room_rgb',
     max_episode_steps=500,
