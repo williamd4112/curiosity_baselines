@@ -37,7 +37,9 @@ from .mazeworld_env import DeepmindMazeWorld_5roomlargetext_moveable_brownian
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge_brownian
 from .mazeworld_env import DeepmindMazeWorld_5roomlargetext_brownian
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge_all
+from .mazeworld_env import DeepmindMazeWorld_5roomlarge_allext
 from .mazeworld_env import DeepmindMazeWorld_5roomlarge_all_stoch
+from .mazeworld_env import DeepmindMazeWorld_5roomlarge_all_stochext
 from .mazeworld_env import DeepmindMazeWorld_5roomlargetext_all
 from .mazeworld_env import DeepmindMazeWorld_8room
 from .mazeworld_env import DeepmindMazeWorld_8room_diff

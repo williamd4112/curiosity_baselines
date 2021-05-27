@@ -45,7 +45,9 @@ from pycolab.examples import (better_scrolly_maze,
                               deepmind_5roomlarge_brownian,
                               deepmind_5roomlargetext_brownian,
                               deepmind_5roomlarge_all,
+                              deepmind_5roomlarge_allext,
                               deepmind_5roomlarge_all_stoch,
+                              deepmind_5roomlarge_all_stochext,
                               deepmind_5roomlargetext_all,
                               deepmind_8room,
                               deepmind_8room_ext,
@@ -1435,6 +1437,41 @@ class DeepmindMazeWorld_5roomlarge_all(pycolab_env.PyColabEnv):
         elif self.obs_type == 'rgb_full':
           return []
 
+class DeepmindMazeWorld_5roomlarge_allext(pycolab_env.PyColabEnv):
+    """Large version of the 5 room environment
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 reward_config={'a':1.0}):
+        self.level = level
+        self.objects = ['a', 'b', 'c', 'd']
+        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.obs_type = obs_type
+        super(DeepmindMazeWorld_5roomlarge_allext, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            resize_scale=17,
+            visitable_states=913,
+            color_palette=3,
+            reward_switch=[],
+            reward_config=reward_config)
+
+    def make_game(self, reward_config):
+        self._croppers = self.make_croppers()
+        return deepmind_5roomlarge_allext.make_game(self.level, reward_config)
+
+    def make_croppers(self):
+        if self.obs_type in {'rgb', 'mask'}:
+          return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+        elif self.obs_type == 'rgb_full':
+          return []
+
 class DeepmindMazeWorld_5roomlarge_all_stoch(pycolab_env.PyColabEnv):
     """Large version of the 5 room environment
     """
@@ -1463,6 +1500,41 @@ class DeepmindMazeWorld_5roomlarge_all_stoch(pycolab_env.PyColabEnv):
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
         return deepmind_5roomlarge_all_stoch.make_game(self.level)
+
+    def make_croppers(self):
+        if self.obs_type in {'rgb', 'mask'}:
+          return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+        elif self.obs_type == 'rgb_full':
+          return []
+
+class DeepmindMazeWorld_5roomlarge_all_stochext(pycolab_env.PyColabEnv):
+    """Large version of the 5 room environment
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 reward_config={'a':1.0}):
+        self.level = level
+        self.objects = ['a', 'b', 'c', 'd']
+        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.obs_type = obs_type
+        super(DeepmindMazeWorld_5roomlarge_all_stochext, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            resize_scale=17,
+            visitable_states=913,
+            color_palette=3,
+            reward_switch=[],
+            reward_config=reward_config)
+
+    def make_game(self, reward_config):
+        self._croppers = self.make_croppers()
+        return deepmind_5roomlarge_all_stochext.make_game(self.level, reward_config)
 
     def make_croppers(self):
         if self.obs_type in {'rgb', 'mask'}:

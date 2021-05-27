@@ -182,8 +182,20 @@ register(
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
 register(
+    id='Deepmind5RoomLargeAllExt-v0',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_all_stochext',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
     id='Deepmind5RoomLargeAll-v1',
     entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_all',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
+    id='Deepmind5RoomLargeAllExt-v1',
+    entry_point='mazeworld.envs:DeepmindMazeWorld_5roomlarge_allext',
     max_episode_steps=500,
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
