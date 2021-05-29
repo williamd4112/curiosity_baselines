@@ -212,14 +212,14 @@ class PlayerSprite(prefab_sprites.MazeWalker):
     """Constructor: just tells `MazeWalker` we can't walk through walls or objects."""
     super(PlayerSprite, self).__init__(
         corner, position, character, impassable='#abcdefgh')
-    self.a_reward = a*15.
-    self.b_reward = b*15.
-    self.c_reward = c*15.
-    self.d_reward = d*15.
-    self.e_reward = e*15.
-    self.f_reward = f*15.
-    self.g_reward = g*15.
-    self.h_reward = h*15.
+    self.a_reward = a
+    self.b_reward = b
+    self.c_reward = c
+    self.d_reward = d
+    self.e_reward = e
+    self.f_reward = f
+    self.g_reward = g
+    self.h_reward = h
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     del backdrop, layers  # Unused
