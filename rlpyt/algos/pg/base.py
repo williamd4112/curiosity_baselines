@@ -9,6 +9,7 @@ from rlpyt.algos.utils import discount_return, generalized_advantage_estimation,
 # Convention: traj_info fields CamelCase, opt_info fields lowerCamelCase
 OptInfo = namedtuple("OptInfo", ["return_",
                                  "intrinsic_rewards",
+                                 "extint_ratio",
                                  "valpred",
                                  "advantage",
                                  "loss", 
@@ -62,16 +63,22 @@ class PolicyGradientAlgo(RlAlgorithm):
 
         if self.curiosity_type in {'icm', 'disagreement', 'micm'}:
             intrinsic_rewards, _ = self.agent.curiosity_step(self.curiosity_type, samples.env.observation.clone(), samples.env.next_observation.clone(), samples.agent.action.clone())
+            intrinsic_rewards_logging = intrinsic_rewards.clone().data.numpy()
+            self.intrinsic_rewards = intrinsic_rewards_logging
+            self.extint_ratio = reward.clone().data.numpy()/(intrinsic_rewards_logging+1e-15)
             reward += intrinsic_rewards
-            self.intrinsic_rewards = intrinsic_rewards.clone().data.numpy()
         elif self.curiosity_type == 'ndigo':
             intrinsic_rewards, _ = self.agent.curiosity_step(self.curiosity_type, samples.env.observation.clone(), samples.agent.prev_action.clone(), samples.agent.action.clone()) # no grad
+            intrinsic_rewards_logging = intrinsic_rewards.clone().data.numpy()
+            self.intrinsic_rewards = intrinsic_rewards_logging
+            self.extint_ratio = reward.clone().data.numpy()/(intrinsic_rewards_logging+1e-15)
             reward += intrinsic_rewards
-            self.intrinsic_rewards = intrinsic_rewards.clone().data.numpy()
         elif self.curiosity_type == 'rnd':
             intrinsic_rewards, _ = self.agent.curiosity_step(self.curiosity_type, samples.env.next_observation.clone(), done.clone())
+            intrinsic_rewards_logging = intrinsic_rewards.clone().data.numpy()
+            self.intrinsic_rewards = intrinsic_rewards_logging
+            self.extint_ratio = reward.clone().data.numpy()/(intrinsic_rewards_logging+1e-15)
             reward += intrinsic_rewards
-            self.intrinsic_rewards = intrinsic_rewards.clone().data.numpy()
 
         if self.normalize_reward:
             rews = np.array([])

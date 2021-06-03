@@ -49,6 +49,7 @@ class PPO(PolicyGradientAlgo):
             self.reward_ff = RewardForwardFilter(discount)
             self.reward_rms = RunningMeanStd()
         self.intrinsic_rewards = None
+        self.extint_ratio = None
         
     def initialize(self, *args, **kwargs):
         """
@@ -154,18 +155,22 @@ class PPO(PolicyGradientAlgo):
                     opt_info.inv_loss.append(inv_loss.item())
                     opt_info.forward_loss.append(forward_loss.item())
                     opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
+                    opt_info.extint_ratio.append(np.mean(self.extint_ratio))
                 elif self.curiosity_type == 'disagreement':
                     forward_loss = curiosity_losses
                     opt_info.forward_loss.append(forward_loss.item())
                     opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
+                    opt_info.extint_ratio.append(np.mean(self.extint_ratio))
                 elif self.curiosity_type == 'ndigo':
                     forward_loss = curiosity_losses
                     opt_info.forward_loss.append(forward_loss.item())
                     opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
+                    opt_info.extint_ratio.append(np.mean(self.extint_ratio))
                 elif self.curiosity_type == 'rnd':
                     forward_loss = curiosity_losses
                     opt_info.forward_loss.append(forward_loss.item())
                     opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
+                    opt_info.extint_ratio.append(np.mean(self.extint_ratio))
 
                 if self.normalize_reward:
                     opt_info.reward_total_std.append(self.reward_rms.var**0.5)
