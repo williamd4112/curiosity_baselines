@@ -174,7 +174,8 @@ class PyColabEnv(gym.Env):
                  color_palette=0,
                  reward_switch=[],
                  reward_config=dict(),
-                 switch_perturbations=[]
+                 switch_perturbations=[],
+                 dimensions=(19,19)
                  ):
         """Create an `PyColabEnv` adapter to a `pycolab` game as a `gym.Env`.
 
@@ -194,6 +195,8 @@ class PyColabEnv(gym.Env):
             color_palette: which color palette to use for objects.
             reward_switch: list of objects or coords if the reward function switches.
             reward_config: list of objects and their associated rewards.
+            switch_perturbations: color perturbations if a background switch is applied.
+            dimensions: dimensions of the game board
         """
         assert max_iterations > 0
         assert isinstance(default_reward, numbers.Number)
@@ -220,17 +223,17 @@ class PyColabEnv(gym.Env):
         not_ordered = list(set(layers) - set(test_game.z_order))
         self._render_order = list(reversed(not_ordered + test_game.z_order))
 
-        # Create the observation space.
+        # Prepare observation space.
         self.obs_type = obs_type
-
-        if self.obs_type == 'mask':
-            self.observation_space = spaces.Box(0., 1., [len(self.state_layer_chars)] + crop_window) # don't count empty space layer
-        elif self.obs_type == 'rgb':
-            self.observation_space = spaces.Box(0., 255., [crop_window[0]*resize_scale, crop_window[1]*resize_scale] + [3])
-        elif self.obs_type == 'rgb_full':
-            self.observation_space = spaces.Box(0., 255., [19*resize_scale, 19*resize_scale] + [3])
-        self.width, self.height = crop_window[0]*resize_scale, crop_window[1]*resize_scale
+        self.height, self.width = dimensions
+        self.crop_window = crop_window
         self.action_space = action_space
+        if self.obs_type == 'mask':
+            self.observation_space = spaces.Box(0., 1., [len(self.state_layer_chars)] + self.crop_window) # don't count empty space layer
+        elif self.obs_type == 'rgb':
+            self.observation_space = spaces.Box(0., 255., [self.crop_window[0]*resize_scale, self.crop_window[1]*resize_scale] + [3])
+        elif self.obs_type == 'rgb_full':
+            self.observation_space = spaces.Box(0., 255., [self.height*17, self.width*17] + [3])
         self.act_null_value = act_null_value
         self.visitable_states = visitable_states
 
@@ -247,7 +250,6 @@ class PyColabEnv(gym.Env):
         self._game_over = False
 
         self.viewer = None
-        self.resize_scale = resize_scale
         self.delay = delay
 
         # Metrics
@@ -256,8 +258,7 @@ class PyColabEnv(gym.Env):
         self.visitation_entropy = 0
         self.num_obj_eps = {char:0 for char in self.objects}
 
-    def pycolab_init(self, logdir, log_heatmaps):
-        # Heatmaps
+    def heatmap_init(self, logdir, log_heatmaps):
         self.episodes = 0 # number of episodes run (to determine when to save heatmaps)
         self.heatmap_save_freq = 3 # save heatmaps every 3 episodes
         self.heatmap = np.zeros((5, 5)) # stores counts each episode (5x5 is a placeholder)
@@ -275,6 +276,9 @@ class PyColabEnv(gym.Env):
                 last_episode = int(sorted_images[-1].split('.')[0])
                 self.episodes = last_episode
 
+    def obs_init(self, resize_scale):
+        self.resize_scale = resize_scale
+
     @abc.abstractmethod
     def make_game(self):
         """Function that creates a new pycolab game.
@@ -290,7 +294,6 @@ class PyColabEnv(gym.Env):
         Returns:
             Dictionary mapping key name to `tuple(R, G, B)`.
         """
-
         if self._color_palette == 0:
             return {'P' : (255., 255., 255.),
                     'a' : (175., 255., 15.),

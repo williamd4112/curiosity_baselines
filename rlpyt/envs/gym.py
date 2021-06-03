@@ -211,16 +211,23 @@ def deepmind_make(*args, info_example=None, **kwargs):
     env = gym.make(kwargs['game'], 
                    obs_type=kwargs['obs_type'], 
                    max_iterations=kwargs['max_steps_per_episode'])
-    env.pycolab_init(kwargs['logdir'], kwargs['log_heatmaps'])
+    env.heatmap_init(kwargs['logdir'], kwargs['log_heatmaps'])
+    
+    if kwargs['obs_type'] == 'rgb_full':
+        resize_scale = 84 // env.width
+    else:
+        resize_scale = 17
+    env.obs_init(resize_scale)
+    print(env.observation_space, env.visitation_entropy, env.episodes, env.resize_scale)
 
     if kwargs['no_negative_reward']:
         env = NoNegativeReward(env)
 
     if 'rgb' in kwargs['obs_type']:
-        if kwargs['obs_type'] == 'rgb_full':
-            env = ResizeFull(env)
         if kwargs['grayscale'] == True:
             env = Grayscale(env)
+        if kwargs['obs_type'] == 'rgb_full' and env.width != env.height:
+            env = ResizeFull(env)
         env = PytorchImage(env)
 
     if info_example is None:

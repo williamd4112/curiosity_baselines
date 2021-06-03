@@ -79,11 +79,11 @@ class FiveRoom(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=223,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -114,11 +114,11 @@ class FiveRoomWhitenoise(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=224,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -149,11 +149,11 @@ class FiveRoomFlipped(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=223,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -184,11 +184,11 @@ class FiveRoomAll(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=221,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -219,11 +219,11 @@ class FiveRoomLong(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=236,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,31))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -254,11 +254,11 @@ class FiveRoomLongunpadded(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=236,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,31))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -289,11 +289,11 @@ class FiveRoomLongwide(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=208,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,31))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -324,11 +324,11 @@ class FiveRoomLongExt(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=208,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,31))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -359,11 +359,11 @@ class FiveRoomNoobj(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=224,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,24))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -394,11 +394,11 @@ class FiveRoomOneobj(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=224,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -429,11 +429,11 @@ class FiveRoomOnewhite(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=224,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -465,11 +465,11 @@ class FiveRoomRandomfixed(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=223,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -500,11 +500,11 @@ class FiveRoomBouncing(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=222,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -535,11 +535,11 @@ class FiveRoomBrownian(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=223,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -571,11 +571,11 @@ class Maze(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=150.,
             color_palette=0,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(13,21))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -607,11 +607,11 @@ class FiveRoomMoveable(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=223,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -643,11 +643,11 @@ class FiveRoomMoveableBrownian(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=223,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -679,11 +679,11 @@ class FiveRoomMoveableStoch(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=223,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -715,11 +715,11 @@ class FiveRoomExtInt(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=223,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(19,19))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -751,11 +751,11 @@ class PianoLong(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=1516,
             color_palette=1,
             reward_switch=[],
-            reward_config=reward_config)
+            reward_config=reward_config,
+            dimensions=(18,113))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -789,11 +789,11 @@ class FiveRoomXL(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -824,11 +824,11 @@ class FiveRoomXLEnemy(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -859,12 +859,12 @@ class FiveRoomXLWeather(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=913,
             color_palette=3,
             reward_switch=['a', 'b', 'c', 'd'],
             reward_config=reward_config,
-            switch_perturbations=[(-80., -80., 70.),(-65., 40., -65.),(-40., -50., 0.),(40., -65., -65.)])
+            switch_perturbations=[(-80., -80., 70.),(-65., 40., -65.),(-40., -50., 0.),(40., -65., -65.)],
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -895,11 +895,11 @@ class FiveRoomXLText(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=891,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -930,11 +930,11 @@ class FiveRoomXLWhitenoise(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=916,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -965,11 +965,11 @@ class FiveRoomXLTextWhitenoise(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=892,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1000,11 +1000,11 @@ class FiveRoomXLRandomfixed(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1035,11 +1035,11 @@ class FiveRoomXLTextRandomfixed(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=891,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1070,11 +1070,11 @@ class FiveRoomXLMoveable(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1105,11 +1105,11 @@ class FiveRoomXLMoveableExt(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1141,11 +1141,11 @@ class FiveRoomXLTextMoveable(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=891,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1176,11 +1176,11 @@ class FiveRoomXLMoveableStoch(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1212,11 +1212,11 @@ class FiveRoomXLMoveableStochExt(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1248,11 +1248,11 @@ class FiveRoomXLTextMoveableStoch(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=891,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1284,11 +1284,11 @@ class FiveRoomXLMoveableBrownian(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1320,11 +1320,11 @@ class FiveRoomXLTextMoveableBrownian(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=891,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1355,11 +1355,11 @@ class FiveRoomXLBrownian(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1391,11 +1391,11 @@ class FiveRoomXLTextBrownian(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=891,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1427,11 +1427,11 @@ class FiveRoomXLAll(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=913,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1464,11 +1464,11 @@ class FiveRoomXLAllExt(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=913,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1500,11 +1500,11 @@ class FiveRoomXLAllStoch(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=913,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1537,11 +1537,11 @@ class FiveRoomXLAllStochExt(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=913,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1574,11 +1574,11 @@ class FiveRoomXLTextAll(pycolab_env.PyColabEnv):
             obs_type=obs_type,
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
-            resize_scale=17,
             visitable_states=889,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1614,11 +1614,11 @@ class EightRoom(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=633,
             color_palette=2,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1651,11 +1651,11 @@ class EightRoomExt(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=633,
             color_palette=2,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1689,11 +1689,11 @@ class EightRoomRgb(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=633,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1726,11 +1726,11 @@ class EightRoomDiff(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=633,
             color_palette=0,
             reward_switch=[],
-            reward_config=reward_config,)
+            reward_config=reward_config,
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1764,12 +1764,12 @@ class EightRoomWeather(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=633,
             color_palette=3,
             reward_switch=['a','b','c','d','e','f','g','h'],
             reward_config=reward_config,
-            switch_perturbations=[(-45.,-25.,-20.),(-20.,-20.,-40.),(-70.,20.,-40.),(-60.,-60.,30.),(-90.,0.,0.),(0.,-90.,0.),(-20.,-20.,-40.),(-20.,-80.,10.)])
+            switch_perturbations=[(-45.,-25.,-20.),(-20.,-20.,-40.),(-70.,20.,-40.),(-60.,-60.,30.),(-90.,0.,0.),(0.,-90.,0.),(-20.,-20.,-40.),(-20.,-80.,10.)],
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1803,12 +1803,12 @@ class EightRoomXLWeather(pycolab_env.PyColabEnv):
             default_reward=default_reward,
             action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
-            resize_scale=17,
             visitable_states=952,
             color_palette=3,
             reward_switch=['a','b','c','d','e','f','g','h'],
             reward_config=reward_config,
-            switch_perturbations=[(-45.,-25.,-20.),(-20.,-20.,-40.),(-70.,20.,-40.),(-60.,-60.,30.),(-90.,0.,0.),(0.,-90.,0.),(-20.,-20.,-40.),(-20.,-80.,10.)])
+            switch_perturbations=[(-45.,-25.,-20.),(-20.,-20.,-40.),(-70.,20.,-40.),(-60.,-60.,30.),(-90.,0.,0.),(0.,-90.,0.),(-20.,-20.,-40.),(-20.,-80.,10.)],
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
