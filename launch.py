@@ -122,10 +122,6 @@ def launch_tmux(args):
         time.sleep(6) # wait for logdir to be created
         with open(log_dir + '/cmd.txt', 'w') as cmd_file:
             cmd_file.writelines(commands['runner'])
-        # with open(log_dir + '/git.txt', 'w') as git_file:
-        #     branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip().decode('utf-8')
-        #     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
-        #     git_file.write('{}/{}'.format(branch, commit))
 
 
 def start_experiment(args):
@@ -270,9 +266,7 @@ def start_experiment(args):
             logdir=args.log_dir,
             obs_type=args.obs_type,
             grayscale=args.grayscale,
-            max_steps_per_episode=args.max_episode_steps,
-            obj_reward=args.obj_reward,
-            enemy_reward=args.enemy_reward
+            max_steps_per_episode=args.max_episode_steps
             )
     elif args.env in _MUJOCO_ENVS:
         env_cl = gym_make

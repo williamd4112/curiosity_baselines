@@ -72,13 +72,13 @@ class FiveRoom(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoom, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=223,
             color_palette=1,
@@ -96,7 +96,7 @@ class FiveRoom(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomWhitenoise(pycolab_env.PyColabEnv):
-    """Deepmind World Discovery Models experiment 1.
+    """A 5 room map with whitenoise background, and a fixed object.
     """
 
     def __init__(self,
@@ -107,13 +107,13 @@ class FiveRoomWhitenoise(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomWhitenoise, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=224,
             color_palette=1,
@@ -131,7 +131,7 @@ class FiveRoomWhitenoise(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomFlipped(pycolab_env.PyColabEnv):
-    """Deepmind World Discovery Models experiment 1.
+    """Deepmind World Discovery Models experiment 1, with the rooms flipped.
     """
 
     def __init__(self,
@@ -142,13 +142,13 @@ class FiveRoomFlipped(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomFlipped, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=223,
             color_palette=1,
@@ -177,13 +177,13 @@ class FiveRoomAll(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomAll, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=221,
             color_palette=1,
@@ -201,7 +201,7 @@ class FiveRoomAll(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomLong(pycolab_env.PyColabEnv):
-    """Deepmind World Discovery Models experiment with a long corridor.
+    """A 5 room variant with a long corridor leading to another room.
     """
 
     def __init__(self,
@@ -212,13 +212,13 @@ class FiveRoomLong(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomLong, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=236,
             color_palette=1,
@@ -236,7 +236,7 @@ class FiveRoomLong(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomLongunpadded(pycolab_env.PyColabEnv):
-    """Deepmind World Discovery Models experiment with a long corridor.
+    """5 room map with a long corridor, with the sides not padded with walls.
     """
 
     def __init__(self,
@@ -247,13 +247,13 @@ class FiveRoomLongunpadded(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomLongunpadded, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=236,
             color_palette=1,
@@ -282,13 +282,13 @@ class FiveRoomLongwide(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomLongwide, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=208,
             color_palette=1,
@@ -306,7 +306,7 @@ class FiveRoomLongwide(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomLongExt(pycolab_env.PyColabEnv):
-    """5 room maze with a wider long corridor.
+    """5 room maze with a long corridor and an extrinsic reward in the far room.
     """
 
     def __init__(self,
@@ -317,13 +317,13 @@ class FiveRoomLongExt(pycolab_env.PyColabEnv):
                  reward_config={'a':1.0}):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomLongExt, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=208,
             color_palette=3,
@@ -341,7 +341,7 @@ class FiveRoomLongExt(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomNoobj(pycolab_env.PyColabEnv):
-    """Deepmind World Discovery Models experiment 1 with no reachable objects.
+    """5 room map with no objects.
     """
 
     def __init__(self,
@@ -352,13 +352,13 @@ class FiveRoomNoobj(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomNoobj, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=224,
             color_palette=1,
@@ -376,7 +376,7 @@ class FiveRoomNoobj(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomOneobj(pycolab_env.PyColabEnv):
-    """Deepmind World Discovery Models experiment 1 with just a fixed object.
+    """5 room map with a single fixed object.
     """
 
     def __init__(self,
@@ -387,13 +387,13 @@ class FiveRoomOneobj(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomOneobj, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=224,
             color_palette=1,
@@ -411,7 +411,7 @@ class FiveRoomOneobj(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomOnewhite(pycolab_env.PyColabEnv):
-    """Deepmind World Discovery Models experiment 1 with just a white noise object.
+    """5 room map with a white noise teleporter.
     """
 
     def __init__(self,
@@ -422,13 +422,13 @@ class FiveRoomOnewhite(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomOnewhite, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=224,
             color_palette=1,
@@ -447,7 +447,7 @@ class FiveRoomOnewhite(pycolab_env.PyColabEnv):
 
 
 class FiveRoomRandomfixed(pycolab_env.PyColabEnv):
-    """Deepmind World Discovery Models experiment 2.
+    """5 room map with a randomly relocating fixed object.
     """
 
     def __init__(self,
@@ -458,13 +458,13 @@ class FiveRoomRandomfixed(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomRandomfixed, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=223,
             color_palette=1,
@@ -493,13 +493,13 @@ class FiveRoomBouncing(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b', 'c']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomBouncing, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=222,
             color_palette=1,
@@ -528,13 +528,13 @@ class FiveRoomBrownian(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomBrownian, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=223,
             color_palette=1,
@@ -563,13 +563,13 @@ class Maze(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd', 'e']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(Maze, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=150.,
@@ -588,7 +588,7 @@ class Maze(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomMoveable(pycolab_env.PyColabEnv):
-    """A 5 room environment with an affectable object.
+    """A 5 room environment with a controllable object.
     """
 
     def __init__(self,
@@ -599,13 +599,13 @@ class FiveRoomMoveable(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['e', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomMoveable, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=223,
@@ -624,7 +624,7 @@ class FiveRoomMoveable(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomMoveableBrownian(pycolab_env.PyColabEnv):
-    """A 5 room environment with an affectable object.
+    """A 5 room environment with a controllable object and a brownian object.
     """
 
     def __init__(self,
@@ -635,13 +635,13 @@ class FiveRoomMoveableBrownian(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['e', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomMoveableBrownian, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=223,
@@ -660,7 +660,7 @@ class FiveRoomMoveableBrownian(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomMoveableStoch(pycolab_env.PyColabEnv):
-    """A 5 room environment with an affectable object that has stochastic movement.
+    """A 5 room environment with a stochastic controllable object.
     """
 
     def __init__(self,
@@ -671,13 +671,13 @@ class FiveRoomMoveableStoch(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['e', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomMoveableStoch, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=223,
@@ -696,7 +696,7 @@ class FiveRoomMoveableStoch(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomExtInt(pycolab_env.PyColabEnv):
-    """A 5 room environment with an affectable object that has stochastic movement.
+    """5 room map with an intrinsic attractor and an extrinsic attractor.
     """
 
     def __init__(self,
@@ -707,13 +707,13 @@ class FiveRoomExtInt(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects 
         self.obs_type = obs_type
         super(FiveRoomExtInt, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=223,
@@ -732,7 +732,7 @@ class FiveRoomExtInt(pycolab_env.PyColabEnv):
           return []
 
 class PianoLong(pycolab_env.PyColabEnv):
-    """A 5 room environment with an affectable object that has stochastic movement.
+    """Piano map with no objects.
     """
 
     def __init__(self,
@@ -743,13 +743,13 @@ class PianoLong(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(PianoLong, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=1516,
@@ -782,13 +782,13 @@ class FiveRoomXL(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXL, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=915,
             color_palette=3,
@@ -806,7 +806,7 @@ class FiveRoomXL(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLEnemy(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a bouncing enemy.
     """
 
     def __init__(self,
@@ -817,13 +817,13 @@ class FiveRoomXLEnemy(pycolab_env.PyColabEnv):
                  reward_config={'a':1.0,'b':-2.0}):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLEnemy, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=915,
             color_palette=3,
@@ -841,7 +841,7 @@ class FiveRoomXLEnemy(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLWeather(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a changing central background color.
     """
 
     def __init__(self,
@@ -852,13 +852,13 @@ class FiveRoomXLWeather(pycolab_env.PyColabEnv):
                  reward_config={'a':1.0,'b':0.0,'c':0.0,'d':0.0}):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLWeather, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=913,
             color_palette=3,
@@ -877,7 +877,7 @@ class FiveRoomXLWeather(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLText(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment, with textures.
     """
 
     def __init__(self,
@@ -888,13 +888,13 @@ class FiveRoomXLText(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLText, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=891,
             color_palette=3,
@@ -912,7 +912,7 @@ class FiveRoomXLText(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLWhitenoise(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a whitenoise background room.
     """
 
     def __init__(self,
@@ -923,13 +923,13 @@ class FiveRoomXLWhitenoise(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLWhitenoise, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=916,
             color_palette=3,
@@ -947,7 +947,7 @@ class FiveRoomXLWhitenoise(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLTextWhitenoise(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with textures and a whitenoise background room.
     """
 
     def __init__(self,
@@ -958,18 +958,18 @@ class FiveRoomXLTextWhitenoise(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLTextWhitenoise, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=892,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,) # 3, 21
+            reward_config=reward_config,)
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -982,7 +982,7 @@ class FiveRoomXLTextWhitenoise(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLRandomfixed(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a fixed object that moves
     """
 
     def __init__(self,
@@ -993,13 +993,13 @@ class FiveRoomXLRandomfixed(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLRandomfixed, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=915,
             color_palette=3,
@@ -1017,7 +1017,7 @@ class FiveRoomXLRandomfixed(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLTextRandomfixed(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with textures and a randomly initialized fixed.
     """
 
     def __init__(self,
@@ -1028,13 +1028,13 @@ class FiveRoomXLTextRandomfixed(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLTextRandomfixed, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=891,
             color_palette=3,
@@ -1052,7 +1052,7 @@ class FiveRoomXLTextRandomfixed(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLMoveable(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a controllable object.
     """
 
     def __init__(self,
@@ -1063,13 +1063,13 @@ class FiveRoomXLMoveable(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['e', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLMoveable, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=915,
             color_palette=3,
@@ -1087,7 +1087,7 @@ class FiveRoomXLMoveable(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLMoveableExt(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a controllable object and extrinsic target.
     """
 
     def __init__(self,
@@ -1098,18 +1098,18 @@ class FiveRoomXLMoveableExt(pycolab_env.PyColabEnv):
                  reward_config={'e':1.0}):
         self.level = level
         self.objects = ['e']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLMoveableExt, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,) # 3, 21
+            reward_config=reward_config,)
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1122,7 +1122,8 @@ class FiveRoomXLMoveableExt(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLTextMoveable(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a controllable object
+    and textures.
     """
 
     def __init__(self,
@@ -1133,18 +1134,18 @@ class FiveRoomXLTextMoveable(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['e', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLTextMoveable, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=891,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,) # 3, 21
+            reward_config=reward_config,)
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1157,7 +1158,7 @@ class FiveRoomXLTextMoveable(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLMoveableStoch(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a stochastic controllable.
     """
 
     def __init__(self,
@@ -1168,13 +1169,13 @@ class FiveRoomXLMoveableStoch(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['e', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLMoveableStoch, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=915,
             color_palette=3,
@@ -1192,7 +1193,8 @@ class FiveRoomXLMoveableStoch(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLMoveableStochExt(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a stochastic controllable
+    and an extrinsic reward target.
     """
 
     def __init__(self,
@@ -1203,13 +1205,13 @@ class FiveRoomXLMoveableStochExt(pycolab_env.PyColabEnv):
                  reward_config={'e':1.0}):
         self.level = level
         self.objects = ['e']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLMoveableStochExt, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=915,
             color_palette=3,
@@ -1227,7 +1229,8 @@ class FiveRoomXLMoveableStochExt(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLTextMoveableStoch(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a stochastic controllable and
+    textured background.
     """
 
     def __init__(self,
@@ -1238,18 +1241,18 @@ class FiveRoomXLTextMoveableStoch(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['e', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLTextMoveableStoch, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=891,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,) # 3, 21
+            reward_config=reward_config,)
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1262,7 +1265,8 @@ class FiveRoomXLTextMoveableStoch(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLMoveableBrownian(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a controllable object
+    and a brownian object.
     """
 
     def __init__(self,
@@ -1273,18 +1277,18 @@ class FiveRoomXLMoveableBrownian(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['e', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLMoveableBrownian, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=915,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,) # 3, 21
+            reward_config=reward_config,)
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1297,7 +1301,8 @@ class FiveRoomXLMoveableBrownian(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLTextMoveableBrownian(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with textured walls and
+    a controllable object/brownian object.
     """
 
     def __init__(self,
@@ -1308,13 +1313,13 @@ class FiveRoomXLTextMoveableBrownian(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['e', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLTextMoveableBrownian, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=891,
             color_palette=3,
@@ -1332,7 +1337,7 @@ class FiveRoomXLTextMoveableBrownian(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLBrownian(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a brownian object.
     """
 
     def __init__(self,
@@ -1343,13 +1348,13 @@ class FiveRoomXLBrownian(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLBrownian, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=915,
             color_palette=3,
@@ -1367,7 +1372,8 @@ class FiveRoomXLBrownian(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLTextBrownian(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with wall textures and
+    a brownian object.
     """
 
     def __init__(self,
@@ -1378,18 +1384,18 @@ class FiveRoomXLTextBrownian(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLTextBrownian, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=891,
             color_palette=3,
             reward_switch=[],
-            reward_config=reward_config,) # 3, 21
+            reward_config=reward_config,)
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
@@ -1402,7 +1408,8 @@ class FiveRoomXLTextBrownian(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLAll(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a brownian, a fixed,
+    a controllable, and a teleporter object.
     """
 
     def __init__(self,
@@ -1413,13 +1420,13 @@ class FiveRoomXLAll(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLAll, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=913,
             color_palette=3,
@@ -1437,7 +1444,9 @@ class FiveRoomXLAll(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLAllExt(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a brownian,
+    a fixed, a controllable, and a teleporter object. An extrinsic
+    reward target is in the top room.
     """
 
     def __init__(self,
@@ -1448,13 +1457,13 @@ class FiveRoomXLAllExt(pycolab_env.PyColabEnv):
                  reward_config={'a':1.0}):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLAllExt, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=913,
             color_palette=3,
@@ -1472,7 +1481,8 @@ class FiveRoomXLAllExt(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLAllStoch(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a brownian,
+    a teleporter, a fixed object, and a stochastic controllable.
     """
 
     def __init__(self,
@@ -1483,13 +1493,13 @@ class FiveRoomXLAllStoch(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLAllStoch, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=913,
             color_palette=3,
@@ -1507,7 +1517,9 @@ class FiveRoomXLAllStoch(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLAllStochExt(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a brownian,
+    a fixed, a stochastic controllable, and a teleporter object. An extrinsic
+    reward target is in the top room. 
     """
 
     def __init__(self,
@@ -1518,13 +1530,13 @@ class FiveRoomXLAllStochExt(pycolab_env.PyColabEnv):
                  reward_config={'a':1.0}):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLAllStochExt, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=913,
             color_palette=3,
@@ -1542,7 +1554,9 @@ class FiveRoomXLAllStochExt(pycolab_env.PyColabEnv):
           return []
 
 class FiveRoomXLTextAll(pycolab_env.PyColabEnv):
-    """Large version of the 5 room environment
+    """Large version of the 5 room environment with a brownian,
+    a teleporter, a controllable, and a fixed object. Extra wall
+    textures included.
     """
 
     def __init__(self,
@@ -1553,13 +1567,13 @@ class FiveRoomXLTextAll(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(FiveRoomXLTextAll, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             resize_scale=17,
             visitable_states=889,
             color_palette=3,
@@ -1580,7 +1594,8 @@ class FiveRoomXLTextAll(pycolab_env.PyColabEnv):
 ####################################################### EIGHT ROOM ##########################################################
 #############################################################################################################################
 class EightRoom(pycolab_env.PyColabEnv):
-    """An eight room environment with many fixed objects.
+    """An eight room environment with 8 fixed object, each
+    with the same color.
     """
 
     def __init__(self,
@@ -1591,13 +1606,13 @@ class EightRoom(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(EightRoom, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=633,
@@ -1616,7 +1631,8 @@ class EightRoom(pycolab_env.PyColabEnv):
           return []
 
 class EightRoomExt(pycolab_env.PyColabEnv):
-    """An eight room environment with many fixed objects.
+    """An eight room environment with 8 fixed object, each with the
+    same color. One object gives an extrinsic reward.
     """
 
     def __init__(self,
@@ -1627,13 +1643,13 @@ class EightRoomExt(pycolab_env.PyColabEnv):
                  reward_config={'d':1.0}):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(EightRoomExt, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=633,
@@ -1652,7 +1668,9 @@ class EightRoomExt(pycolab_env.PyColabEnv):
           return []
 
 class EightRoomRgb(pycolab_env.PyColabEnv):
-    """An eight room environment with many fixed objects.
+    """An eight room environment with 8 fixed objects. Each object is
+    a different color, using a color palette where each color averages
+    to 60 across channels.
     """
 
     def __init__(self,
@@ -1663,13 +1681,13 @@ class EightRoomRgb(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(EightRoomRgb, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=633,
@@ -1688,7 +1706,8 @@ class EightRoomRgb(pycolab_env.PyColabEnv):
           return []
 
 class EightRoomDiff(pycolab_env.PyColabEnv):
-    """An eight room environment with many fixed objects.
+    """An eight room environment with 8 fixed objects, each
+    with a different color.
     """
 
     def __init__(self,
@@ -1699,13 +1718,13 @@ class EightRoomDiff(pycolab_env.PyColabEnv):
                  reward_config=dict()):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(EightRoomDiff, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=633,
@@ -1724,7 +1743,9 @@ class EightRoomDiff(pycolab_env.PyColabEnv):
           return []
 
 class EightRoomWeather(pycolab_env.PyColabEnv):
-    """An eight room environment with many fixed objects.
+    """An eight room environment with 8 fixed objects, and a
+    central room that changes color and switches the source of
+    extrinsic reward.
     """
 
     def __init__(self,
@@ -1735,13 +1756,13 @@ class EightRoomWeather(pycolab_env.PyColabEnv):
                  reward_config={'a':1.0,'b':0.0,'c':0.0,'d':0.0,'e':0.0,'f':0.0,'g':0.0,'h':0.0}):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(EightRoomWeather, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=633,
@@ -1761,7 +1782,9 @@ class EightRoomWeather(pycolab_env.PyColabEnv):
           return []
 
 class EightRoomXLWeather(pycolab_env.PyColabEnv):
-    """An eight room environment with many fixed objects.
+    """A large eight room environment with 8 fixed objects, and a
+    central room that changes color and switches the source of
+    extrinsic reward.
     """
 
     def __init__(self,
@@ -1772,13 +1795,13 @@ class EightRoomXLWeather(pycolab_env.PyColabEnv):
                  reward_config={'a':1.0,'b':0.0,'c':0.0,'d':0.0,'e':0.0,'f':0.0,'g':0.0,'h':0.0}):
         self.level = level
         self.objects = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-        self.state_layer_chars = ['#'] + self.objects # each char will produce a layer in the disentangled state
+        self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
         super(EightRoomXLWeather, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
-            action_space=spaces.Discrete(4 + 1), # left, right, up, down, no action
+            action_space=spaces.Discrete(4 + 1),
             act_null_value=4,
             resize_scale=17,
             visitable_states=952,
