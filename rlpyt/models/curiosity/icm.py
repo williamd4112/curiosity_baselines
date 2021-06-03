@@ -29,7 +29,7 @@ class ICM(nn.Module):
             feature_space='inverse'
             ):
         super(ICM, self).__init__()
-        self.prediction_beta = prediction_beta
+        self.beta = prediction_beta
         self.feature_encoding = feature_encoding
         self.feature_space = feature_space
         self.obs_stats = obs_stats
@@ -103,7 +103,7 @@ class ICM(nn.Module):
     def compute_bonus(self, observations, next_observations, actions):
         phi1, phi2, predicted_phi2, _ = self.forward(observations, next_observations, actions)
         reward = nn.functional.mse_loss(predicted_phi2, phi2, reduction='none').sum(-1)/self.feature_size
-        return self.prediction_beta * reward
+        return self.beta * reward
 
     def compute_loss(self, observations, next_observations, actions, valid):
         # dimension add for when you have only one environment

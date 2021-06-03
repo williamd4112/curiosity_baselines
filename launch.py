@@ -182,6 +182,7 @@ def start_experiment(args):
     elif args.curiosity_alg == 'ndigo':
         model_args['curiosity_kwargs']['feature_encoding'] = args.feature_encoding
         model_args['curiosity_kwargs']['pred_horizon'] = args.pred_horizon
+        model_args['curiosity_kwargs']['prediction_beta'] = args.prediction_beta
         model_args['curiosity_kwargs']['batch_norm'] = args.batch_norm
         model_args['curiosity_kwargs']['device'] = args.sample_mode
     elif args.curiosity_alg == 'rnd':

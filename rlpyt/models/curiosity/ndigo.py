@@ -44,6 +44,7 @@ class NDIGO(torch.nn.Module):
             image_shape,
             action_size,
             horizon,
+            prediction_beta=1.0,
             feature_encoding='idf_maze',
             gru_size=128,
             batch_norm=False,
@@ -57,6 +58,7 @@ class NDIGO(torch.nn.Module):
         self.horizon = horizon
         self.feature_encoding = feature_encoding
         self.obs_stats = obs_stats
+        self.beta = prediction_beta
         if self.obs_stats is not None:
             self.obs_mean, self.obs_std = self.obs_stats
         self.device = torch.device('cuda:0' if device == 'gpu' else 'cpu')
@@ -211,7 +213,7 @@ class NDIGO(torch.nn.Module):
 
         # r_int = nn.functional.relu(r_int)
 
-        return r_int
+        return r_int*self.beta
 
 
     def compute_loss(self, observations, prev_actions, actions, valid):

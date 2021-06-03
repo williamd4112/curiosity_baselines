@@ -30,7 +30,7 @@ class MICM(nn.Module):
             ):
         super(MICM, self).__init__()
         self.device = torch.device("cuda:0" if device == "gpu" else "cpu")
-        self.prediction_beta = prediction_beta
+        self.beta = prediction_beta
         self.feature_encoding = feature_encoding
         self.obs_stats = obs_stats
         if self.obs_stats is not None:
@@ -124,7 +124,7 @@ class MICM(nn.Module):
         elif self.ensemble_mode == 'var':
             reward = torch.var(rewards, dim=0)
 
-        return self.prediction_beta * reward
+        return self.beta * reward
 
     def compute_loss(self, observations, next_observations, actions, valid):
         # dimension add for when you have only one environment

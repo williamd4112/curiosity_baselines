@@ -21,12 +21,13 @@ class RND(nn.Module):
             obs_stats=None,
             prediction_beta=1.0,
             drop_probability=1.0,
+            feature_encoding='none',
             gamma=0.99,
             device='cpu'
             ):
         super(RND, self).__init__()
 
-        self.prediction_beta = prediction_beta
+        self.beta = prediction_beta
         self.drop_probability = drop_probability
         self.device = torch.device('cuda:0' if device == 'gpu' else 'cpu')
 
@@ -180,7 +181,7 @@ class RND(nn.Module):
 
         # apply done mask
         rewards *= not_done
-        return self.prediction_beta * rewards
+        return self.beta * rewards
 
     def compute_loss(self, next_observations, valid):
         phi, predicted_phi, _ = self.forward(next_observations, not_done=None)

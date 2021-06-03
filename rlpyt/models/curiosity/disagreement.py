@@ -30,7 +30,7 @@ class Disagreement(nn.Module):
         super(Disagreement, self).__init__()
 
         self.ensemble_size = ensemble_size
-        self.prediction_beta = prediction_beta
+        self.beta = prediction_beta
         self.feature_encoding = feature_encoding
         self.obs_stats = obs_stats
         self.device = torch.device("cuda:0" if device == "gpu" else "cpu")
@@ -104,7 +104,7 @@ class Disagreement(nn.Module):
         _, _, predicted_phi2_stacked = self.forward(observations, next_observations, actions)
         feature_var = torch.var(predicted_phi2_stacked, dim=0) # feature variance across forward models
         reward = torch.mean(feature_var, axis=-1) # mean over feature
-        return self.prediction_beta * reward
+        return self.beta * reward
 
     def compute_loss(self, observations, next_observations, actions, valid):
         #------------------------------------------------------------#
