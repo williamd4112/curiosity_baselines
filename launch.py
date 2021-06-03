@@ -45,6 +45,7 @@ with open('./global.json') as global_params:
     _RESULTS_DIR = params['local_resultsdir']
     _TB_PORT = params['tb_port']
     _ATARI_ENVS = params['envs']['atari_envs']
+    _PYCOLAB_ENVS = params['envs']['pycolab_envs']
     _MUJOCO_ENVS = params['envs']['mujoco_envs']
 
 
@@ -256,7 +257,7 @@ def start_experiment(args):
             normalize_obs=args.normalize_obs,
             normalize_obs_steps=10000
             )
-    elif 'deepmind' in args.env.lower(): # pycolab deepmind environments
+    elif args.env in _PYCOLAB_ENVS:
         env_cl = deepmind_make
         traj_info_cl = PycolabTrajInfo
         env_args = dict(

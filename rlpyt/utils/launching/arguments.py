@@ -5,6 +5,7 @@ import json
 with open('./global.json') as global_params:
     params = json.load(global_params)
     _ATARI_ENVS = params['envs']['atari_envs']
+    _PYCOLAB_ENVS = params['envs']['pycolab_envs']
     _MUJOCO_ENVS = params['envs']['mujoco_envs']
 
 def get_args(args_in=sys.argv[1:]):
@@ -63,7 +64,7 @@ def get_args(args_in=sys.argv[1:]):
     if 'mario' in environment.lower():
         parser.add_argument('-mario_level', default='Level1-1', type=str, help='World and level to start at for super mario bros.')
         parser.add_argument('-normalize_obs', action='store_true', help='Whether or not to normalize the observation each step.')
-    elif 'deepmind' in environment.lower():
+    elif environment in _PYCOLAB_ENVS:
         parser.add_argument('-log_heatmaps', action='store_true', help='Whether or not to store heatmaps.')
         parser.add_argument('-normalize_obs', action='store_true', help='Whether or not to normalize the observation each step.')
         parser.add_argument('-obs_type', default='mask', type=str, choices=['mask', 'rgb', 'rgb_full'], help='Whether to pass binary mask observations or RGB observations.')
