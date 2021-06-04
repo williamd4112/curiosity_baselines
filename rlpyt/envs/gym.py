@@ -218,7 +218,6 @@ def deepmind_make(*args, info_example=None, **kwargs):
     else:
         resize_scale = 17
     env.obs_init(resize_scale)
-    print(env.observation_space, env.visitation_entropy, env.episodes, env.resize_scale)
 
     if kwargs['no_negative_reward']:
         env = NoNegativeReward(env)
