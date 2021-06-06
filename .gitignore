@@ -9,6 +9,9 @@ heatmap*
 images
 Makefile*
 monitor.py
+barplot*
+batch.py
+ops.py
 
 # Results directory, and mujoco key
 /results/
