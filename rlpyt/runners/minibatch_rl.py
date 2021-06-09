@@ -132,9 +132,11 @@ class MinibatchRlBase(BaseRunner):
         self._last_update_counter = 0
 
     def shutdown(self):
-        logger.log("Training complete.")
+        logger.log("Shutting down ...")
         self.pbar.stop()
-        self.sampler.shutdown()
+        logger.log("Progress bar stopped.")
+        self.sampler.shutdown()        
+        logger.log("Training complete.")
 
     def get_itr_snapshot(self, itr):
         """
