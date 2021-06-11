@@ -805,7 +805,7 @@ class FiveRoomXL(pycolab_env.PyColabEnv):
         elif self.obs_type == 'rgb_full':
           return []
 
-class FiveRoomXLEnemy(pycolab_env.PyColabEnv):
+class FiveRoomXLEnemy1(pycolab_env.PyColabEnv):
     """Large version of the 5 room environment with a bouncing enemy.
     """
 
@@ -815,6 +815,41 @@ class FiveRoomXLEnemy(pycolab_env.PyColabEnv):
                  obs_type='mask',
                  default_reward=0.,
                  reward_config={'a':1.0,'b':-2.0}):
+        self.level = level
+        self.objects = ['a', 'b']
+        self.state_layer_chars = ['#'] + self.objects
+        self.obs_type = obs_type
+        super(FiveRoomXLEnemy, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1),
+            visitable_states=915,
+            color_palette=3,
+            reward_switch=[],
+            reward_config=reward_config,
+            dimensions=(42,42))
+
+    def make_game(self, reward_config):
+        self._croppers = self.make_croppers()
+        return fiveroomlarge_enemy.make_game(self.level, reward_config)
+
+    def make_croppers(self):
+        if self.obs_type in {'rgb', 'mask'}:
+          return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+        elif self.obs_type == 'rgb_full':
+          return []
+
+class FiveRoomXLEnemy2(pycolab_env.PyColabEnv):
+    """Large version of the 5 room environment with a bouncing enemy.
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 reward_config={'a':1.0,'b':-0.5}):
         self.level = level
         self.objects = ['a', 'b']
         self.state_layer_chars = ['#'] + self.objects

@@ -21,7 +21,8 @@ from .mazeworld_env import FiveRoomMoveableBrownian
 from .mazeworld_env import FiveRoomXL
 from .mazeworld_env import FiveRoomXLWhitenoise
 from .mazeworld_env import FiveRoomXLWeather
-from .mazeworld_env import FiveRoomXLEnemy
+from .mazeworld_env import FiveRoomXLEnemy1
+from .mazeworld_env import FiveRoomXLEnemy2
 from .mazeworld_env import FiveRoomXLText
 from .mazeworld_env import FiveRoomXLTextWhitenoise
 from .mazeworld_env import FiveRoomXLRandomfixed
