@@ -1,6 +1,7 @@
 
 import numpy as np
 import os
+import pathlib
 import glob
 import atari_py
 import cv2
@@ -122,7 +123,11 @@ class AtariEnv(Env):
         self._record_episode = False
         self._record_freq = record_freq
         self._video_dir = os.path.join(record_dir, 'videos')
-        self._frames_dir = os.path.join(self._video_dir, 'frames')
+        if "TMPDIR" in os.environ:
+            self._frames_dir = os.path.join("{}/frames".format(os.path.expandvars("$TMPDIR")))
+            pathlib.Path(self._frames_dir).mkdir(exist_ok=True)
+        else:
+            self._frames_dir = os.path.join(self._video_dir, 'frames')
         self._episode_number = 0
 
         self.reset()
@@ -193,6 +198,15 @@ class AtariEnv(Env):
 
     def get_obs(self):
         return self._obs.copy()
+
+    def close(self):
+        images = os.listdir(self._frames_dir)
+        for i in images:
+            os.remove(self._frames_dir + '/' + i)
+        try:
+            os.rmdir(self._frames_dir)
+        except:
+            pass
 
     ###########################################################################
     # Helpers
