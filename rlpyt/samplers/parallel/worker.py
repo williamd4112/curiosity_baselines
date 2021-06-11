@@ -114,6 +114,7 @@ def sampling_process(common_kwargs, worker_kwargs):
         collector.reset_if_needed(agent_inputs)  # Outside barrier?
         ctrl.barrier_in.wait()
         if ctrl.quit.value:
+            logger.log('Quitting worker ...')
             break
         if ctrl.do_eval.value:
             eval_collector.collect_evaluation(ctrl.itr.value)  # Traj_infos to queue inside.
@@ -124,4 +125,5 @@ def sampling_process(common_kwargs, worker_kwargs):
         ctrl.barrier_out.wait()
 
     for env in envs + eval_envs:
+        logger.log('Stopping env ...')
         env.close()

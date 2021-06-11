@@ -559,7 +559,7 @@ class PyColabEnv(gym.Env):
             else:
                 assert img is not None, '`board` must not be `None`.'
 
-        img = self.resize(img)
+        img = self.resize(img, scale=17)
 
         if mode == 'rgb_array':
             return img
@@ -572,8 +572,11 @@ class PyColabEnv(gym.Env):
             time.sleep(self.delay / 1e3)
             return self.viewer.isopen
 
-    def resize(self, img):
-        img = _repeat_axes(img, self.resize_scale, axis=[0, 1])
+    def resize(self, img, scale=None):
+        if scale is None:            
+            img = _repeat_axes(img, self.resize_scale, axis=[0, 1])
+        else:
+            img = _repeat_axes(img, scale, axis=[0, 1])
         if len(img.shape) != 3:
             img = np.repeat(img[..., None], 3, axis=-1)
         return img.astype(np.uint8)
