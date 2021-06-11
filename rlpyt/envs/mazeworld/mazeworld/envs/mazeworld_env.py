@@ -819,7 +819,7 @@ class FiveRoomXLEnemy1(pycolab_env.PyColabEnv):
         self.objects = ['a', 'b']
         self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
-        super(FiveRoomXLEnemy, self).__init__(
+        super(FiveRoomXLEnemy1, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
@@ -854,7 +854,7 @@ class FiveRoomXLEnemy2(pycolab_env.PyColabEnv):
         self.objects = ['a', 'b']
         self.state_layer_chars = ['#'] + self.objects
         self.obs_type = obs_type
-        super(FiveRoomXLEnemy, self).__init__(
+        super(FiveRoomXLEnemy2, self).__init__(
             max_iterations=max_iterations,
             obs_type=obs_type,
             default_reward=default_reward,
