@@ -200,13 +200,11 @@ class AtariEnv(Env):
         return self._obs.copy()
 
     def close(self):
-        images = os.listdir(self._frames_dir)
-        for i in images:
-            os.remove(self._frames_dir + '/' + i)
-        try:
+        if self.record_env:
+            images = os.listdir(self._frames_dir)
+            for i in images:
+                os.remove(self._frames_dir + '/' + i)
             os.rmdir(self._frames_dir)
-        except:
-            pass
 
     ###########################################################################
     # Helpers
