@@ -176,7 +176,7 @@ class AtariEnv(Env):
         done = game_over or (self._episodic_lives and lost_life)
         info = EnvInfo(game_score=game_score, traj_done=game_over)
         self._step_counter += 1
-        if self._no_negative_reward and reward < 0.0 or self._no_extrinsic:
+        if self._no_negative_reward and reward < 0.0:
             reward = 0.0
         reward *= self._multiplier
         return EnvStep(self.get_obs(), reward, done, info)
