@@ -231,7 +231,7 @@ class PyColabEnv(gym.Env):
         if self.obs_type == 'mask':
             self.observation_space = spaces.Box(0., 1., [len(self.state_layer_chars)] + self.crop_window) # don't count empty space layer
         elif self.obs_type == 'rgb':
-            self.observation_space = spaces.Box(0., 255., [self.crop_window[0]*resize_scale, self.crop_window[1]*resize_scale] + [3])
+            self.observation_space = spaces.Box(0., 255., [self.crop_window[0]*17, self.crop_window[1]*17] + [3])
         elif self.obs_type == 'rgb_full':
             self.observation_space = spaces.Box(0., 255., [84,84] + [3])
         self.act_null_value = act_null_value
