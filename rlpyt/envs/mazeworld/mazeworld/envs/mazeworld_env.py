@@ -704,7 +704,7 @@ class FiveRoomExtInt(pycolab_env.PyColabEnv):
                  max_iterations=500,
                  obs_type='mask',
                  default_reward=0.,
-                 reward_config=dict()):
+                 reward_config={'a':0.0, 'b':1.0}):
         self.level = level
         self.objects = ['a', 'b']
         self.state_layer_chars = ['#'] + self.objects 
@@ -723,7 +723,7 @@ class FiveRoomExtInt(pycolab_env.PyColabEnv):
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
-        return fiveroom_extint.make_game(self.level)
+        return fiveroom_extint.make_game(self.level, reward_config)
 
     def make_croppers(self):
         if self.obs_type in {'rgb', 'mask'}:

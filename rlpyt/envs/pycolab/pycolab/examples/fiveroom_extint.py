@@ -99,7 +99,7 @@ ROOMS = {
   4 : [[14, 6], [14, 7], [14, 11], [14, 12], [15, 5], [15, 6], [15, 7], [15, 8], [15, 9], [15, 10], [15, 11], [15, 12], [15, 13], [16, 4], [16, 5], [16, 6], [16, 7], [16, 8], [16, 9], [16, 10], [16, 11], [16, 12], [16, 13], [16, 14], [17, 4], [17, 5], [17, 6], [17, 7], [17, 8], [17, 9], [17, 10], [17, 11], [17, 12], [17, 13], [17, 14]],
 }
 
-def make_game(level):
+def make_game(level, reward_config):
   """Builds and returns a Better Scrolly Maze game for the selected level."""
   maze_ascii = MAZES_ART[level]
 
@@ -114,8 +114,8 @@ def make_game(level):
       maze_ascii, what_lies_beneath=' ',
       sprites={
           'P': PlayerSprite,
-          'a': FixedObject,
-          'b': FixedObject},
+          'a': ascii_art.Partial(FixedObject, reward=reward_config['a']),
+          'b': ascii_art.Partial(FixedObject, reward=reward_config['b']),},
       update_schedule=['P', 'a', 'b'],
       z_order='abP')
 
@@ -163,11 +163,16 @@ class PlayerSprite(prefab_sprites.MazeWalker):
 class FixedObject(plab_things.Sprite):
   """Static object. Doesn't move."""
 
-  def __init__(self, corner, position, character):
+  def __init__(self, corner, position, character, reward=0.0):
     super(FixedObject, self).__init__(
         corner, position, character)
+    self.reward = reward
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
+    mr, mc = self.position
+    pr, pc = things['P'].position
+    if abs(pr-mr) <= 2 and abs(pc-mc) <= 2:
+      the_plot.add_reward(self.reward)
     del actions, backdrop  # Unused.
 
 def main(argv=()):
