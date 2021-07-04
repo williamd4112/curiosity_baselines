@@ -26,6 +26,7 @@ from pycolab.examples import (maze,
                               fiveroom_extint,
                               fiveroom_moveable_brownian,
                               fiveroomlarge,
+                              fiveroomlarge_extint,
                               fiveroomlarge_weather,
                               fiveroomlarge_enemy,
                               fiveroomlarge_whitenoise,
@@ -804,6 +805,43 @@ class FiveRoomXL(pycolab_env.PyColabEnv):
           return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
         elif self.obs_type == 'rgb_full':
           return []
+
+class FiveRoomXLExtInt(pycolab_env.PyColabEnv):
+    """5 room map with an intrinsic attractor and an extrinsic attractor.
+    """
+
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 reward_config={'a':0.0, 'b':1.0}):
+        self.level = level
+        self.objects = ['a', 'b']
+        self.state_layer_chars = ['#'] + self.objects 
+        self.obs_type = obs_type
+        super(FiveRoomXLExtInt, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1),
+            act_null_value=4,
+            visitable_states=223,
+            color_palette=1,
+            reward_switch=[],
+            reward_config=reward_config,
+            dimensions=(19,19))
+
+    def make_game(self, reward_config):
+        self._croppers = self.make_croppers()
+        return fiveroomlarge_extint.make_game(self.level, reward_config)
+
+    def make_croppers(self):
+        if self.obs_type in {'rgb', 'mask'}:
+          return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+        elif self.obs_type == 'rgb_full':
+          return []
+
 
 class FiveRoomXLEnemy1(pycolab_env.PyColabEnv):
     """Large version of the 5 room environment with a bouncing enemy.

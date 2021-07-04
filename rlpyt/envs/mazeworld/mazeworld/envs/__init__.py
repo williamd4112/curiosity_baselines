@@ -19,6 +19,7 @@ from .mazeworld_env import FiveRoomMoveableStoch
 from .mazeworld_env import FiveRoomExtInt
 from .mazeworld_env import FiveRoomMoveableBrownian
 from .mazeworld_env import FiveRoomXL
+from .mazeworld_env import FiveRoomXLExtInt
 from .mazeworld_env import FiveRoomXLWhitenoise
 from .mazeworld_env import FiveRoomXLWeather
 from .mazeworld_env import FiveRoomXLEnemy1

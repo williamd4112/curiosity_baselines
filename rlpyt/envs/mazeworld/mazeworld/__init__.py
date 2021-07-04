@@ -68,6 +68,12 @@ register(
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
 register(
+    id='5RoomLargeExtInt-v0',
+    entry_point='mazeworld.envs:FiveRoomXLExtInt',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
     id='5RoomLargeEnemy-v0',
     entry_point='mazeworld.envs:FiveRoomXLEnemy1',
     max_episode_steps=500,
