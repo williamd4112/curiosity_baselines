@@ -215,6 +215,8 @@ def deepmind_make(*args, info_example=None, **kwargs):
     
     if kwargs['obs_type'] == 'rgb_full':
         resize_scale = 84 // env.width
+        if env.width == 85:
+            resize_scale = 1
     else:
         resize_scale = 17
     env.obs_init(resize_scale)

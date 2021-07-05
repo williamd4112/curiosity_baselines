@@ -49,4 +49,5 @@ from .mazeworld_env import EightRoomExt
 from .mazeworld_env import EightRoomRgb
 from .mazeworld_env import EightRoomWeather
 from .mazeworld_env import EightRoomXLWeather
+from .mazeworld_env import EightRoomHardWeather
 from .mazeworld_env import PianoLong

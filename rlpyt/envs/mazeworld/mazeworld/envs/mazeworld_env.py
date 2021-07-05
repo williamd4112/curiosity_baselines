@@ -53,6 +53,7 @@ from pycolab.examples import (maze,
                               eightroom_ext,
                               eightroom_weather,
                               eightroomlarge_weather,
+                              eightroomhard_weather,
                               piano_long
                               )
 from pycolab import cropping
@@ -1893,7 +1894,44 @@ class EightRoomXLWeather(pycolab_env.PyColabEnv):
         elif self.obs_type == 'rgb_full':
           return []
 
+class EightRoomHardWeather(pycolab_env.PyColabEnv):
+    """A larger eight room environment with 8 fixed objects, and a
+    central room that changes color and switches the source of
+    extrinsic reward.
+    """
 
+    def __init__(self,
+                 level=0,
+                 max_iterations=500,
+                 obs_type='mask',
+                 default_reward=0.,
+                 reward_config={'a':1.0,'b':0.0,'c':0.0,'d':0.0,'e':0.0,'f':0.0,'g':0.0,'h':0.0}):
+        self.level = level
+        self.objects = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+        self.state_layer_chars = ['#'] + self.objects
+        self.obs_type = obs_type
+        super(EightRoomHardWeather, self).__init__(
+            max_iterations=max_iterations,
+            obs_type=obs_type,
+            default_reward=default_reward,
+            action_space=spaces.Discrete(4 + 1),
+            act_null_value=4,
+            visitable_states=5504,
+            color_palette=3,
+            reward_switch=['a','b','c','d','e','f','g','h'],
+            reward_config=reward_config,
+            switch_perturbations=[(-45.,-25.,-20.),(-20.,-20.,-40.),(-70.,20.,-40.),(-60.,-60.,30.),(-90.,0.,0.),(0.,-90.,0.),(-20.,-20.,-40.),(-20.,-80.,10.)],
+            dimensions=(85,85))
+
+    def make_game(self, reward_config):
+        self._croppers = self.make_croppers()
+        return eightroomhard_weather.make_game(self.level, reward_config)
+
+    def make_croppers(self):
+        if self.obs_type in {'rgb', 'mask'}:
+          return [cropping.ScrollingCropper(rows=5, cols=5, to_track=['P'], scroll_margins=(None, None), pad_char=' ')]
+        elif self.obs_type == 'rgb_full':
+          return []
 
 
 

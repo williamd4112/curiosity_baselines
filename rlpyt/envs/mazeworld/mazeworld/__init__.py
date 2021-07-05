@@ -296,6 +296,12 @@ register(
     kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
 
 register(
+    id='8RoomHardWeather-v0',
+    entry_point='mazeworld.envs:EightRoomHardWeather',
+    max_episode_steps=500,
+    kwargs={'level': 0, 'max_iterations': 500, 'obs_type': 'maze'})
+
+register(
     id='8Room-v1',
     entry_point='mazeworld.envs:EightRoomRgb',
     max_episode_steps=500,
