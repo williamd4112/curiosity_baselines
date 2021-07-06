@@ -5,6 +5,7 @@ import json
 with open('./global.json') as global_params:
     params = json.load(global_params)
     _ATARI_ENVS = params['envs']['atari_envs']
+    _PYCOLAB_ENVS = params['envs']['pycolab_envs']
     _MUJOCO_ENVS = params['envs']['mujoco_envs']
 
 def get_args(args_in=sys.argv[1:]):
@@ -12,7 +13,7 @@ def get_args(args_in=sys.argv[1:]):
 
     # main args
     parser.add_argument('-alg', type=str, choices=['ppo', 'sac', 'a2c'], help='Which learning algorithm to run.')
-    parser.add_argument('-curiosity_alg', type=str, choices=['none', 'icm', 'disagreement', 'ndigo', 'rnd'], help='Which intrinsic reward algorithm to use.')
+    parser.add_argument('-curiosity_alg', type=str, choices=['none', 'icm', 'micm', 'disagreement', 'ndigo', 'rnd'], help='Which intrinsic reward algorithm to use.')
     parser.add_argument('-env', type=str, help='Which environment to run on.')
     
     # general args
@@ -49,8 +50,6 @@ def get_args(args_in=sys.argv[1:]):
         parser.add_argument('-linear_lr', action='store_true', help='Whether or not to change learning rate linearly as a function of iteration.')
         parser.add_argument('-normalize_advantage', action='store_true', help='Whether or not to normalize advantages.')
         parser.add_argument('-normalize_reward', action='store_true', help='Whether or not to normalize rewards before computing advantages')
-        parser.add_argument('-kernel_mu', default=0.0, type=float, help='Cutoff bound for the advantage bounding kernel half gaussian.')
-        parser.add_argument('-kernel_sigma', default=float(1e-3), type=float, help='Dropoff rate for the advantage bounding kernel half gaussian.')
     elif 'a2c' in args_in:
         parser.add_argument('-discount', default=0.99, type=float, help='Reward discount factor applied.')
         parser.add_argument('-lr', default=0.001, type=float, help='Learning rate.')
@@ -65,15 +64,18 @@ def get_args(args_in=sys.argv[1:]):
     if 'mario' in environment.lower():
         parser.add_argument('-mario_level', default='Level1-1', type=str, help='World and level to start at for super mario bros.')
         parser.add_argument('-normalize_obs', action='store_true', help='Whether or not to normalize the observation each step.')
-    elif 'deepmind' in environment.lower():
+    elif environment in _PYCOLAB_ENVS:
         parser.add_argument('-log_heatmaps', action='store_true', help='Whether or not to store heatmaps.')
         parser.add_argument('-normalize_obs', action='store_true', help='Whether or not to normalize the observation each step.')
-        parser.add_argument('-obs_type', default='mask', type=str, choices=['mask', 'rgb'], help='Whether to pass binary mask observations or RGB observations.')
+        parser.add_argument('-obs_type', default='mask', type=str, choices=['mask', 'rgb', 'rgb_full'], help='Whether to pass binary mask observations or RGB observations.')
         parser.add_argument('-grayscale', action='store_true', help='Whether or not to grayscale images if using rgb.')
         parser.add_argument('-max_episode_steps', default=500, type=int, help='How many steps to run before the done flag is raised.')
     elif environment in _ATARI_ENVS:
         parser.add_argument('-max_episode_steps', default=27000, type=int, help='How many steps to run before the done flag is raised.')
         parser.add_argument('-normalize_obs', action='store_true', help='Whether or not to normalize the observation each step.')
+        parser.add_argument('-score_multiplier', default=1.0, type=float, help='A multiplier for the extrinsic reward.')
+        parser.add_argument('-repeat_action_probability', default=0.0, type=float, help='Probability that an action will repeat (sticky actions).')
+        parser.add_argument('-fire_on_reset', action='store_true', help='Whether or not to automatically press the fire button to start the game, or have the agent do this.')
 
     # curiosity specific args
     curiosity_alg = args_in[args_in.index('-curiosity_alg')+1]
@@ -83,6 +85,14 @@ def get_args(args_in=sys.argv[1:]):
         parser.add_argument('-batch_norm', action='store_true', help='Whether or not to use batch norm in the feature encoder.')
         parser.add_argument('-prediction_beta', default=1.0, type=float, help='Scalar multiplier applied to the prediction error to generate the intrinsic reward. Environment dependent.')
         parser.add_argument('-forward_model', default='res', type=str, choices=['res', 'og'], help='Which forward model architecture to use.')
+        parser.add_argument('-feature_space', default='inverse', type=str, choices=['inverse', 'random'], help='Use inverse features or random fixed features.')
+    elif curiosity_alg == 'micm':
+        parser.add_argument('-feature_encoding', default='idf_burda', type=str, choices=['none', 'idf', 'idf_burda', 'idf_maze'], help='Which feature encoding method to use with ICM.')
+        parser.add_argument('-forward_loss_wt', default=0.2, type=float, help='Forward loss coefficient. Inverse weight is (1 - this).')
+        parser.add_argument('-batch_norm', action='store_true', help='Whether or not to use batch norm in the feature encoder.')
+        parser.add_argument('-prediction_beta', default=1.0, type=float, help='Scalar multiplier applied to the prediction error to generate the intrinsic reward. Environment dependent.')
+        parser.add_argument('-forward_model', default='res', type=str, choices=['res', 'og'], help='Which forward model architecture to use.')
+        parser.add_argument('-ensemble_mode', default='sample', type=str, choices=['sample', 'mean', 'var'], help='Which ensemble reward formulation to use.')
     elif curiosity_alg == 'disagreement':
         parser.add_argument('-feature_encoding', default='idf_burda', type=str, choices=['none', 'idf', 'idf_burda', 'idf_maze'], help='Which feature encoding method to use with ICM.')
         parser.add_argument('-forward_loss_wt', default=0.2, type=float, help='Forward loss coefficient. Inverse weight is (1 - this).')
@@ -94,6 +104,7 @@ def get_args(args_in=sys.argv[1:]):
         parser.add_argument('-feature_encoding', default='idf_maze', type=str, choices=['none', 'idf', 'idf_burda', 'idf_maze'], help='Which feature encoding method to use with ICM.')
         parser.add_argument('-pred_horizon', default=1, type=int, help='Number of prediction steps used to calculate intrinsic reward.')
         parser.add_argument('-batch_norm', action='store_true', help='Whether or not to use batch norm in the feature encoder.')
+        parser.add_argument('-prediction_beta', default=1.0, type=float, help='Scalar multiplier applied to the prediction error to generate the intrinsic reward. Environment dependent.')
     elif curiosity_alg == 'rnd':
         parser.add_argument('-feature_encoding', default='none', type=str, choices=['none'], help='Which feature encoding method to use with RND.')
         parser.add_argument('-prediction_beta', default=1.0, type=float, help='Scalar multiplier applied to the prediction error to generate the intrinsic reward. Environment dependent.')

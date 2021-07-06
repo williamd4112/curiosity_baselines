@@ -44,6 +44,7 @@ class NDIGO(torch.nn.Module):
             image_shape,
             action_size,
             horizon,
+            prediction_beta=1.0,
             feature_encoding='idf_maze',
             gru_size=128,
             batch_norm=False,
@@ -57,6 +58,7 @@ class NDIGO(torch.nn.Module):
         self.horizon = horizon
         self.feature_encoding = feature_encoding
         self.obs_stats = obs_stats
+        self.beta = prediction_beta
         if self.obs_stats is not None:
             self.obs_mean, self.obs_std = self.obs_stats
         self.device = torch.device('cuda:0' if device == 'gpu' else 'cpu')
@@ -141,9 +143,8 @@ class NDIGO(torch.nn.Module):
         self.gru_states = None # only bc we're processing exactly 1 episode per batch
 
         # slice beliefs and actions
-        belief_states_t = belief_states[:T-self.horizon] # slice off last timesteps
-        belief_states_tm1 = torch.zeros((T-self.horizon-1, B, self.gru_size), device=self.device)
-        belief_states_tm1[:] = belief_states_t.clone()[:-1]
+        belief_states_t = belief_states.clone()[:-self.horizon] # slice off last timesteps
+        belief_states_tm1 = belief_states.clone()[:-self.horizon-1]
         
         action_seqs_t = torch.zeros((T-self.horizon, B, self.horizon*self.action_size), device=self.device) # placeholder
         action_seqs_tm1 = torch.zeros((T-self.horizon-1, B, (self.horizon+1)*self.action_size), device=self.device) # placeholder
@@ -200,6 +201,8 @@ class NDIGO(torch.nn.Module):
         losses_tm1 = torch.sum(losses_tm1, dim=-1)/losses_tm1.shape[-1] # average of each feature for each environment at each timestep (T, B, ave_loss_over_feature)
         losses_t = nn.functional.binary_cross_entropy(predicted_states_t, true_obs_t, reduction='none')
         losses_t = torch.sum(losses_t, dim=-1)/losses_t.shape[-1]
+
+
         
         # subtract losses to get rewards (r[t+H-1] = losses[t-1] - losses[t])
         r_int = torch.zeros((T, B), device=self.device)
@@ -210,7 +213,7 @@ class NDIGO(torch.nn.Module):
 
         # r_int = nn.functional.relu(r_int)
 
-        return r_int
+        return r_int*self.beta
 
 
     def compute_loss(self, observations, prev_actions, actions, valid):
@@ -237,25 +240,25 @@ class NDIGO(torch.nn.Module):
 
             # make forward model predictions for this predictor
             if k == 1:
-                predicted_states = self.forward_model_1(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-1, B, 75)
+                predicted_states = self.forward_model_1(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-1, B, 75)
             elif k == 2:
-                predicted_states = self.forward_model_2(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-2, B, 75)
+                predicted_states = self.forward_model_2(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-2, B, 75)
             elif k == 3:
-                predicted_states = self.forward_model_3(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-3, B, 75)
+                predicted_states = self.forward_model_3(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-3, B, 75)
             elif k == 4:
-                predicted_states = self.forward_model_4(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-4, B, 75)
+                predicted_states = self.forward_model_4(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-4, B, 75)
             elif k == 5:
-                predicted_states = self.forward_model_5(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-5, B, 75)
+                predicted_states = self.forward_model_5(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-5, B, 75)
             elif k == 6:
-                predicted_states = self.forward_model_6(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-6, B, 75)
+                predicted_states = self.forward_model_6(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-6, B, 75)
             elif k == 7:
-                predicted_states = self.forward_model_7(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-7, B, 75)
+                predicted_states = self.forward_model_7(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-7, B, 75)
             elif k == 8:
-                predicted_states = self.forward_model_8(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-8, B, 75)
+                predicted_states = self.forward_model_8(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-8, B, 75)
             elif k == 9:
-                predicted_states = self.forward_model_9(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-9, B, 75)
+                predicted_states = self.forward_model_9(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-9, B, 75)
             elif k == 10:
-                predicted_states = self.forward_model_10(belief_states[:T-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-10, B, 75)
+                predicted_states = self.forward_model_10(belief_states[:-k], action_seqs.detach()).view(-1, B, img_shape[0]*img_shape[1]*img_shape[2]) # (T-10, B, 75)
 
             # generate losses for this predictor
             predicted_states = nn.functional.sigmoid(predicted_states)

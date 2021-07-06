@@ -3,7 +3,6 @@ from PIL import Image
 import numpy as np
 import torch
 from torch import nn
-torch.set_printoptions(edgeitems=3)
 
 from rlpyt.utils.tensor import infer_leading_dims, restore_leading_dims, valid_mean
 from rlpyt.utils.averages import RunningMeanStd, RewardForwardFilter
@@ -19,41 +18,38 @@ class RND(nn.Module):
     def __init__(
             self, 
             image_shape, 
+            obs_stats=None,
             prediction_beta=1.0,
             drop_probability=1.0,
+            feature_encoding='none',
             gamma=0.99,
             device='cpu'
             ):
         super(RND, self).__init__()
 
-        self.prediction_beta = prediction_beta
+        self.beta = prediction_beta
         self.drop_probability = drop_probability
         self.device = torch.device('cuda:0' if device == 'gpu' else 'cpu')
 
-        c, h, w = 1, image_shape[1], image_shape[2] # assuming grayscale inputs
+        c, h, w = image_shape[0], image_shape[1], image_shape[2]
+        if image_shape[0] == 4:
+            c = 1
+        self.c = c
+        self.h = h
+        self.w = w
         self.obs_rms = RunningMeanStd(shape=(1, c, h, w)) # (T, B, c, h, w)
+        if obs_stats is not None:
+            self.obs_rms.mean[0] = obs_stats[0]
+            self.obs_rms.var[0] = obs_stats[1]**2
         self.rew_rms = RunningMeanStd()
         self.rew_rff = RewardForwardFilter(gamma)
         self.feature_size = 512
         self.conv_feature_size = 7*7*64
 
         # Learned predictor model
-        # self.forward_model = nn.Sequential(nn.Conv2d(in_channels=c, out_channels=32, kernel_size=8, stride=4),
-        #                                    nn.LeakyReLU(),
-        #                                    nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2),
-        #                                    nn.LeakyReLU(),
-        #                                    nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1),
-        #                                    nn.LeakyReLU(),
-        #                                    Flatten(),
-        #                                    nn.Linear(self.conv_feature_size, self.feature_size),
-        #                                    nn.ReLU(),
-        #                                    nn.Linear(self.feature_size, self.feature_size),
-        #                                    nn.ReLU(),
-        #                                    nn.Linear(self.feature_size, self.feature_size))
-
         self.forward_model = nn.Sequential(
                                             nn.Conv2d(
-                                                in_channels=1,
+                                                in_channels=c,
                                                 out_channels=32,
                                                 kernel_size=8,
                                                 stride=4),
@@ -84,18 +80,9 @@ class RND(nn.Module):
                 param.bias.data.zero_()
 
         # Fixed weight target model
-        # self.target_model = nn.Sequential(nn.Conv2d(in_channels=c, out_channels=32, kernel_size=8, stride=4),
-        #                                   nn.LeakyReLU(),
-        #                                   nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2),
-        #                                   nn.LeakyReLU(),
-        #                                   nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1),
-        #                                   nn.LeakyReLU(),
-        #                                   Flatten(),
-        #                                   nn.Linear(self.conv_feature_size, self.feature_size))
-
         self.target_model = nn.Sequential(
                                             nn.Conv2d(
-                                                in_channels=1,
+                                                in_channels=c,
                                                 out_channels=32,
                                                 kernel_size=8,
                                                 stride=4),
@@ -124,40 +111,31 @@ class RND(nn.Module):
             param.requires_grad = False
 
 
-    def forward(self, obs, done=None):
+    def forward(self, obs, not_done=None):
 
         # in case of frame stacking
-        obs = obs[:,:,-1,:,:]
-        obs = obs.unsqueeze(2)
+        if obs.shape[2] == 4:
+            obs = obs[:,:,-1,:,:]
+            obs = obs.unsqueeze(2)
+        obs_cpu = obs.clone().cpu().data.numpy()
 
         # img = np.squeeze(obs.data.numpy()[0][0])
         # mean = np.squeeze(self.obs_rms.mean)
         # var = np.squeeze(self.obs_rms.var)
         # std = np.squeeze(np.sqrt(self.obs_rms.var))
-        # cv2.imwrite('images/original.png', img)
-        # cv2.imwrite('images/mean.png', mean)
-        # cv2.imwrite('images/var.png', var)
-        # cv2.imwrite('images/std.png', std)
-        # cv2.imwrite('images/whitened.png', img-mean)
-        # cv2.imwrite('images/final.png', (img-mean)/std)
-        # cv2.imwrite('images/scaled_final.png', ((img-mean)/std)*111)
+        # cv2.imwrite('rndimages/original.png', img.transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/mean.png', mean.transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/var.png', var.transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/std.png', std.transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/whitened.png', (img-mean).transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/final.png', ((img-mean)/std).transpose(1, 2, 0))
+        # cv2.imwrite('rndimages/scaled_final.png', (((img-mean)/std)*111).transpose(1, 2, 0))
+        #print("Final", np.min(((img-mean)/std).ravel()), np.mean(((img-mean)/std).ravel()), np.max(((img-mean)/std).ravel()))
+        # print("#"*100 + "\n")
 
         # Infer (presence of) leading dimensions: [T,B], [B], or [].
         # lead_dim is just number of leading dimensions: e.g. [T, B] = 2 or [] = 0.
         lead_dim, T, B, img_shape = infer_leading_dims(obs, 3)
-        
-        # normalize observations and clip (see paper for details)
-        if done is not None:
-            obs_cpu = obs.clone().cpu().data.numpy()
-            done = done.cpu().data.numpy()
-            done = np.sum(np.abs(done-1), axis=0)
-            obs_cpu = np.swapaxes(obs_cpu, 0, 1)
-            sliced_obs = obs_cpu[0][:int(done[0].item())]
-            for i in range(1, B):
-                c = obs_cpu[i]
-                data_chunk = obs_cpu[i][:int(done[i].item())]
-                sliced_obs = np.concatenate((sliced_obs, data_chunk))
-            self.obs_rms.update(sliced_obs)
         
         if self.device == torch.device('cuda:0'):
             obs_mean = torch.from_numpy(self.obs_rms.mean).float().cuda()
@@ -165,50 +143,53 @@ class RND(nn.Module):
         else:
             obs_mean = torch.from_numpy(self.obs_rms.mean).float()
             obs_var = torch.from_numpy(self.obs_rms.var).float()
-
-        obs = ((obs - obs_mean) / torch.sqrt(obs_var))
-        obs = torch.clamp(obs, -5, 5)
-        obs = obs.type(torch.float) # expect torch.uint8 inputs
+        norm_obs = (obs.clone().float() - obs_mean) / (torch.sqrt(obs_var)+1e-10)
+        norm_obs = torch.clamp(norm_obs, min=-5, max=5).float()
 
         # prediction target
-        phi = self.target_model(obs.clone().detach().view(T * B, *img_shape)).view(T, B, -1)
+        phi = self.target_model(norm_obs.clone().detach().view(T * B, *img_shape)).view(T, B, -1)
 
         # make prediction
-        predicted_phi = self.forward_model(obs.detach().view(T * B, *img_shape)).view(T, B, -1)
+        predicted_phi = self.forward_model(norm_obs.detach().view(T * B, *img_shape)).view(T, B, -1)
 
-        return phi, predicted_phi, T, B
+        # update statistics
+        if not_done is not None:
+            valid_obs = np.reshape(obs_cpu[np.where(not_done==1)[:2]], (-1, self.c, self.h, self.w))
+            self.obs_rms.update(valid_obs)
+
+        return phi, predicted_phi, T
 
     def compute_bonus(self, next_observation, done):
-        phi, predicted_phi, T, _ = self.forward(next_observation, done=done)
+        done = done.cpu().data.numpy()
+        not_done = np.abs(done-1)
+        phi, predicted_phi, T = self.forward(next_observation, not_done=not_done)
         rewards = nn.functional.mse_loss(predicted_phi, phi.detach(), reduction='none').sum(-1)/self.feature_size
-        rewards_cpu = rewards.clone().cpu().data.numpy()
-        done = torch.abs(done-1).cpu().data.numpy()
-        total_rew_per_env = list()
-        for i in range(T):
-            update = self.rew_rff.update(rewards_cpu[i], done=done[i])
-            total_rew_per_env.append(update)
-        total_rew_per_env = np.array(total_rew_per_env)
-        mean_length = np.mean(np.sum(np.swapaxes(done, 0, 1), axis=1))
 
-        self.rew_rms.update_from_moments(np.mean(total_rew_per_env), np.var(total_rew_per_env), mean_length)
+        # update running mean
+        rewards_cpu = rewards.clone().cpu().data.numpy()
+        total_rew_per_env = np.array([self.rew_rff.update(rewards_cpu[i], not_done=not_done[i]) for i in range(T)])
+        self.rew_rms.update_from_moments(np.mean(total_rew_per_env), np.var(total_rew_per_env), np.sum(not_done))
+
+        # normalize rewards
         if self.device == torch.device('cuda:0'):
             rew_var = torch.from_numpy(np.array(self.rew_rms.var)).float().cuda()
-            done = torch.from_numpy(np.array(done)).float().cuda()
+            not_done = torch.from_numpy(not_done).float().cuda()
         else:
             rew_var = torch.from_numpy(np.array(self.rew_rms.var)).float()
-            done = torch.from_numpy(np.array(done)).float()
+            not_done = torch.from_numpy(not_done).float()
         rewards /= torch.sqrt(rew_var)
 
-        rewards *= done
-        return self.prediction_beta * rewards
+        # apply done mask
+        rewards *= not_done
+        return self.beta * rewards
 
-    def compute_loss(self, observations, valid):
-        phi, predicted_phi, T, B = self.forward(observations, done=None)
+    def compute_loss(self, next_observations, valid):
+        phi, predicted_phi, _ = self.forward(next_observations, not_done=None)
         forward_loss = nn.functional.mse_loss(predicted_phi, phi.detach(), reduction='none').sum(-1)/self.feature_size
         mask = torch.rand(forward_loss.shape)
-        mask = (mask > self.drop_probability).type(torch.FloatTensor).to(self.device)
-        forward_loss = forward_loss * mask.detach()
-        forward_loss = valid_mean(forward_loss, valid.detach())
+        mask = 1.0 - (mask > self.drop_probability).float().to(self.device)
+        net_mask = mask * valid
+        forward_loss = torch.sum(forward_loss * net_mask.detach()) / torch.sum(net_mask.detach())
         return forward_loss
 
 

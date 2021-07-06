@@ -9,6 +9,7 @@ from rlpyt.algos.utils import discount_return, generalized_advantage_estimation,
 # Convention: traj_info fields CamelCase, opt_info fields lowerCamelCase
 OptInfo = namedtuple("OptInfo", ["return_",
                                  "intrinsic_rewards",
+                                 "extint_ratio",
                                  "valpred",
                                  "advantage",
                                  "loss", 
@@ -18,8 +19,7 @@ OptInfo = namedtuple("OptInfo", ["return_",
                                  "inv_loss", 
                                  "forward_loss",
                                  "reward_total_std", 
-                                 "curiosity_loss", 
-                                 "gradNorm", 
+                                 "curiosity_loss",
                                  "entropy", 
                                  "perplexity"])
 AgentTrain = namedtuple("AgentTrain", ["dist_info", "value"])
@@ -61,18 +61,24 @@ class PolicyGradientAlgo(RlAlgorithm):
         reward, done, value, bv = (samples.env.reward, samples.env.done, samples.agent.agent_info.value, samples.agent.bootstrap_value)
         done = done.type(reward.dtype)
 
-        if self.curiosity_type == 'icm' or self.curiosity_type == 'disagreement':
+        if self.curiosity_type in {'icm', 'disagreement', 'micm'}:
             intrinsic_rewards, _ = self.agent.curiosity_step(self.curiosity_type, samples.env.observation.clone(), samples.env.next_observation.clone(), samples.agent.action.clone())
+            intrinsic_rewards_logging = intrinsic_rewards.clone().data.numpy()
+            self.intrinsic_rewards = intrinsic_rewards_logging
+            self.extint_ratio = reward.clone().data.numpy()/(intrinsic_rewards_logging+1e-15)
             reward += intrinsic_rewards
-            self.intrinsic_rewards = intrinsic_rewards.clone().data.numpy()
         elif self.curiosity_type == 'ndigo':
             intrinsic_rewards, _ = self.agent.curiosity_step(self.curiosity_type, samples.env.observation.clone(), samples.agent.prev_action.clone(), samples.agent.action.clone()) # no grad
+            intrinsic_rewards_logging = intrinsic_rewards.clone().data.numpy()
+            self.intrinsic_rewards = intrinsic_rewards_logging
+            self.extint_ratio = reward.clone().data.numpy()/(intrinsic_rewards_logging+1e-15)
             reward += intrinsic_rewards
-            self.intrinsic_rewards = intrinsic_rewards.clone().data.numpy()
         elif self.curiosity_type == 'rnd':
-            intrinsic_rewards, _ = self.agent.curiosity_step (self.curiosity_type, samples.env.next_observation.clone(), done.clone())
+            intrinsic_rewards, _ = self.agent.curiosity_step(self.curiosity_type, samples.env.next_observation.clone(), done.clone())
+            intrinsic_rewards_logging = intrinsic_rewards.clone().data.numpy()
+            self.intrinsic_rewards = intrinsic_rewards_logging
+            self.extint_ratio = reward.clone().data.numpy()/(intrinsic_rewards_logging+1e-15)
             reward += intrinsic_rewards
-            self.intrinsic_rewards = intrinsic_rewards.clone().data.numpy()
 
         if self.normalize_reward:
             rews = np.array([])
@@ -101,8 +107,5 @@ class PolicyGradientAlgo(RlAlgorithm):
                 adv_mean = advantage.mean()
                 adv_std = advantage.std()
             advantage[:] = (advantage - adv_mean) / max(adv_std, 1e-6)
-
-        if self.kernel_params is not None: # apply advantage kernel
-            advantage[:] = torch.tensor(np.piecewise(advantage.data.numpy(), [abs(advantage.data.numpy()) < self.mu, abs(advantage.data.numpy()) >= self.mu], [self.kernel_line, self.kernel_gauss]))
 
         return return_, advantage, valid

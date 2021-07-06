@@ -3,25 +3,35 @@
 
 This is a collection of curiosity algorithms implemented in pytorch on top of the [rlpyt](https://github.com/astooke/rlpyt) deep rl codebase. 
 
-## To-do
-1) Add remaining curiosity models
-2) Update models directory with more environments
+### Available Curiosity Algorithms
+
+|Algo|Type|Functional|
+
+Algo | Type | Functional
+:------------ | :-------------| :-------------
+ICM | Prediction error, Controllability |  ✅
+Disagreement | Prediction error | ✅
+RND | Count based | ✅
+NDIGO | Prediction error, Learning progress | ❌
+#Exploration | Count based | ❌
+VIME | Learning progress | ❌
+Empowerment | Controllability | ❌
+CTS | Count | ❌
+Bootstrap DQN | Uncertainty | ❌
 
 ### Available Learning Algorithms
-**Policy Gradient** A2C, PPO
 
-**Replay Buffers** (supporting both DQN + QPG) non-sequence and sequence (for recurrent) replay, n-step returns, uniform or prioritized replay, full-observation or frame-based buffer (e.g. for Atari, stores only unique frames to save memory, reconstructs multi-frame observations).
-
-**Deep Q-Learning** DQN + variants: Double, Dueling, Categorical (up to Rainbow minus Noisy Nets), Recurrent (R2D2-style)
-
-**Q-Function Policy Gradient** DDPG, TD3, SAC
-
-### Available Curiosity Algorithms
-**Prediction error** ICM, Disagreement
-
-**Count-based** RND
-
-**Learning progress** NDIGO
+Algo | Type | Functional
+:------------ | :-------------| :-------------
+PPO |  Policy Gradient | ✅
+A2C |  Policy Gradient | ✅
+DQN |  Deep Q-Learning | ✅
+Double DQN | Deep Q-Learning | ✅
+Dueling DQN | Deep Q-Learning | ✅
+R2D2 | Deep Q-Learning | ✅
+DDPG | Q-Function Policy Gradient | ✅
+TD3 | Q-Function Policy Gradient | ✅
+SAC | Q-Function Policy Gradient | ✅
 
 ### Available Environments
 * Standard gym environments (mujoco, etc.)
@@ -59,13 +69,13 @@ python3 launch.py -env breakout -alg ppo -curiosity_alg icm -lstm
 
 8.  This will launch your experiment in a tmux session titled "experiment". This session will have 3 windows - a window where your code is running, an htop monitoring process, and a window that serves tensorboard to port 12345 (or the port specified in global.json). 
 
-9.  Results folders will be automatically generated in the results directory created in step 6.
+9.  Results folders will be automatically generated in the results directory created in the directory created in step 6.
 
 10.  Example runs can be found in the models directory. Model weights and exact hyperparameters can be found there for tested environments.
 
 ## Notes
 
-For more information on the rlpyt core codebase, please see this [white paper on Arxiv](https://arxiv.org/abs/1909.01500).  If you use this repository in your work or otherwise wish to cite it, please make reference to the white paper.
+For more information on the original rlpyt codebase, please see this [white paper on Arxiv](https://arxiv.org/abs/1909.01500).  If you use this repository in your work or otherwise wish to cite it, please reference the rlpyt white paper.
 
 ### Code Organization
 

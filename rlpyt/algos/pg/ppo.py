@@ -39,7 +39,6 @@ class PPO(PolicyGradientAlgo):
             linear_lr_schedule=True,
             normalize_advantage=False,
             normalize_reward=False,
-            kernel_params=None,
             curiosity_type='none'
             ):
         """Saves input settings."""
@@ -50,12 +49,8 @@ class PPO(PolicyGradientAlgo):
             self.reward_ff = RewardForwardFilter(discount)
             self.reward_rms = RunningMeanStd()
         self.intrinsic_rewards = None
+        self.extint_ratio = None
         
-        if kernel_params is not None:
-            self.mu, self.sigma = self.kernel_params
-            self.kernel_line = lambda x: x
-            self.kernel_gauss = lambda x: np.sign(x)*self.mu*np.exp(-(abs(x)-self.mu)**2/(2*self.sigma**2))
-
     def initialize(self, *args, **kwargs):
         """
         Extends base ``initialize()`` to initialize learning rate schedule, if
@@ -88,7 +83,7 @@ class PPO(PolicyGradientAlgo):
             self.agent.update_obs_rms(agent_inputs.observation)
         return_, advantage, valid = self.process_returns(samples)
 
-        if self.curiosity_type == 'icm' or self.curiosity_type == 'disagreement':
+        if self.curiosity_type in {'icm', 'micm', 'disagreement'}:
             agent_curiosity_inputs = IcmAgentCuriosityInputs(
                 observation=samples.env.observation.clone(),
                 next_observation=samples.env.next_observation.clone(),
@@ -155,28 +150,31 @@ class PPO(PolicyGradientAlgo):
                 opt_info.value_loss.append(value_loss.item())
                 opt_info.entropy_loss.append(entropy_loss.item())
 
-                if self.curiosity_type == 'icm':
+                if self.curiosity_type in {'icm', 'micm'}:
                     inv_loss, forward_loss = curiosity_losses
                     opt_info.inv_loss.append(inv_loss.item())
                     opt_info.forward_loss.append(forward_loss.item())
                     opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
+                    opt_info.extint_ratio.append(np.mean(self.extint_ratio))
                 elif self.curiosity_type == 'disagreement':
                     forward_loss = curiosity_losses
                     opt_info.forward_loss.append(forward_loss.item())
                     opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
+                    opt_info.extint_ratio.append(np.mean(self.extint_ratio))
                 elif self.curiosity_type == 'ndigo':
                     forward_loss = curiosity_losses
                     opt_info.forward_loss.append(forward_loss.item())
                     opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
+                    opt_info.extint_ratio.append(np.mean(self.extint_ratio))
                 elif self.curiosity_type == 'rnd':
                     forward_loss = curiosity_losses
                     opt_info.forward_loss.append(forward_loss.item())
                     opt_info.intrinsic_rewards.append(np.mean(self.intrinsic_rewards))
+                    opt_info.extint_ratio.append(np.mean(self.extint_ratio))
 
                 if self.normalize_reward:
                     opt_info.reward_total_std.append(self.reward_rms.var**0.5)
 
-                opt_info.gradNorm.append(grad_norm)
                 opt_info.entropy.append(entropy.item())
                 opt_info.perplexity.append(perplexity.item())
                 self.update_counter += 1
@@ -227,7 +225,7 @@ class PPO(PolicyGradientAlgo):
 
         loss = pi_loss + value_loss + entropy_loss
 
-        if self.curiosity_type == 'icm': 
+        if self.curiosity_type in {'icm', 'micm'}: 
             inv_loss, forward_loss = self.agent.curiosity_loss(self.curiosity_type, *agent_curiosity_inputs)
             loss += inv_loss
             loss += forward_loss

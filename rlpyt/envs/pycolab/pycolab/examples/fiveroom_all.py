@@ -48,7 +48,7 @@ MAZES_ART = [
     # Make sure that the Player will have no way to "escape" the maze.
     #
     # Legend:
-    #     '#': impassable walls.            'a': moveable object A.
+    #     '#': impassable walls.            'a': fixed object A.
     #     'P': player starting location.    'b': white noise object B.
     #     ' ': boring old maze floor.
     #
@@ -60,21 +60,21 @@ MAZES_ART = [
     # Maze #0: (paper: 5 rooms environment)
     ['###################',
      '##               ##',
-     '# #             # #',
-     '#  #     e     #  #',
+     '# #      a      # #',
+     '#  #           #  #',
      '#   #         #   #',
      '#    #### ####    #',
      '#    #### ####    #',
      '#    ##     ##    #',
      '#    ##     ##    #',
-     '#        P        #',
+     '#  d     P      b #',
      '#    ##     ##    #',
      '#    ##     ##    #',
      '#    #### ####    #',
      '#    #### ####    #',
      '#   #         #   #',
      '#  #           #  #',
-     '# # b           # #',
+     '# #      c      # #',
      '##               ##',
      '###################']
 ]
@@ -83,82 +83,45 @@ MAZES_ART = [
 COLOUR_FG = {' ': (0, 0, 0),        # Default black background
              '#': (764, 0, 999),    # Walls of the maze
              'P': (0, 999, 999),    # This is you, the player
-             'e': (99, 140, 140),    # Patroller A
-             'b': (145, 987, 341)}  # Patroller B
+             'a': (999, 0, 780),    # Patroller A
+             'b': (145, 987, 341),  # Patroller B
+             'c': (252, 186, 3),    # Patroller C
+             'd': (3, 240, 252)}    # Patroller D
 
 COLOUR_BG = {'@': (0, 0, 0)}  # So the coins look like @ and not solid blocks.
 
-ENEMIES = {'e', 'b'} # Globally accessible set of sprites
+ENEMIES = {'a', 'b', 'c', 'd'} # Globally accessible set of sprites
 
 # Empty coordinates corresponding to each numbered room (width 1 passageways not blocked)
 ROOMS = {
-  0 : [
-       [7, 7], [7, 8], [7, 9], [7, 10], [7, 11],
-       [8, 7], [8, 8], [8, 9], [8, 10], [8, 11],
-       [9, 7], [9, 8], [9, 9], [9, 10], [9, 11],
-       [10, 7], [10, 8], [10, 9], [10, 10], [10, 11],
-       [11, 7], [11, 8], [11, 9], [11, 10], [11, 11]
-      ],
-  1 : [
-       [2, 1],
-       [3, 1], [3, 2],
-       [4, 1], [4, 2], [4, 3],
-       [5, 1], [5, 2], [5, 3], [5, 4],
-       [6, 1], [6, 2], [6, 3], [6, 4],
-       [7, 1], [7, 2], [7, 3], [7, 4],
-       [8, 1], [8, 2], [8, 3], [8, 4],
-       [9, 1], [9, 2], [9, 3],
-       [10, 1], [10, 2], [10, 3], [10, 4],
-       [11, 1], [11, 2], [11, 3], [11, 4],
-       [12, 1], [12, 2], [12, 3], [12, 4],
-       [13, 1], [13, 2], [13, 3], [13, 4],
-       [14, 1], [14, 2], [14, 3],
-       [15, 1], [15, 2],
-       [16, 1],
-      ],
-  2 : [
-       [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10], [1, 11], [1, 12], [1, 13], [1, 14], [1, 15], [1, 16],
-       [2, 3], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9], [2, 10], [2, 11], [2, 12], [2, 13], [2, 14], [2, 15],
-       [3, 4], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10], [3, 11], [3, 12], [3, 13], [3, 14],
-       [4, 5], [4, 6], [4, 7], [4, 8],         [4, 10], [4, 11], [4, 12], [4, 13],
-      ],
-  3 : [
-       [2, 17],
-       [3, 17], [3, 16],
-       [4, 17], [4, 16], [4, 15],
-       [5, 17], [5, 16], [5, 15], [5, 14],
-       [6, 17], [6, 16], [6, 15], [6, 14],
-       [7, 17], [7, 16], [7, 15], [7, 14],
-       [8, 17], [8, 16], [8, 15], [8, 14],
-       [9, 17], [9, 16], [9, 15],
-       [10, 17], [10, 16], [10, 15], [10, 14],
-       [11, 17], [11, 16], [11, 15], [11, 14],
-       [12, 17], [12, 16], [12, 15], [12, 14],
-       [13, 17], [13, 16], [13, 15], [13, 14],
-       [14, 17], [14, 16], [14, 15],
-       [15, 17], [15, 16],
-       [16, 17],
-      ],
-  4 : [
-       [17, 2], [17, 3], [17, 4], [17, 5], [17, 6], [17, 7], [17, 8], [17, 9], [17, 10], [17, 11], [17, 12], [17, 13], [17, 14], [17, 15], [17, 16],
-       [16, 3], [16, 4], [16, 5], [16, 6], [16, 7], [16, 8], [16, 9], [16, 10], [16, 11], [16, 12], [16, 13], [16, 14], [16, 15],
-       [15, 4], [15, 5], [15, 6], [15, 7], [15, 8], [15, 9], [15, 10], [15, 11], [15, 12], [15, 13], [15, 14],
-       [14, 5], [14, 6], [14, 7], [14, 8],          [14, 10], [14, 11], [14, 12], [14, 13],
-      ],
+  0 : [[7, 7], [7, 8], [7, 9], [7, 10], [7, 11], [8, 7], [8, 8], [8, 9], [8, 10], [8, 11], [9, 7], [9, 8], [9, 9], [9, 10], [9, 11], [10, 7], [10, 8], [10, 9], [10, 10], [10, 11], [11, 7], [11, 8], [11, 9], [11, 10], [11, 11]],
+  1 : [[4, 1], [4, 2], [5, 1], [5, 2], [5, 3], [6, 1], [6, 2], [6, 3], [6, 4], [7, 1], [7, 2], [7, 3], [7, 4], [8, 1], [8, 2], [8, 3], [9, 1], [9, 2], [9, 3], [10, 1], [10, 2], [10, 3], [11, 1], [11, 2], [11, 3], [11, 4], [12, 1], [12, 2], [12, 3], [12, 4], [13, 1], [13, 2], [13, 3], [14, 1], [14, 2]],
+  2 : [[1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10], [1, 11], [1, 12], [1, 13], [1, 14], [2, 4], [2, 5], [2, 6], [2, 7], [2, 8], [2, 9], [2, 10], [2, 11], [2, 12], [2, 13], [2, 14], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10], [3, 11], [3, 12], [3, 13], [4, 6], [4, 7], [4, 11], [4, 12]],
+  3 : [[4, 16], [4, 17], [5, 15], [5, 16], [5, 17], [6, 14], [6, 15], [6, 16], [6, 17], [7, 14], [7, 15], [7, 16], [7, 17], [8, 15], [8, 16], [8, 17], [9, 15], [9, 16], [9, 17], [10, 15], [10, 16], [10, 17], [11, 14], [11, 15], [11, 16], [11, 17], [12, 14], [12, 15], [12, 16], [12, 17], [13, 15], [13, 16], [13, 17], [14, 16], [14, 17]],
+  4 : [[14, 6], [14, 7], [14, 11], [14, 12], [15, 5], [15, 6], [15, 7], [15, 8], [15, 9], [15, 10], [15, 11], [15, 12], [15, 13], [16, 4], [16, 5], [16, 6], [16, 7], [16, 8], [16, 9], [16, 10], [16, 11], [16, 12], [16, 13], [16, 14], [17, 4], [17, 5], [17, 6], [17, 7], [17, 8], [17, 9], [17, 10], [17, 11], [17, 12], [17, 13], [17, 14]],
 }
 
 def make_game(level):
   """Builds and returns a Better Scrolly Maze game for the selected level."""
   maze_ascii = MAZES_ART[level]
 
+  # change location of fixed object in the top room
+  for row in range(14, 18):
+    if 'c' in maze_ascii[row]:
+      maze_ascii[row] = maze_ascii[row].replace('c', ' ', 1)
+  new_coord = random.sample(ROOMS[4], 1)[0]
+  maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'c' + maze_ascii[new_coord[0]][new_coord[1]+1:]
+
   return ascii_art.ascii_art_to_game(
       maze_ascii, what_lies_beneath=' ',
       sprites={
           'P': PlayerSprite,
-          'e': MoveableObject,
-          'b': WhiteNoiseObject},
-      update_schedule=['P', 'e', 'b'],
-      z_order='ebP')
+          'a': MoveableObject,
+          'b': WhiteNoiseObject,
+          'c': FixedObject,
+          'd': BrownianObject},
+      update_schedule=['P', 'a', 'b', 'c', 'd'],
+      z_order='abcdP')
 
 def make_croppers(level):
   """Builds and returns `ObservationCropper`s for the selected level.
@@ -183,7 +146,7 @@ class PlayerSprite(prefab_sprites.MazeWalker):
   def __init__(self, corner, position, character):
     """Constructor: just tells `MazeWalker` we can't walk through walls or objects."""
     super(PlayerSprite, self).__init__(
-        corner, position, character, impassable='#')
+        corner, position, character, impassable='#abcd')
     self.last_position = None # store last position for moveable object
     self.last_action = None # store last action for moveable object
 
@@ -210,19 +173,12 @@ class WhiteNoiseObject(prefab_sprites.MazeWalker):
 
   def __init__(self, corner, position, character):
     """Constructor: list impassables, initialise direction."""
-    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='P#e')
+    super(WhiteNoiseObject, self).__init__(corner, position, character, impassable='#')
     # Initialize empty space in surrounding radius.
-    self._empty_coords = ROOMS[4]
+    self._empty_coords = ROOMS[3]
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     del actions, backdrop  # Unused.
-
-    # We only move once every two game iterations.
-    if the_plot.frame % 2:
-      self._stay(board, the_plot)
-      return
-
-    # Sample and make a move
     self._teleport(self._empty_coords[np.random.choice(len(self._empty_coords))])
 
 class MoveableObject(prefab_sprites.MazeWalker):
@@ -230,6 +186,19 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
   def __init__(self, corner, position, character):
     super(MoveableObject, self).__init__(corner, position, character, impassable='#b')
+    self.eps = 0.25 # probability you move randomly when interacted with
+    self.directions = {0:self._north,
+                       1:self._east,
+                       2:self._south,
+                       3:self._west}
+    self.opp_directions = {0:self._south,
+                           1:self._west,
+                           2:self._north,
+                           3:self._east}
+    self.no_go = {0:None,
+                  1:(4,8),
+                  2:(3,9),
+                  3:(4,10)}
 
   def update(self, actions, board, layers, backdrop, things, the_plot):
     mr, mc = self.position
@@ -238,43 +207,111 @@ class MoveableObject(prefab_sprites.MazeWalker):
 
     # move up
     if (mc == pc) and (mr - pr == -1) and (p_action == 0):
-      moved = self._north(board, the_plot)
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([1, 3])
+        box_direction = self.directions[direction_ind]
+      else:
+        box_direction = self._north
+
+      moved = box_direction(board, the_plot)
       if moved is not None:
         things['P']._south(board, the_plot)
 
     # move down
     elif (mc == pc) and (mr - pr == 1) and (p_action == 1):
-      exiting_room = (self.position == (3, 9))
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([1, 3])
+        box_direction = self.directions[direction_ind]
+        no_go_coord = self.no_go[direction_ind]
+      else:
+        box_direction = self._south
+        no_go_coord = (3,9)
+
+      exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
         things['P']._north(board, the_plot)
         self._stay(board, the_plot)
       else:
-        moved = self._south(board, the_plot)
+        moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
           things['P']._north(board, the_plot)
 
     # move right
     elif (mc - pc == 1) and (mr == pr) and (p_action == 3):
-      exiting_room = (self.position == (4, 8))
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([0, 2])
+        box_direction = self.directions[direction_ind]
+        no_go_coord = self.no_go[direction_ind]
+      else:
+        box_direction = self._east
+        no_go_coord = (4,8)
+
+      exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
         things['P']._west(board, the_plot)
         self._stay(board, the_plot)
       else:
-        moved = self._east(board, the_plot)
+        moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
           things['P']._west(board, the_plot)
 
     # move left
     elif (mc - pc == -1) and (mr == pr) and (p_action == 2):
-      exiting_room = (self.position == (4, 10))
+      rand = np.random.rand() <= self.eps
+      if rand == True:
+        direction_ind = np.random.choice([0, 2])
+        box_direction = self.directions[direction_ind]
+        no_go_coord = self.no_go[direction_ind]
+      else:
+        box_direction = self._west
+        no_go_coord = (4,10)
+
+      exiting_room = (self.position == no_go_coord)
       if exiting_room == True:
         things['P']._east(board, the_plot)
         self._stay(board, the_plot)
       else:
-        moved = self._west(board, the_plot)
+        moved = box_direction(board, the_plot)
         if moved is not None: # obstructed
           things['P']._east(board, the_plot)
 
+    del actions, backdrop  # Unused.
+
+class BrownianObject(prefab_sprites.MazeWalker):
+  """Randomly sample direction from left/right/up/down"""
+
+  def __init__(self, corner, position, character):
+    """Constructor: list impassables, initialise direction."""
+    super(BrownianObject, self).__init__(corner, position, character, impassable='#')
+    # Choose our initial direction.
+    self._direction = np.random.choice(4) # 0 = east, 1 = west, 2 = north, 3 = south
+
+  def update(self, actions, board, layers, backdrop, things, the_plot):
+    del actions, backdrop  # Unused.
+
+    # Sample a move
+    if self.position[0] == 9 and self.position[1] == 4: # prevent escaping the left room
+      self._direction = np.random.choice([1, 2, 3])
+    else:
+      self._direction = np.random.choice(4) # 0 = east, 1 = west, 2 = north, 3 = south
+
+    # Make a move
+    if self._direction == 0: self._east(board, the_plot)
+    elif self._direction == 1: self._west(board, the_plot)
+    elif self._direction == 2: self._north(board, the_plot)
+    elif self._direction == 3: self._south(board, the_plot)
+
+class FixedObject(plab_things.Sprite):
+  """Static object. Doesn't move."""
+
+  def __init__(self, corner, position, character):
+    super(FixedObject, self).__init__(
+        corner, position, character)
+
+  def update(self, actions, board, layers, backdrop, things, the_plot):
     del actions, backdrop  # Unused.
 
 

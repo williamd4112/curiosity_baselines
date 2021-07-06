@@ -1,6 +1,7 @@
 
 import numpy as np
 import os
+import pathlib
 import glob
 import atari_py
 import cv2
@@ -56,6 +57,7 @@ class AtariEnv(Env):
         num_img_obs (int): number of frames in observation (>=1)
         clip_reward (bool): if ``True``, clip reward to np.sign(reward)
         episodic_lives (bool): if ``True``, output ``done=True`` but ``env_info[traj_done]=False`` when a life is lost
+        fire_on_reset (bool): if ``True`` then input fire action automatically to start the game.
         max_start_noops (int): upper limit for random number of noop actions after reset
         repeat_action_probability (0-1): probability for sticky actions
         horizon (int): max number of steps before timeout / ``traj_done=True``
@@ -82,7 +84,8 @@ class AtariEnv(Env):
                  normalize_obs_steps=10000,
                  downsampling_scheme='classical',
                  record_freq=0,
-                 record_dir=None
+                 record_dir=None,
+                 score_multiplier=1.0
                  ):
         save__init__args(locals(), underscore=True)
 
@@ -113,13 +116,18 @@ class AtariEnv(Env):
         self._has_fire = "FIRE" in self.get_action_meanings()
         self._has_up = "UP" in self.get_action_meanings()
         self._horizon = int(horizon)
+        self._multiplier = score_multiplier
 
         # Recording
         self.record_env = False # set in samping_process for environment 0
         self._record_episode = False
         self._record_freq = record_freq
         self._video_dir = os.path.join(record_dir, 'videos')
-        self._frames_dir = os.path.join(self._video_dir, 'frames')
+        if "TMPDIR" in os.environ:
+            self._frames_dir = os.path.join("{}/frames".format(os.path.expandvars("$TMPDIR")))
+            pathlib.Path(self._frames_dir).mkdir(exist_ok=True)
+        else:
+            self._frames_dir = os.path.join(self._video_dir, 'frames')
         self._episode_number = 0
 
         self.reset()
@@ -168,8 +176,9 @@ class AtariEnv(Env):
         done = game_over or (self._episodic_lives and lost_life)
         info = EnvInfo(game_score=game_score, traj_done=game_over)
         self._step_counter += 1
-        if self._no_negative_reward and reward < 0.0 or self._no_extrinsic:
+        if self._no_negative_reward and reward < 0.0:
             reward = 0.0
+        reward *= self._multiplier
         return EnvStep(self.get_obs(), reward, done, info)
 
     def render(self, cv2=False, wait=10, show_full_obs=False):
@@ -189,6 +198,13 @@ class AtariEnv(Env):
 
     def get_obs(self):
         return self._obs.copy()
+
+    def close(self):
+        if self.record_env:
+            images = os.listdir(self._frames_dir)
+            for i in images:
+                os.remove(self._frames_dir + '/' + i)
+            os.rmdir(self._frames_dir)
 
     ###########################################################################
     # Helpers

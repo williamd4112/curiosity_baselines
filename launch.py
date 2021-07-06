@@ -45,6 +45,7 @@ with open('./global.json') as global_params:
     _RESULTS_DIR = params['local_resultsdir']
     _TB_PORT = params['tb_port']
     _ATARI_ENVS = params['envs']['atari_envs']
+    _PYCOLAB_ENVS = params['envs']['pycolab_envs']
     _MUJOCO_ENVS = params['envs']['mujoco_envs']
 
 
@@ -81,6 +82,10 @@ def launch_tmux(args):
         for arg, value in vars(args).items():
             if arg == 'launch_tmux':
                 args_string += '-launch_tmux no '
+            elif arg == 'enemy_reward':
+                args_string += '-enemy_reward {} '.format(format(value, 'f'))
+            elif arg == 'obj_reward':
+                args_string += '-obj_reward {} '.format(format(value, 'f'))
             elif value is None and arg == 'log_dir':
                 args_string += f'-log_dir {log_dir} '
             elif value is True:
@@ -117,10 +122,6 @@ def launch_tmux(args):
         time.sleep(6) # wait for logdir to be created
         with open(log_dir + '/cmd.txt', 'w') as cmd_file:
             cmd_file.writelines(commands['runner'])
-        # with open(log_dir + '/git.txt', 'w') as git_file:
-        #     branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip().decode('utf-8')
-        #     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf-8')
-        #     git_file.write('{}/{}'.format(branch, commit))
 
 
 def start_experiment(args):
@@ -161,6 +162,15 @@ def start_experiment(args):
         model_args['curiosity_kwargs']['prediction_beta'] = args.prediction_beta
         model_args['curiosity_kwargs']['forward_loss_wt'] = args.forward_loss_wt
         model_args['curiosity_kwargs']['forward_model'] = args.forward_model
+        model_args['curiosity_kwargs']['feature_space'] = args.feature_space
+    elif args.curiosity_alg == 'micm':
+        model_args['curiosity_kwargs']['feature_encoding'] = args.feature_encoding
+        model_args['curiosity_kwargs']['batch_norm'] = args.batch_norm
+        model_args['curiosity_kwargs']['prediction_beta'] = args.prediction_beta
+        model_args['curiosity_kwargs']['forward_loss_wt'] = args.forward_loss_wt
+        model_args['curiosity_kwargs']['forward_model'] = args.forward_model
+        model_args['curiosity_kwargs']['ensemble_mode'] = args.ensemble_mode
+        model_args['curiosity_kwargs']['device'] = args.sample_mode
     elif args.curiosity_alg == 'disagreement':
         model_args['curiosity_kwargs']['feature_encoding'] = args.feature_encoding
         model_args['curiosity_kwargs']['ensemble_size'] = args.ensemble_size
@@ -172,6 +182,7 @@ def start_experiment(args):
     elif args.curiosity_alg == 'ndigo':
         model_args['curiosity_kwargs']['feature_encoding'] = args.feature_encoding
         model_args['curiosity_kwargs']['pred_horizon'] = args.pred_horizon
+        model_args['curiosity_kwargs']['prediction_beta'] = args.prediction_beta
         model_args['curiosity_kwargs']['batch_norm'] = args.batch_norm
         model_args['curiosity_kwargs']['device'] = args.sample_mode
     elif args.curiosity_alg == 'rnd':
@@ -198,10 +209,6 @@ def start_experiment(args):
 
     # ----------------------------------------------------- LEARNING ALG ----------------------------------------------------- #
     if args.alg == 'ppo':
-        if args.kernel_mu == 0.:
-            kernel_params = None
-        else:
-            kernel_params = (args.kernel_mu, args.kernel_sigma)
         algo = PPO(
                 discount=args.discount,
                 learning_rate=args.lr,
@@ -218,7 +225,6 @@ def start_experiment(args):
                 linear_lr_schedule=args.linear_lr,
                 normalize_advantage=args.normalize_advantage,
                 normalize_reward=args.normalize_reward,
-                kernel_params=kernel_params,
                 curiosity_type=args.curiosity_alg
                 )
     elif args.alg == 'a2c':
@@ -248,7 +254,7 @@ def start_experiment(args):
             normalize_obs=args.normalize_obs,
             normalize_obs_steps=10000
             )
-    elif 'deepmind' in args.env.lower(): # pycolab deepmind environments
+    elif args.env in _PYCOLAB_ENVS:
         env_cl = deepmind_make
         traj_info_cl = PycolabTrajInfo
         env_args = dict(
@@ -285,6 +291,9 @@ def start_experiment(args):
             record_freq=args.record_freq,
             record_dir=args.log_dir,
             horizon=args.max_episode_steps,
+            score_multiplier=args.score_multiplier,
+            repeat_action_probability=args.repeat_action_probability,
+            fire_on_reset=args.fire_on_reset
             )
 
     if args.sample_mode == 'gpu':

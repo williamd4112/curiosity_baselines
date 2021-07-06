@@ -1,6 +1,8 @@
 
 import torch
 from torch import nn
+import numpy as np
+import cv2
 
 from rlpyt.utils.tensor import infer_leading_dims, restore_leading_dims, valid_mean
 from rlpyt.models.curiosity.encoders import *
@@ -28,7 +30,7 @@ class Disagreement(nn.Module):
         super(Disagreement, self).__init__()
 
         self.ensemble_size = ensemble_size
-        self.prediction_beta = prediction_beta
+        self.beta = prediction_beta
         self.feature_encoding = feature_encoding
         self.obs_stats = obs_stats
         self.device = torch.device("cuda:0" if device == "gpu" else "cpu")
@@ -61,12 +63,16 @@ class Disagreement(nn.Module):
         self.forward_model_2 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(self.device)
         self.forward_model_3 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(self.device)
         self.forward_model_4 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(self.device)
+        self.forward_model_5 = fmodel_class(feature_size=self.feature_size, action_size=action_size).to(self.device)
 
     def forward(self, obs1, obs2, action):
 
         if self.obs_stats is not None:
-            img1 = (obs1 - self.obs_mean) / self.obs_std
-            img2 = (obs2 - self.obs_mean) / self.obs_std
+            img1 = (obs1 - self.obs_mean) / (self.obs_std+1e-10)
+            img2 = (obs2 - self.obs_mean) / (self.obs_std+1e-10)
+
+        # img = np.squeeze(obs1.data.numpy()[20][0])
+        # cv2.imwrite('disimages/original.png', img.transpose(1, 2, 0))
 
         img1 = obs1.type(torch.float)
         img2 = obs2.type(torch.float) # Expect torch.uint8 inputs
@@ -89,7 +95,7 @@ class Disagreement(nn.Module):
         predicted_phi2.append(self.forward_model_2(phi1.detach(), action.view(T, B, -1).detach()))
         predicted_phi2.append(self.forward_model_3(phi1.detach(), action.view(T, B, -1).detach()))
         predicted_phi2.append(self.forward_model_4(phi1.detach(), action.view(T, B, -1).detach()))
-
+        predicted_phi2.append(self.forward_model_5(phi1.detach(), action.view(T, B, -1).detach()))
         predicted_phi2_stacked = torch.stack(predicted_phi2)
 
         return phi2, predicted_phi2, predicted_phi2_stacked
@@ -98,7 +104,7 @@ class Disagreement(nn.Module):
         _, _, predicted_phi2_stacked = self.forward(observations, next_observations, actions)
         feature_var = torch.var(predicted_phi2_stacked, dim=0) # feature variance across forward models
         reward = torch.mean(feature_var, axis=-1) # mean over feature
-        return self.prediction_beta * reward
+        return self.beta * reward
 
     def compute_loss(self, observations, next_observations, actions, valid):
         #------------------------------------------------------------#
@@ -121,6 +127,9 @@ class Disagreement(nn.Module):
 
         forward_loss_4 = nn.functional.dropout(nn.functional.mse_loss(predicted_phi2[3], phi2.detach(), reduction='none'), p=0.2).sum(-1)/self.feature_size
         forward_loss += valid_mean(forward_loss_4, valid)
+
+        forward_loss_5 = nn.functional.dropout(nn.functional.mse_loss(predicted_phi2[4], phi2.detach(), reduction='none'), p=0.2).sum(-1)/self.feature_size
+        forward_loss += valid_mean(forward_loss_5, valid)
 
         return self.forward_loss_wt*forward_loss
 

@@ -201,24 +201,6 @@ def mario_make(*args, info_example=None, **kwargs):
         env = GymEnvWrapper(EnvInfoWrapper(env))
     return env
 
-    # env = retro.make('SuperMarioBros-Nes', 'Level1-1')
-    # buttons = env.buttons
-    # env = MarioXReward(env)
-    # if kwargs['no_extrinsic']:
-    #     env = NoExtrinsicReward(env)
-    # if kwargs['no_negative_reward']:
-    #     env = NoNegativeReward(env)
-    # env = FrameSkip(env, 4)
-    # env = ProcessFrame84(env, crop=False)
-    # env = FrameStack(env, 4)
-    # env = LimitedDiscreteActions(env, buttons)
-    # env = PytorchImage(env) # (h,w,c) -> (c,h,w)
-    # if info_example is None:
-    #     env = GymEnvWrapper(env)
-    # else:
-    #     env = GymEnvWrapper(EnvInfoWrapper(env))
-    # return env
-
 def deepmind_make(*args, info_example=None, **kwargs):
     """Use as factory function for making instances of Pycolab environments with
     rlpyt's ``GymEnvWrapper``, using ``gym.make(*args, **kwargs)``. If
@@ -226,15 +208,27 @@ def deepmind_make(*args, info_example=None, **kwargs):
     """
     import rlpyt.envs.mazeworld.mazeworld
 
-    env = gym.make(kwargs['game'], obs_type=kwargs['obs_type'], max_iterations=kwargs['max_steps_per_episode'])
-    env.pycolab_init(kwargs['logdir'], kwargs['log_heatmaps'])
+    env = gym.make(kwargs['game'], 
+                   obs_type=kwargs['obs_type'], 
+                   max_iterations=kwargs['max_steps_per_episode'])
+    env.heatmap_init(kwargs['logdir'], kwargs['log_heatmaps'])
+    
+    if kwargs['obs_type'] == 'rgb_full':
+        resize_scale = 84 // env.width
+        if env.width == 85:
+            resize_scale = 1
+    else:
+        resize_scale = 17
+    env.obs_init(resize_scale)
 
     if kwargs['no_negative_reward']:
         env = NoNegativeReward(env)
 
-    if kwargs['obs_type'] == 'rgb':
+    if 'rgb' in kwargs['obs_type']:
         if kwargs['grayscale'] == True:
             env = Grayscale(env)
+        if kwargs['obs_type'] == 'rgb_full' and env.width != env.height:
+            env = ResizeFull(env)
         env = PytorchImage(env)
 
     if info_example is None:

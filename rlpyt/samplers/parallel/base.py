@@ -154,10 +154,14 @@ class ParallelSamplerBase(BaseSampler):
         return traj_infos
 
     def shutdown(self):
+        logger.log('Stopping sampler ...')
         self.ctrl.quit.value = True
         self.ctrl.barrier_in.wait()
+        logger.log('Control barrier wait over.')
         for w in self.workers:
             w.join()
+            logger.log('Worker {} shutdown'.format(self.workers.index(w)))
+        logger.log('Sampler shutdown.')
 
     ######################################
     # Helpers
