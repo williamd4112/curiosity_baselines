@@ -48,6 +48,7 @@ from .mazeworld_env import EightRoomDiff
 from .mazeworld_env import EightRoomExt
 from .mazeworld_env import EightRoomRgb
 from .mazeworld_env import EightRoomWeather
+from .mazeworld_env import EightRoomXLExt
 from .mazeworld_env import EightRoomXLWeather
 from .mazeworld_env import EightRoomHardExt
 from .mazeworld_env import EightRoomHardWeather
