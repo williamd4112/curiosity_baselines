@@ -216,7 +216,6 @@ def make_game(level, reward_config):
       maze_ascii[new_coord[0]] = maze_ascii[new_coord[0]][:new_coord[1]] + 'h' + maze_ascii[new_coord[0]][new_coord[1]+1:]
 
   a, b, c, d, e, f, g, h = reward_config.values()
-  print(reward_config)
   return ascii_art.ascii_art_to_game(
       maze_ascii, what_lies_beneath=' ',
       sprites={
