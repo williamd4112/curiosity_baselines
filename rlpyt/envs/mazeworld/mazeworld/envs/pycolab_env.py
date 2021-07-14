@@ -233,7 +233,10 @@ class PyColabEnv(gym.Env):
         elif self.obs_type == 'rgb':
             self.observation_space = spaces.Box(0., 255., [self.crop_window[0]*17, self.crop_window[1]*17] + [3])
         elif self.obs_type == 'rgb_full':
-            self.observation_space = spaces.Box(0., 255., [84,84] + [3])
+            if 84 % self.width == 0:
+                self.observation_space = spaces.Box(0., 255., [84,84] + [3])
+            else:
+                self.observation_space = spaces.Box(0., 255., [85,85] + [3])
         self.act_null_value = act_null_value
         self.visitable_states = visitable_states
 

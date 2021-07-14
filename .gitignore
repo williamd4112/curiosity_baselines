@@ -12,6 +12,7 @@ monitor.py
 barplot*
 batch.py
 ops.py
+view.py
 
 # Results directory, and mujoco key
 /results/
