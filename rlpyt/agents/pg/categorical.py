@@ -2,7 +2,7 @@
 import torch
 
 from rlpyt.agents.base import AgentStep, AgentCuriosityStep, BaseAgent, RecurrentAgentMixin, AlternatingRecurrentAgentMixin
-from rlpyt.agents.pg.base import AgentInfo, NdigoInfo, IcmInfo, RndInfo, AgentInfoRnn
+from rlpyt.agents.pg.base import AgentInfo, AgentInfoTwin, NdigoInfo, IcmInfo, RndInfo, AgentInfoRnn, AgentInfoRnnTwin
 from rlpyt.distributions.categorical import Categorical, DistInfo
 from rlpyt.utils.buffer import buffer_to, buffer_func, buffer_method
 
@@ -16,36 +16,59 @@ class CategoricalPgAgent(BaseAgent):
     while both output the value estimate).
     """
 
-    def __call__(self, observation, prev_action, prev_reward):
+    def __call__(self, observation, prev_action, prev_reward, dual=False):
         prev_action = self.distribution.to_onehot(prev_action)
         model_inputs = buffer_to((observation, prev_action, prev_reward),
             device=self.device)
-        pi, value = self.model(*model_inputs)
+        pi, value = (self.model_int if dual else self.model)(*model_inputs)
         return buffer_to((DistInfo(prob=pi), value), device="cpu")
 
     def initialize(self, env_spaces, share_memory=False,
-            global_B=1, env_ranks=None):
+            global_B=1, env_ranks=None, **kwargs):
         super().initialize(env_spaces, share_memory,
-            global_B=global_B, env_ranks=env_ranks)
+            global_B=global_B, env_ranks=env_ranks, **kwargs)
         self.distribution = Categorical(dim=env_spaces.action.n)
 
     @torch.no_grad()
     def step(self, observation, prev_action, prev_reward):
         prev_action = self.distribution.to_onehot(prev_action)
         model_inputs = buffer_to((observation, prev_action, prev_reward), device=self.device)
+
+         # TODO: need to decide which action to take
         pi, value = self.model(*model_inputs)
+        int_pi, int_value = self.model_int(*model_inputs)
+
         dist_info = DistInfo(prob=pi)
-        action = self.distribution.sample(dist_info)
-        agent_info = AgentInfo(dist_info=dist_info, value=value)
+
+        if self.dual_model:
+            pi_int, pi_int = self.model_int(*model_inputs)
+            dist_int_info = DistInfo(prob=pi_int)
+            if self._mode == "eval":
+                action = self.distribution.sample(dist_info)
+            else:
+                action = self.distribution.sample(dist_int_info)
+        else:
+            action = self.distribution.sample(dist_info)
+        
+        if self.dual_model:
+            agent_info = AgentInfoTwin(dist_info=dist_info, value=value, 
+                                dist_int_info=dist_int_info, int_value=int_value)
+        else:
+            agent_info = AgentInfo(dist_info=dist_info, value=value)
+
         action, agent_info = buffer_to((action, agent_info), device="cpu")
         return AgentStep(action=action, agent_info=agent_info)
 
     @torch.no_grad()
-    def value(self, observation, prev_action, prev_reward):
+    def value(self, observation, prev_action, prev_reward, ret_int=False):
         prev_action = self.distribution.to_onehot(prev_action)
         model_inputs = buffer_to((observation, prev_action, prev_reward),
             device=self.device)
-        _pi, value = self.model(*model_inputs)
+        if ret_int:
+            assert self.dual_model
+            _pi, value = self.model_int(*model_inputs)
+        else:
+            _pi, value = self.model(*model_inputs)
         return value.to("cpu")
 
 
@@ -67,17 +90,41 @@ class RecurrentCategoricalPgAgentBase(BaseAgent):
     def step(self, observation, prev_action, prev_reward):
         prev_action = self.distribution.to_onehot(prev_action)
         agent_inputs = buffer_to((observation, prev_action, prev_reward), device=self.device)
-        pi, value, rnn_state = self.model(*agent_inputs, self.prev_rnn_state)
+
+        pi, value, rnn_state = self.model(*agent_inputs, self.prev_rnn_state)        
         dist_info = DistInfo(prob=pi)
-        action = self.distribution.sample(dist_info)
+
+        if self.dual_model:            
+            int_pi, int_value, int_rnn_state = self.model_int(*agent_inputs, self.prev_int_rnn_state)
+            dist_int_info = DistInfo(prob=int_pi)
+            if self._mode == "eval":
+                action = self.distribution.sample(dist_info)
+            else:
+                action = self.distribution.sample(dist_int_info)
+        else:
+            action = self.distribution.sample(dist_info)
+
         # Model handles None, but Buffer does not, make zeros if needed:
         prev_rnn_state = self.prev_rnn_state or buffer_func(rnn_state, torch.zeros_like)
         # Transpose the rnn_state from [N,B,H] --> [B,N,H] for storage.
         # (Special case: model should always leave B dimension in.)
         prev_rnn_state = buffer_method(prev_rnn_state, "transpose", 0, 1)
-        agent_info = AgentInfoRnn(dist_info=dist_info, value=value, prev_rnn_state=prev_rnn_state)
-        action, agent_info = buffer_to((action, agent_info), device="cpu")
+
+        if self.dual_model:                    
+            prev_int_rnn_state = self.prev_int_rnn_state or buffer_func(int_rnn_state, torch.zeros_like)
+            prev_int_rnn_state = buffer_method(prev_int_rnn_state, "transpose", 0, 1)            
+            agent_info = AgentInfoRnnTwin(dist_info=dist_info, 
+                                    value=value, 
+                                    prev_rnn_state=prev_rnn_state,
+                                    dist_int_info=dist_int_info, 
+                                    int_value=int_value, 
+                                    prev_int_rnn_state=prev_int_rnn_state)      
+        else:
+            agent_info = AgentInfoRnn(dist_info=dist_info, value=value, prev_rnn_state=prev_rnn_state)
+            action, agent_info = buffer_to((action, agent_info), device="cpu")
         self.advance_rnn_state(rnn_state)  # Keep on device.
+        if self.dual_model:
+            self.advance_int_rnn_state(int_rnn_state)
         return AgentStep(action=action, agent_info=agent_info)
 
     @torch.no_grad()
@@ -137,11 +184,16 @@ class RecurrentCategoricalPgAgentBase(BaseAgent):
         return losses
 
     @torch.no_grad()
-    def value(self, observation, prev_action, prev_reward):
+    def value(self, observation, prev_action, prev_reward, ret_int=False):
         prev_action = self.distribution.to_onehot(prev_action)
         agent_inputs = buffer_to((observation, prev_action, prev_reward),
             device=self.device)
-        _pi, value, _rnn_state = self.model(*agent_inputs, self.prev_rnn_state)
+        # _pi, value, _rnn_state = self.model(*agent_inputs, self.prev_rnn_state)
+        if ret_int:
+            assert self.dual_model
+            _pi, value, _rnn_state = self.model_int(*agent_inputs, self.prev_int_rnn_state)
+        else:
+            _pi, value, _rnn_state = self.model(*agent_inputs, self.prev_rnn_state)
         return value.to("cpu")
 
 
