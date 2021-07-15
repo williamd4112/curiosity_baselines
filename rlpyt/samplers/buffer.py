@@ -6,7 +6,7 @@ import numpy as np
 from rlpyt.agents.pg.base import AgentInfo, AgentInfoRnn
 from rlpyt.utils.buffer import buffer_from_example, torchify_buffer
 from rlpyt.agents.base import AgentInputs
-from rlpyt.samplers.collections import (Samples, AgentSamples, AgentSamplesBsv, EnvSamples)
+from rlpyt.samplers.collections import (Samples, AgentSamples, AgentSamplesBsv, AgentSamplesBsvTwin, EnvSamples)
 
 
 def build_samples_buffer(agent, env, batch_spec, bootstrap_value=False,
@@ -14,6 +14,7 @@ def build_samples_buffer(agent, env, batch_spec, bootstrap_value=False,
     """Recommended to step/reset agent and env in subprocess, so it doesn't
     affect settings in master before forking workers (e.g. torch num_threads
     (MKL) may be set at first forward computation.)"""
+    # import ipdb; ipdb.set_trace()
     if examples is None:
         if subprocess:
             mgr = mp.Manager()
@@ -30,15 +31,21 @@ def build_samples_buffer(agent, env, batch_spec, bootstrap_value=False,
     all_action = buffer_from_example(examples["action"], (T + 1, B), agent_shared)
     action = all_action[1:]
     prev_action = all_action[:-1]  # Writing to action will populate prev_action.
+    # import ipdb; ipdb.set_trace()
     agent_info = buffer_from_example(examples["agent_info"], (T, B), agent_shared)
     agent_buffer = AgentSamples(
         action=action,
         prev_action=prev_action,
         agent_info=agent_info,
     )
-    if bootstrap_value:
-        bv = buffer_from_example(examples["agent_info"].value, (1, B), agent_shared)
-        agent_buffer = AgentSamplesBsv(*agent_buffer, bootstrap_value=bv)
+    if bootstrap_value:        
+        if agent.dual_model:
+            bv = buffer_from_example(examples["agent_info"].value, (1, B), agent_shared)
+            int_bv = buffer_from_example(examples["agent_info"].value, (1, B), agent_shared)
+            agent_buffer = AgentSamplesBsvTwin(*agent_buffer, bootstrap_value=bv, int_bootstrap_value=int_bv)
+        else:
+            bv = buffer_from_example(examples["agent_info"].value, (1, B), agent_shared)
+            agent_buffer = AgentSamplesBsv(*agent_buffer, bootstrap_value=bv)
 
     observation = buffer_from_example(examples["observation"], (T, B), env_shared) # all zero arrays (except 0th index should equal o_reset)
     next_observation = buffer_from_example(examples["observation"], (T, B), env_shared) 
@@ -82,6 +89,10 @@ def get_example_outputs(agent, env, examples, subprocess=False):
     if "prev_rnn_state" in agent_info:
         # Agent leaves B dimension in, strip it: [B,N,H] --> [N,H]
         agent_info = agent_info._replace(prev_rnn_state=agent_info.prev_rnn_state[0])
+
+    if "prev_int_rnn_state" in agent_info:
+        # Agent leaves B dimension in, strip it: [B,N,H] --> [N,H]
+        agent_info = agent_info._replace(prev_int_rnn_state=agent_info.prev_int_rnn_state[0])
 
     examples["observation"] = o_reset
     examples["reward"] = r

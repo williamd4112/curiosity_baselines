@@ -64,6 +64,9 @@ class CpuResetCollector(DecorrelatingStartCollector):
             # agent.value() should not advance rnn state.
             agent_buf.bootstrap_value[:] = self.agent.value(obs_pyt, act_pyt, rew_pyt)
 
+        if "int_bootstrap_value" in agent_buf:
+            agent_buf.int_bootstrap_value[:] = self.agent.value(obs_pyt, act_pyt, rew_pyt, ret_int=True)
+
         return AgentInputs(observation, action, reward), traj_infos, completed_infos
 
 
@@ -155,12 +158,15 @@ class CpuWaitResetCollector(DecorrelatingStartCollector):
             env_buf.reward[t] = reward_tot
             env_buf.next_observation[t] = observation # [1 : T+1]
             env_buf.done[t] = self.done
-            if agent_info:
+            if agent_info:                
                 agent_buf.agent_info[t] = agent_info
 
         if "bootstrap_value" in agent_buf:
             # agent.value() should not advance rnn state.
             agent_buf.bootstrap_value[:] = self.agent.value(obs_pyt, act_pyt, rew_tot_pyt)
+
+        if "int_bootstrap_value" in agent_buf:
+            agent_buf.int_bootstrap_value[:] = self.agent.value(obs_pyt, act_pyt, rew_tot_pyt, ret_int=True)
 
         return AgentInputs(observation, action, reward_tot), traj_infos, completed_infos
 

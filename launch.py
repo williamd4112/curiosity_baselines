@@ -198,14 +198,18 @@ def start_experiment(args):
         else:
             agent = MujocoFfAgent(initial_model_state_dict=initial_model_state_dict)
     else:
-        if args.lstm:
+        if args.lstm:            
             agent = AtariLstmAgent(
                         initial_model_state_dict=initial_model_state_dict,
                         model_kwargs=model_args,
-                        no_extrinsic=args.no_extrinsic
+                        no_extrinsic=args.no_extrinsic,
+                        dual_model=args.dual_model,
                         )
         else:
-            agent = AtariFfAgent(initial_model_state_dict=initial_model_state_dict)
+            agent = AtariFfAgent(initial_model_state_dict=initial_model_state_dict,
+                model_kwargs=model_args,
+                no_extrinsic=args.no_extrinsic,
+                dual_model=args.dual_model)
 
     # ----------------------------------------------------- LEARNING ALG ----------------------------------------------------- #
     if args.alg == 'ppo':
@@ -225,7 +229,8 @@ def start_experiment(args):
                 linear_lr_schedule=args.linear_lr,
                 normalize_advantage=args.normalize_advantage,
                 normalize_reward=args.normalize_reward,
-                curiosity_type=args.curiosity_alg
+                curiosity_type=args.curiosity_alg,
+                policy_loss_type=args.policy_loss_type
                 )
     elif args.alg == 'a2c':
         algo = A2C(
@@ -337,7 +342,7 @@ def start_experiment(args):
             CollectorCls=collector_class
             )
 
-    # ----------------------------------------------------- RUNNER ----------------------------------------------------- #
+    # ----------------------------------------------------- RUNNER ----------------------------------------------------- #   
     if args.eval_envs > 0:
         runner = MinibatchRlEval(
             algo=algo,

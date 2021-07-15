@@ -1,4 +1,5 @@
 import multiprocessing as mp
+from os import stat
 import torch
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.nn.parallel import DistributedDataParallelCPU as DDPC
@@ -36,7 +37,7 @@ class BaseAgent:
     recurrent = False
     alternating = False
 
-    def __init__(self, ModelCls=None, model_kwargs=None, initial_model_state_dict=None, no_extrinsic=False):
+    def __init__(self, ModelCls=None, model_kwargs=None, initial_model_state_dict=None, no_extrinsic=False, dual_model=False):
         """
         Arguments are saved but no model initialization occurs.
 
@@ -49,9 +50,11 @@ class BaseAgent:
 
         save__init__args(locals())
         self.model = None  # type: torch.nn.Module
+        self.model_int = None    
         self.curiosity_type = model_kwargs['curiosity_kwargs']['curiosity_alg']
         self.shared_model = None
         self.distribution = None
+        self.dual_model = dual_model
         self.device = torch.device("cpu")
         self._mode = None
         if self.model_kwargs is None:
@@ -87,12 +90,17 @@ class BaseAgent:
         self.env_model_kwargs = self.make_env_to_model_kwargs(env_spaces)
         self.env_model_kwargs['obs_stats'] = kwargs['obs_stats']
         self.model = self.ModelCls(**self.env_model_kwargs, **self.model_kwargs)
+        if self.dual_model:
+            self.model_int = self.ModelCls(**self.env_model_kwargs, **self.model_kwargs)
         if share_memory:
             self.model.share_memory()
             # Store the shared_model (CPU) under a separate name, in case the
             # model gets moved to GPU later:
             self.shared_model = self.model
+            if self.dual_model:
+                self.shared_model_int = self.model_int
         if self.initial_model_state_dict is not None:
+            assert not self.dual_model, "Not yet implemented model loading for dual_model mode"
             self.model.load_state_dict(self.initial_model_state_dict)
         self.env_spaces = env_spaces
         self.share_memory = share_memory
@@ -116,8 +124,14 @@ class BaseAgent:
             self.model = self.ModelCls(**self.env_model_kwargs,
                 **self.model_kwargs)
             self.model.load_state_dict(self.shared_model.state_dict())
+            if self.dual_model:
+                self.model_int = self.ModelCls(**self.env_model_kwargs,
+                    **self.model_kwargs)
+                self.model_int.load_state_dict(self.shared_model_int.state_dict())
         self.device = torch.device("cuda", index=cuda_idx)
         self.model.to(self.device)
+        if self.dual_model:
+            self.model_int.to(self.device)
         logger.log(f"Initialized agent model on device: {self.device}.")
 
     def data_parallel(self):
@@ -132,10 +146,15 @@ class BaseAgent:
         """
         if self.device.type == "cpu":
             self.model = DDPC(self.model)
+            if self.dual_model:
+                self.model_int = DDPC(self.model_int)
             logger.log("Initialized DistributedDataParallelCPU agent model.")
         else:
             self.model = DDP(self.model,
                 device_ids=[self.device.index], output_device=self.device.index)
+            if self.dual_model:
+                self.model_int = DDP(self.model_int,
+                    device_ids=[self.device.index], output_device=self.device.index)
             logger.log("Initialized DistributedDataParallel agent model on "
                 f"device {self.device}.")
 
@@ -156,10 +175,16 @@ class BaseAgent:
             return
         assert self.shared_model is not None
         self.model = self.ModelCls(**self.env_model_kwargs, **self.model_kwargs)
+        if self.dual_model:
+            self.model_int = self.ModelCls(**self.env_model_kwargs, **self.model_kwargs)
         # TODO: might need strip_ddp_state_dict.
         self.model.load_state_dict(self.shared_model.state_dict())
+        if self.dual_model:
+            self.model_int.load_state_dict(self.shared_model_int.state_dict())
         if share_memory:  # Not needed in async_serial.
             self.model.share_memory()  # For CPU workers in async_cpu.
+            if self.dual_model:
+                self.model_int.share_memory()
         logger.log("Initialized async CPU agent model.")
 
     def collector_initialize(self, global_B=1, env_ranks=None):
@@ -185,33 +210,44 @@ class BaseAgent:
 
     def parameters(self):
         """Parameters to be optimized (overwrite in subclass if multiple models)."""
-        return self.model.parameters()
+        return list(self.model.parameters()) + list(self.model_int.parameters()) if self.dual_model else self.model.parameters()
 
     def named_parameters(self):
-        return self.model.named_parameters()
+        # import ipdb; ipdb.set_trace()
+        return self.model.named_parameters() + self.model_int.named_parameters() if self.dual_model else self.model.named_parameters()
 
     def state_dict(self):
         """Returns model parameters for saving."""
-        return self.model.state_dict()
+        return [self.model.state_dict(), self.model_int.state_dict()] if self.dual_model else self.model.state_dict()
 
     def load_state_dict(self, state_dict):
         """Load model parameters, should expect format returned from ``state_dict()``."""
-        self.model.load_state_dict(state_dict)
+        if self.dual_model:
+            self.model.load_state_dict(state_dict[0])
+            self.model_int.load_state_dict(state_dict[1])
+        else:
+            self.model.load_state_dict(state_dict)
 
     def train_mode(self, itr):
         """Go into training mode (e.g. see PyTorch's ``Module.train()``)."""
         self.model.train()
         self._mode = "train"
+        if self.dual_model:
+            self.model_int.train()
 
     def sample_mode(self, itr):
         """Go into sampling mode."""
         self.model.eval()
         self._mode = "sample"
+        if self.dual_model:
+            self.model_int.eval()
 
     def eval_mode(self, itr):
         """Go into evaluation mode.  Example use could be to adjust epsilon-greedy."""
         self.model.eval()
         self._mode = "eval"
+        if self.dual_model:
+            self.model_int.eval()
 
     def sync_shared_memory(self):
         """Copies model parameters into shared_model, e.g. to make new values
@@ -225,6 +261,9 @@ class BaseAgent:
         if self.shared_model is not self.model:  # (self.model gets trained)
             self.shared_model.load_state_dict(strip_ddp_state_dict(
                 self.model.state_dict()))
+            if self.dual_model:
+                self.shared_model_int.load_state_dict(strip_ddp_state_dict(
+                self.model_int.state_dict()))
 
     def send_shared_memory(self):
         """Used in async mode only, in optimizer process; copies parameters
@@ -237,6 +276,9 @@ class BaseAgent:
             with self._rw_lock.write_lock:
                 self.shared_model.load_state_dict(
                     strip_ddp_state_dict(self.model.state_dict()))
+                if self.dual_model:
+                    self.shared_model_int.load_state_dict(
+                        strip_ddp_state_dict(self.shared_model.state_dict()))
                 self._send_count.value += 1
 
     def recv_shared_memory(self):
@@ -250,6 +292,8 @@ class BaseAgent:
             with self._rw_lock:
                 if self._recv_count < self._send_count.value:
                     self.model.load_state_dict(self.shared_model.state_dict())
+                    if self.dual_model:
+                        self.model_int.load_state_dict(self.shared_model_int.state_dict())
                     self._recv_count = self._send_count.value
 
     def toggle_alt(self):
@@ -273,6 +317,9 @@ class RecurrentAgentMixin:
         self._prev_rnn_state = None
         self._sample_rnn_state = None  # Store during eval.
 
+        self._prev_int_rnn_state = None
+        self._sample_int_rnn_state = None  # Store during eval.
+
     def reset(self):
         """Sets the recurrent state to ``None``, which built-in PyTorch
         modules converts to zeros."""
@@ -290,28 +337,42 @@ class RecurrentAgentMixin:
         call this at the end of their ``step()``). """
         self._prev_rnn_state = new_rnn_state
 
+    def advance_int_rnn_state(self, new_int_rnn_state):
+        """Sets the recurrent state to the newly computed one (i.e. recurrent agents should
+        call this at the end of their ``step()``). """
+        self._prev_int_rnn_state = new_int_rnn_state
+
     @property
     def prev_rnn_state(self):
         return self._prev_rnn_state
+    
+    @property
+    def prev_int_rnn_state(self):
+        return self._prev_int_rnn_state
 
     def train_mode(self, itr):
         """If coming from sample mode, store the rnn state elsewhere and clear it."""
         if self._mode == "sample":
             self._sample_rnn_state = self._prev_rnn_state
+            self._sample_int_rnn_state = self._prev_rnn_state
         self._prev_rnn_state = None
+        self._prev_int_rnn_state = None
         super().train_mode(itr)
 
     def sample_mode(self, itr):
         """If coming from non-sample modes, restore the last sample-mode rnn state."""
         if self._mode != "sample":
             self._prev_rnn_state = self._sample_rnn_state
+            self._prev_int_rnn_state = self._sample_int_rnn_state
         super().sample_mode(itr)
 
     def eval_mode(self, itr):
         """If coming from sample mode, store the rnn state elsewhere and clear it."""
         if self._mode == "sample":
             self._sample_rnn_state = self._prev_rnn_state
+            self._sample_int_rnn_state = self._prev_int_rnn_state
         self._prev_rnn_state = None
+        self._prev_int_rnn_state = None
         super().eval_mode(itr)
 
 

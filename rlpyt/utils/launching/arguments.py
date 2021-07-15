@@ -21,7 +21,7 @@ def get_args(args_in=sys.argv[1:]):
     parser.add_argument('-lstm', action='store_true', help='Whether or not to run an LSTM or FF policy.')
     parser.add_argument('-no_extrinsic', action='store_true', help='Whether or not to use no extrinsic reward.')
     parser.add_argument('-no_negative_reward', action='store_true', help='Whether or not to use negative rewards (living penalty for example).')
-    parser.add_argument('-num_envs', default=4, type=int, help='Number of environments to run in parallel.')
+    parser.add_argument('-num_envs', default=1, type=int, help='Number of environments to run in parallel.')
     parser.add_argument('-sample_mode', default='cpu', type=str, help='Whether to use GPU or CPU sampling.')
     parser.add_argument('-num_gpus', default=0, type=int, help='Number of GPUs available.')
     parser.add_argument('-num_cpus', default=1, type=int, help='Number of CPUs to run worker processes.')
@@ -112,6 +112,9 @@ def get_args(args_in=sys.argv[1:]):
     elif curiosity_alg == 'none':
         parser.add_argument('-feature_encoding', default='none', type=str, choices=['none'], help='Which feature encoding method to use with your policy.')
 
+    # dual policy optimization
+    parser.add_argument('-policy_loss_type', type=str, default=None)
+    parser.add_argument('-dual_model', action='store_true', default=False)
 
     # switch argument (only used in launch.py in __main__)
     parser.add_argument('-launch_tmux', default='yes', type=str, help='')
