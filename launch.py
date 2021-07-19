@@ -1,4 +1,5 @@
 import os
+from rlpyt.runners.sync_rl import SyncRl, SyncRlEval
 import sys
 import subprocess
 import time
@@ -139,9 +140,21 @@ def start_experiment(args):
     config = dict(env_id=args.env)
     
     if args.sample_mode == 'gpu':
-        assert args.num_gpus > 0
-        affinity = dict(cuda_idx=0, workers_cpus=list(range(args.num_cpus)))
-        os.environ['CUDA_VISIBLE_DEVICES'] = str(0)
+        # affinity = dict(num_gpus=args.num_gpus, workers_cpus=list(range(args.num_cpus)))
+        if args.num_gpus > 0:
+            affinity = make_affinity(
+                run_slot=0,
+                n_cpu_core=args.num_cpus,  # Use 16 cores across all experiments.
+                n_gpu=args.num_gpus,  # Use 8 gpus across all experiments.
+                hyperthread_offset=24,  # If machine has 24 cores.
+                n_socket=2,  # Presume CPU socket affinity to lower/upper half GPUs.
+                gpu_per_run=2,  # How many GPUs to parallelize one run across.
+                # cpu_per_run=1,
+            )
+            print('Make multi-gpu affinity')
+        else:
+            affinity = dict(cuda_idx=0, workers_cpus=list(range(args.num_cpus)))
+            os.environ['CUDA_VISIBLE_DEVICES'] = str(0)
     else:
         affinity = dict(workers_cpus=list(range(args.num_cpus)))
     
@@ -342,9 +355,9 @@ def start_experiment(args):
             CollectorCls=collector_class
             )
 
-    # ----------------------------------------------------- RUNNER ----------------------------------------------------- #   
+    # ----------------------------------------------------- RUNNER ----------------------------------------------------- #     
     if args.eval_envs > 0:
-        runner = MinibatchRlEval(
+        runner = (MinibatchRlEval if args.num_gpus <= 1 else SyncRlEval)(
             algo=algo,
             agent=agent,
             sampler=sampler,
@@ -355,7 +368,7 @@ def start_experiment(args):
             pretrain=args.pretrain
             )
     else:
-        runner = MinibatchRl(
+        runner = (MinibatchRl if args.num_gpus <= 1 else SyncRl)(
             algo=algo,
             agent=agent,
             sampler=sampler,

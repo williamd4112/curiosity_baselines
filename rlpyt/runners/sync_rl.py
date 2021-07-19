@@ -87,6 +87,8 @@ class SyncRlMixin:
             port=port,
             backend=backend,
             par=par,
+            log_dir=self.log_dir,
+            pretrain=self.pretrain,
             )
             for rank in range(1, world_size)]
         workers = [self.WorkerCls(**w_kwargs) for w_kwargs in workers_kwargs]
@@ -161,6 +163,8 @@ class SyncWorkerMixin:
             port,
             backend,
             par,
+            log_dir=None,
+            pretrain=None
             ):
         save__init__args(locals())
 
