@@ -146,10 +146,10 @@ def start_experiment(args):
                 run_slot=0,
                 n_cpu_core=args.num_cpus,  # Use 16 cores across all experiments.
                 n_gpu=args.num_gpus,  # Use 8 gpus across all experiments.
-                hyperthread_offset=24,  # If machine has 24 cores.
+                hyperthread_offset=72,  # If machine has 24 cores.
                 n_socket=2,  # Presume CPU socket affinity to lower/upper half GPUs.
-                gpu_per_run=2,  # How many GPUs to parallelize one run across.
-                # cpu_per_run=1,
+                gpu_per_run=args.gpu_per_run,  # How many GPUs to parallelize one run across.
+                cpu_per_run=1,
             )
             print('Make multi-gpu affinity')
         else:

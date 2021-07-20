@@ -25,6 +25,7 @@ def get_args(args_in=sys.argv[1:]):
     parser.add_argument('-sample_mode', default='cpu', type=str, help='Whether to use GPU or CPU sampling.')
     parser.add_argument('-num_gpus', default=0, type=int, help='Number of GPUs available.')
     parser.add_argument('-num_cpus', default=1, type=int, help='Number of CPUs to run worker processes.')
+    parser.add_argument('-gpu_per_run', default=2, type=int, help='How many GPUs to parallelize one run across.')
     parser.add_argument('-eval_envs', default=0, type=int, help='Number of evaluation environments per worker process.')
     parser.add_argument('-eval_max_steps', default=int(51e3), type=int, help='Max number of timesteps run during an evaluation cycle (from one evaluation process).')
     parser.add_argument('-eval_max_traj', default=50, type=int, help='Max number of trajectories collected during an evaluation cycle (from all evaluation processes).')
