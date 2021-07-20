@@ -7,7 +7,7 @@
     "supercloud_resultsdir": "/home/gridsan/ericrc/curiosity_baselines/results",
     "local_workdir": ".",
     "container_resultsdir": "/curiosity_baselines/results",
-    "local_resultsdir": "results-new",
+    "local_resultsdir": "results",
     "cpu_trainer_ami": "",
     "gpu_trainer_ami": "ami-0525bb648404b25a7",
     "tb_port": "12345",

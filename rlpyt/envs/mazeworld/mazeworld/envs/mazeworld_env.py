@@ -833,7 +833,7 @@ class FiveRoomXLExtInt(pycolab_env.PyColabEnv):
             color_palette=1,
             reward_switch=[],
             reward_config=reward_config,
-            dimensions=(19,19))
+            dimensions=(42,42))
 
     def make_game(self, reward_config):
         self._croppers = self.make_croppers()
