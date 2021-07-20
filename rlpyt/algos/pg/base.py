@@ -34,7 +34,7 @@ OptInfoTwin = namedtuple("OptInfoTwin", ["return_", "return_int_",
                                  "entropy_loss", "int_entropy_loss",
                                  "inv_loss", 
                                  "forward_loss",
-                                 "reward_total_std", "int_reward_total_std"
+                                 "reward_total_std", "int_reward_total_std",
                                  "curiosity_loss",
                                  "entropy", "int_entropy",
                                  "perplexity", "int_perplexity"])
@@ -79,8 +79,7 @@ class PolicyGradientAlgo(RlAlgorithm):
                                 samples.agent.agent_info.value, samples.agent.bootstrap_value, 
                                 samples.agent.agent_info.int_value, samples.agent.int_bootstrap_value)
         else:
-            reward, done, value, bv = (samples.env.reward, samples.env.done, samples.agent.agent_info.value, samples.agent.bootstrap_value)
-
+            reward, done, value, bv = (samples.env.reward, samples.env.done, samples.agent.agent_info.value, samples.agent.bootstrap_value)        
         done = done.type(reward.dtype)
 
         if self.curiosity_type in {'icm', 'disagreement', 'micm'}:
@@ -121,7 +120,7 @@ class PolicyGradientAlgo(RlAlgorithm):
             if self.agent.dual_model:
                 int_rews = np.array([])
                 for int_rew in int_reward.clone().detach().data.numpy():
-                    rews = np.concatenate((int_rews, self.reward_ff.update(int_rew)))
+                    int_rews = np.concatenate((int_rews, self.int_reward_ff.update(int_rew)))
                 self.int_reward_rms.update_from_moments(np.mean(int_rews), np.var(int_rews), len(int_rews))
                 int_reward = int_reward / np.sqrt(self.int_reward_rms.var)
 

@@ -142,14 +142,17 @@ def start_experiment(args):
     if args.sample_mode == 'gpu':
         # affinity = dict(num_gpus=args.num_gpus, workers_cpus=list(range(args.num_cpus)))
         if args.num_gpus > 0:
+            # import ipdb; ipdb.set_trace()
             affinity = make_affinity(
                 run_slot=0,
                 n_cpu_core=args.num_cpus,  # Use 16 cores across all experiments.
                 n_gpu=args.num_gpus,  # Use 8 gpus across all experiments.
-                hyperthread_offset=72,  # If machine has 24 cores.
-                n_socket=2,  # Presume CPU socket affinity to lower/upper half GPUs.
+                # contexts_per_gpu=2,
+                # hyperthread_offset=72,  # If machine has 24 cores.
+                # n_socket=2,  # Presume CPU socket affinity to lower/upper half GPUs.
                 gpu_per_run=args.gpu_per_run,  # How many GPUs to parallelize one run across.
-                cpu_per_run=1,
+
+                # cpu_per_run=1,
             )
             print('Make multi-gpu affinity')
         else:
@@ -168,7 +171,7 @@ def start_experiment(args):
         initial_model_state_dict = checkpoint['agent_state_dict']
 
     # ----------------------------------------------------- POLICY ----------------------------------------------------- #
-    model_args = dict(curiosity_kwargs=dict(curiosity_alg=args.curiosity_alg))
+    model_args = dict(curiosity_kwargs=dict(curiosity_alg=args.curiosity_alg), curiosity_step_kwargs=dict())
     if args.curiosity_alg =='icm':
         model_args['curiosity_kwargs']['feature_encoding'] = args.feature_encoding
         model_args['curiosity_kwargs']['batch_norm'] = args.batch_norm
@@ -204,6 +207,9 @@ def start_experiment(args):
         model_args['curiosity_kwargs']['drop_probability'] = args.drop_probability
         model_args['curiosity_kwargs']['gamma'] = args.discount
         model_args['curiosity_kwargs']['device'] = args.sample_mode
+    
+    if args.curiosity_alg != 'none':
+        model_args['curiosity_step_kwargs']['curiosity_step_minibatches'] = args.curiosity_step_minibatches
 
     if args.env in _MUJOCO_ENVS:
         if args.lstm:

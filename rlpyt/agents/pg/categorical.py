@@ -3,9 +3,10 @@ import torch
 
 from rlpyt.agents.base import AgentStep, AgentCuriosityStep, BaseAgent, RecurrentAgentMixin, AlternatingRecurrentAgentMixin
 from rlpyt.agents.pg.base import AgentInfo, AgentInfoTwin, NdigoInfo, IcmInfo, RndInfo, AgentInfoRnn, AgentInfoRnnTwin
+from rlpyt.agents.base import AgentInputs, AgentInputsRnn, IcmAgentCuriosityStepInputs, NdigoAgentCuriosityStepInputs, RndAgentCuriosityStepInputs
 from rlpyt.distributions.categorical import Categorical, DistInfo
 from rlpyt.utils.buffer import buffer_to, buffer_func, buffer_method
-
+from rlpyt.utils.misc import iterate_mb_idxs
 
 class CategoricalPgAgent(BaseAgent):
     """
@@ -118,10 +119,10 @@ class RecurrentCategoricalPgAgentBase(BaseAgent):
                                     prev_rnn_state=prev_rnn_state,
                                     dist_int_info=dist_int_info, 
                                     int_value=int_value, 
-                                    prev_int_rnn_state=prev_int_rnn_state)      
+                                    prev_int_rnn_state=prev_int_rnn_state)                                        
         else:
             agent_info = AgentInfoRnn(dist_info=dist_info, value=value, prev_rnn_state=prev_rnn_state)
-            action, agent_info = buffer_to((action, agent_info), device="cpu")
+        action, agent_info = buffer_to((action, agent_info), device="cpu")
         self.advance_rnn_state(rnn_state)  # Keep on device.
         if self.dual_model:
             self.advance_int_rnn_state(int_rnn_state)
@@ -129,26 +130,53 @@ class RecurrentCategoricalPgAgentBase(BaseAgent):
 
     @torch.no_grad()
     def curiosity_step(self, curiosity_type, *args):
+        curiosity_model = self.model.module.curiosity_model if isinstance(self.model, torch.nn.parallel.DistributedDataParallel) else self.model.curiosity_model
+        curiosity_step_minibatches = self.model_kwargs['curiosity_step_kwargs']['curiosity_step_minibatches']
+        T, B = args[0].shape[:2] # either observation or next_observation
+        batch_size = B
+        mb_size = batch_size // curiosity_step_minibatches
+
         if curiosity_type in {'icm', 'micm', 'disagreement'}:
             observation, next_observation, actions = args
             actions = self.distribution.to_onehot(actions)
-            curiosity_agent_inputs = buffer_to((observation, next_observation, actions), device=self.device)
-            agent_curiosity_info = IcmInfo()
+            curiosity_agent_inputs = IcmAgentCuriosityStepInputs(
+                observation=observation,
+                next_observation=next_observation,
+                actions=actions
+            )
+            curiosity_agent_inputs = buffer_to(curiosity_agent_inputs, device=self.device)
+            agent_curiosity_info = IcmInfo()                
         elif curiosity_type == 'ndigo':
             observation, prev_actions, actions = args
             actions = self.distribution.to_onehot(actions)
             prev_actions = self.distribution.to_onehot(prev_actions)
-            curiosity_agent_inputs = buffer_to((observation, prev_actions, actions), device=self.device)
+            curiosity_agent_inputs = NdigoAgentCuriosityStepInputs(
+                observations=observation,
+                prev_actions=prev_actions,
+                actions=actions
+            )
+            curiosity_agent_inputs = buffer_to(curiosity_agent_inputs, device=self.device)
             agent_curiosity_info = NdigoInfo(prev_gru_state=None)
         elif curiosity_type == 'rnd':
             next_observation, done = args
-            curiosity_agent_inputs = buffer_to((next_observation, done), device=self.device)
+            curiosity_agent_inputs = RndAgentCuriosityStepInputs(
+                next_observation=next_observation,
+                done=done
+            )
+            curiosity_agent_inputs = buffer_to(curiosity_agent_inputs, device=self.device)
             agent_curiosity_info = RndInfo()
-        
-        curiosity_model = self.model.module.curiosity_model if isinstance(self.model, torch.nn.parallel.DistributedDataParallel) else self.model.curiosity_model
-        r_int = curiosity_model.compute_bonus(*curiosity_agent_inputs)
-        
+
+        # Need to split the intrinsic reward predictions to several minibatches -- otherwise, we will run out of GPU memory 
+        r_ints = []
+        for idxs in iterate_mb_idxs(batch_size, mb_size, shuffle=False):
+            T_idxs = slice(None)
+            B_idxs = idxs                    
+            mb_r_int = curiosity_model.compute_bonus(*curiosity_agent_inputs[slice(None), B_idxs])
+            r_ints.append(mb_r_int)
+        r_int = torch.cat(r_ints, dim=1)
+
         r_int, agent_curiosity_info = buffer_to((r_int, agent_curiosity_info), device="cpu")
+
         return AgentCuriosityStep(r_int=r_int, agent_curiosity_info=agent_curiosity_info)
 
     def curiosity_loss(self, curiosity_type, *args):
@@ -160,6 +188,7 @@ class RecurrentCategoricalPgAgentBase(BaseAgent):
             actions = actions.squeeze() # ([batch, 1, size]) -> ([batch, size])
             curiosity_agent_inputs = buffer_to((observation, next_observation, actions, valid), device=self.device)
             inv_loss, forward_loss = curiosity_model.compute_loss(*curiosity_agent_inputs)
+            # inv_loss, forward_loss = curiosity_model.compute_loss(*args)
             losses = (inv_loss.to("cpu"), forward_loss.to("cpu"))
         elif curiosity_type == 'disagreement':
             observation, next_observation, actions, valid = args

@@ -323,7 +323,7 @@ class PPO(PolicyGradientAlgo):
 
             entropy_loss = - self.entropy_loss_coeff * entropy
             int_entropy_loss = - self.entropy_loss_coeff * int_entropy
-
+            
             loss = (pi_loss + value_loss + entropy_loss) + (int_pi_loss + int_value_loss + int_entropy_loss)
         else:
             ratio = dist.likelihood_ratio(action, old_dist_info=old_dist_info, new_dist_info=dist_info)
@@ -343,7 +343,7 @@ class PPO(PolicyGradientAlgo):
             loss = pi_loss + value_loss + entropy_loss
 
         if self.curiosity_type in {'icm', 'micm'}: 
-            inv_loss, forward_loss = self.agent.curiosity_loss(self.curiosity_type, *agent_curiosity_inputs)
+            inv_loss, forward_loss = self.agent.curiosity_loss(self.curiosity_type, *agent_curiosity_inputs)           
             loss += inv_loss
             loss += forward_loss
             curiosity_losses = (inv_loss, forward_loss)

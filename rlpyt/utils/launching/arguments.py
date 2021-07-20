@@ -80,6 +80,8 @@ def get_args(args_in=sys.argv[1:]):
 
     # curiosity specific args
     curiosity_alg = args_in[args_in.index('-curiosity_alg')+1]
+    if curiosity_alg != 'none':
+        parser.add_argument('-curiosity_step_minibatches', default=4, type=int, help='Minibatch size for computing curiosity rewards.')
     if curiosity_alg == 'icm':
         parser.add_argument('-feature_encoding', default='idf_burda', type=str, choices=['none', 'idf', 'idf_burda', 'idf_maze'], help='Which feature encoding method to use with ICM.')
         parser.add_argument('-forward_loss_wt', default=0.2, type=float, help='Forward loss coefficient. Inverse weight is (1 - this).')

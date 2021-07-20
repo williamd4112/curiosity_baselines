@@ -34,6 +34,7 @@ class AtariLstmModel(torch.nn.Module):
             strides=None,
             paddings=None,
             curiosity_kwargs=dict(curiosity_alg='none'),
+            curiosity_step_kwargs=dict(curiosity_step_minibatches=4),
             obs_stats=None
             ):
         """Instantiate neural net module according to inputs."""
