@@ -20,7 +20,7 @@ mjkey.txt
 configs/*
 
 # HPC Launch files and logs
-*.sh
+# *.sh
 logs
 
 # Graph files
