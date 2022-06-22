@@ -21,7 +21,7 @@ matplotlib==3.3.2
 monotonic==1.5
 mujoco-py==2.0.2.10
 mpi4py==3.0.3
-numpy==1.19.0
+numpy==1.22.0
 oauthlib==3.1.0
 opencv-python==4.2.0.34
 Pillow==7.1.2
